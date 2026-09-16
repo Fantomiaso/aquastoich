@@ -2,6 +2,8 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
+## [⬇ Скачать AquaStoich 1.0 · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0.0)
+
 **Версия 1.0 находится в стадии тестирования.** Проверяйте рассчитанные дозы капельными тестами и фактическими замерами.
 
 Локальное приложение для расчёта воды на подмену и внесённых удобрений. Работает без регистрации и сетевой базы данных. Данные автоматически сохраняются на этом компьютере.

@@ -2,6 +2,8 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
+## [⬇ AquaStoich 1.0 herunterladen · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0.0)
+
 **Version 1.0 befindet sich in der Testphase.** AquaStoich berechnet die Remineralisierung von Süßwasser-Aquarien, Dünger und Stammlösungen. Dosierungen und pH sollten vor der Verwendung des Wassers durch Messungen überprüft werden.
 
 ## Download und Installation

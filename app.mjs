@@ -1011,7 +1011,11 @@ $('#journal-export').addEventListener('click', () => {
   const bytes = journalXlsx(entries, allJournalTests(), activeAquarium().name);
   const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const link = document.createElement('a');
-  const safeName = activeAquarium().name.replace(/[^\p{L}\p{N}._-]+/gu, '_').slice(0, 60) || 'aquarium';
+  const safeName = activeAquarium().name.normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Za-z0-9._-]+/g, '_')
+    .replace(/^[_\.]+|[_\.]+$/g, '')
+    .slice(0, 60) || `aquarium-${activeAquarium().id.slice(-6)}`;
   link.href = URL.createObjectURL(blob);
   link.download = `AquaStoich_${safeName}_journal.xlsx`;
   document.body.append(link);
