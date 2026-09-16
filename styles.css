@@ -302,6 +302,9 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 
 @media (max-width: 1120px) {
   .layout { grid-template-columns: 225px minmax(300px, 1fr) minmax(340px, 400px); }
+  .topbar { height: auto; min-height: 45px; flex-wrap: wrap; }
+  .top-actions { flex-wrap: wrap; justify-content: flex-end; }
+  .brand div span { display: none; }
 }
 
 @media (max-width: 900px) {
