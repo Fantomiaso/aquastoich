@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.cache/
+.pnpm-store/
+qa-data/
+*.log
+.DS_Store

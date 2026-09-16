@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f5">
+  <title>AquaStoich — aquarium water calculator</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">A</span><div><strong>AquaStoich</strong><span>Расчёт воды для подмены</span></div></div>
+      <div class="top-actions"><label class="aquarium-switch"><span>Аквариум</span><select id="active-aquarium" aria-label="Выбрать аквариум"></select></label><span class="testing-badge">Версия 1.0 · тестирование</span><label class="language-picker"><span>Язык</span><select id="language" aria-label="Язык приложения"><option value="en">English</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="es">Español</option></select></label><button id="copy-summary" class="button quiet" type="button">Скопировать расчёт</button><button id="reset" class="button quiet" type="button">Новый расчёт</button></div>
+    </header>
+
+    <nav class="app-tabs" aria-label="Разделы программы">
+      <button type="button" data-view="calculator" class="active">Расчёт</button>
+      <button type="button" data-view="aquariums">Аквариумы</button>
+      <button type="button" data-view="journal">Журнал измерений</button>
+      <button type="button" data-view="database">База веществ</button>
+    </nav>
+
+    <main class="layout" id="calculator-view">
+      <aside class="setup">
+        <section class="panel">
+          <div class="mode-switch" role="group" aria-label="Режим расчёта"><button type="button" data-calc-mode="prepare">Приготовление</button><button type="button" data-calc-mode="change">Подмена воды</button></div>
+          <div class="section-heading"><h2 id="source-heading">Исходная вода</h2></div>
+          <label class="field"><span id="volume-label">Объём приготовляемой воды</span><div class="input-unit"><input id="volume" inputmode="decimal" type="number" min="0.001" step="any"><span>л</span></div></label>
+          <div class="field-grid two">
+            <label class="field"><span>Исходный GH</span><div class="input-unit"><input id="source-gh" inputmode="decimal" type="number" min="0" step="any"><span>°dGH</span></div></label>
+            <label class="field"><span>Исходный KH</span><div class="input-unit"><input id="source-kh" inputmode="decimal" type="number" min="0" step="any"><span>°dKH</span></div></label>
+          </div>
+          <div class="field-grid two">
+            <label class="field"><span>Исходный pH</span><input id="source-ph" inputmode="decimal" type="number" min="0" max="14" step="any" placeholder="—"></label>
+            <label class="field"><span>CO₂ после отстаивания</span><div class="input-unit"><input id="ph-co2" inputmode="decimal" type="number" min="0.01" step="any"><span>мг/л</span></div></label>
+          </div>
+          <details class="details" id="source-details"><summary>Известные ионы исходной воды <span>мг/л</span></summary><div id="source-fields" class="field-grid two"></div><p class="fine-print">GH и KH задаются отдельно по тестам. Если вводите Ca/Mg или HCO₃, проверьте, что они согласуются с GH/KH.</p></details>
+        </section>
+
+        <section class="panel" id="tank-panel" hidden>
+          <div class="section-heading"><h2>Вода в аквариуме до подмены</h2></div>
+          <label class="field"><span>Объём аквариума с водой</span><div class="input-unit"><input id="tank-volume" type="number" min="0.001" step="any"><span>л</span></div></label>
+          <button id="open-aquarium-profile" class="text-button" type="button">Размеры и рабочий объём ↗</button>
+          <div class="field-grid three spaced-grid">
+            <label class="field"><span>GH</span><input id="tank-gh" type="number" min="0" step="any"></label>
+            <label class="field"><span>KH</span><input id="tank-kh" type="number" min="0" step="any"></label>
+            <label class="field"><span>pH</span><input id="tank-ph" type="number" min="0" max="14" step="any" placeholder="—"></label>
+          </div>
+          <details class="details"><summary>Ионы в аквариуме <span>мг/л</span></summary><div id="tank-fields" class="field-grid two"></div></details>
+        </section>
+
+        <section class="panel">
+          <div class="section-heading"><h2 id="target-scope">Целевые параметры</h2></div>
+          <p class="help">Пустое поле пропускается · 0 — заданная цель</p>
+          <div id="target-fields" class="field-grid two"></div>
+          <details class="details" id="preset-details"><summary>Пресеты пропорций <span>можно несколько</span></summary><div id="preset-list" class="preset-list"></div><p id="preset-warning" class="preset-warning"></p><p class="fine-print">Стартовые примеры. Подстройте пропорции под виды и измерения.</p></details>
+          <div class="ratio-editor-head"><strong>Соотношения ионов</strong><button id="add-ratio" class="text-button" type="button">+ Добавить</button></div>
+          <p class="help ratio-help">По массе, мг/л · сначала цель, при конфликте — допуск</p>
+          <div id="ratio-fields" class="ratio-fields"></div>
+          <button id="solve" class="button primary full" type="button">Подобрать дозы</button>
+        </section>
+
+        <div class="source-note"><a href="https://github.com/Fantomiaso/aquastoich/blob/main/README.md" target="_blank" rel="noopener noreferrer">Методика и источники составов ↗</a></div>
+      </aside>
+
+      <div class="workspace">
+        <section class="panel reagents-panel">
+          <div class="section-heading split"><div><h2>Вещества и дозы</h2></div><span id="reagent-count" class="count-pill"></span></div>
+          <div class="catalog-filters"><input id="catalog-search" type="search" placeholder="Название, синоним или формула" aria-label="Поиск вещества"><div class="catalog-filter-row"><select id="catalog-effect" aria-label="Фильтр по эффекту"></select><select id="catalog-sort" aria-label="Сортировка веществ"></select></div></div>
+          <div class="add-bar"><select id="catalog" aria-label="Выбрать вещество"></select><button id="add-product" class="button secondary" type="button">Добавить</button></div>
+          <button id="open-database" class="text-button catalog-link" type="button">+ Своё вещество или смесь</button>
+          <div id="reagents" class="reagents"></div>
+          <p class="help bottom-help">Авто — подбор по целям. «Зафиксировать» сохраняет вещество и дозу при пересчёте.</p>
+        </section>
+
+        <section class="panel results-panel">
+          <div class="section-heading split"><div><h2>Результат</h2></div><span class="live-pill"><span></span> обновляется сразу</span></div>
+          <div id="messages" class="messages" aria-live="polite"></div>
+          <button id="ph-result" class="ph-result" type="button" aria-expanded="false" aria-controls="ph-breakdown"></button>
+          <div id="ph-breakdown" class="result-breakdown" hidden></div>
+          <p class="fine-print ph-note">pH после отстаивания — оценка по KH, фосфату и заданному CO₂ при 25 °C. Начальные 5 мг/л выбраны по вашему диапазону pH; уточняйте CO₂ по измерениям.</p>
+          <div class="calibration-details" id="calibration-details"><strong>Калибровка pH по замеру</strong><div class="calibration-line"><label class="mini-field"><span id="measured-ph-label">Фактический pH после смешивания</span><input id="measured-ph" type="number" min="4" max="10" step="any" placeholder="например 7,6"></label><button id="calibrate-ph" class="button secondary" type="button">Применить замер</button></div><p id="calibration-status" class="fine-print"></p></div>
+          <div id="prepared-summary" class="prepared-summary" hidden></div>
+          <div id="result-cards" class="result-cards"></div>
+          <div id="result-breakdown" class="result-breakdown" hidden></div>
+          <div id="ratios" class="ratios"></div>
+          <div class="table-heading"><h3>Сводная таблица ионов</h3><span>мг/л · нажмите на строку</span></div>
+          <div class="table-wrap"><table><thead><tr><th>Ион</th><th>Было</th><th>Добавлено</th><th>Итого</th></tr></thead><tbody id="ion-table"></tbody></table></div>
+          <p class="fine-print table-note">Показаны ионы с известным составом. HCO₃/CO₃ даны по внесённым формулам; после отстаивания их формы меняются. Неизвестные противоионы готовых препаратов учтены ниже в мэкв/л.</p>
+          <div class="balance-heading"><h3>Баланс добавок</h3><span>мэкв/л</span></div>
+          <div id="balance" class="balance"></div>
+          <p class="fine-print">Баланс исходной воды требует полного ионного анализа.</p>
+        </section>
+      </div>
+    </main>
+
+    <section id="aquariums-view" class="aux-view" hidden>
+      <div class="aux-columns aquarium-columns">
+        <div class="panel aux-panel">
+          <div class="section-heading split"><h2>Аквариумы</h2><button id="aquarium-add" class="button secondary" type="button">+ Новый аквариум</button></div>
+          <p class="help">Выберите аквариум для расчёта подмены и отдельного журнала.</p>
+          <div id="aquarium-list" class="aquarium-list"></div>
+        </div>
+        <div class="panel aux-panel">
+          <div class="section-heading"><h2>Профиль аквариума</h2></div>
+          <label class="field"><span>Название аквариума</span><input id="aquarium-name" type="text" maxlength="100"></label>
+          <details class="details aquarium-note"><summary>Примечание к аквариуму</summary><textarea id="aquarium-note" rows="4" placeholder="Обитатели, грунт, оборудование…"></textarea></details>
+          <div class="field-grid two spaced-grid"><label class="field"><span>Форма аквариума</span><select id="aquarium-shape"><option value="rect">Прямоугольный</option><option value="cylinder">Цилиндрический</option></select></label><label class="field"><span>Способ определения объёма</span><select id="aquarium-volume-mode"><option value="manual">Вручную</option><option value="geometry">По размерам</option></select></label></div>
+          <p class="fine-print">Размеры указываются снаружи. Для грунта берётся средняя толщина слоя. Декор и оборудование в расчёт не входят.</p>
+          <div id="aquarium-rect-fields" class="field-grid two spaced-grid"><label class="field"><span>Длина, см</span><input data-geometry="lengthCm" type="number" min="0" step="any"></label><label class="field"><span>Ширина, см</span><input data-geometry="widthCm" type="number" min="0" step="any"></label></div>
+          <div id="aquarium-cylinder-fields" class="field-grid two spaced-grid" hidden><label class="field"><span>Диаметр, см</span><input data-geometry="diameterCm" type="number" min="0" step="any"></label></div>
+          <div class="field-grid two spaced-grid"><label class="field"><span>Высота, см</span><input data-geometry="heightCm" type="number" min="0" step="any"></label><label class="field"><span>Толщина стекла, мм</span><input data-geometry="glassMm" type="number" min="0" step="any"></label><label class="field"><span>Средний слой грунта, см</span><input data-geometry="substrateCm" type="number" min="0" step="any"></label><label class="field"><span>Недолив от края, см</span><input data-geometry="topGapCm" type="number" min="0" step="any"></label></div>
+          <div class="aquarium-volume-result"><span>Расчётный объём воды</span><strong id="aquarium-estimate">—</strong></div>
+          <label class="field spaced-grid"><span>Рабочий объём воды, л</span><input id="aquarium-volume" type="number" min="0.001" step="any"></label>
+          <p class="fine-print">Рабочий объём используется в расчёте подмены. При выборе «По размерам» он обновляется автоматически.</p>
+          <div class="form-actions"><button id="aquarium-delete" class="button quiet danger-text" type="button">Удалить аквариум</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="journal-view" class="aux-view" hidden>
+      <div class="aux-columns journal-columns">
+        <div class="panel aux-panel">
+          <div class="section-heading"><h2 id="journal-form-title">Новое измерение</h2></div>
+          <div class="field-grid two"><label class="field"><span>Где измерено</span><select id="journal-location"><option value="aquarium">Аквариум</option><option value="source">Исходная вода</option><option value="prepared">Приготовленная вода</option></select></label><label class="field"><span>Дата и время</span><input id="journal-at" type="datetime-local"></label></div>
+          <label class="check-line"><input id="journal-auto-time" type="checkbox" checked> Время автоматически при сохранении</label>
+          <div class="journal-add-test"><select id="journal-test-select" aria-label="Добавить тест"></select><button id="journal-add-test" class="button secondary" type="button">+ Тест</button></div>
+          <div id="journal-test-fields" class="journal-test-fields"></div>
+          <details class="details" id="journal-light"><summary>Настройки света</summary><div class="field-grid two spaced-grid"><label class="field"><span>Светильник</span><input data-light="fixture" type="text" placeholder="Модель или название"></label><label class="field"><span>Мощность, Вт</span><input data-light="powerW" type="number" min="0" step="any"></label><label class="field"><span>Яркость, %</span><input data-light="intensityPercent" type="number" min="0" max="100" step="any"></label><label class="field"><span>Начало освещения</span><input data-light="startTime" type="time"></label><label class="field"><span>Длительность, ч</span><input data-light="durationHours" type="number" min="0" max="24" step="any"></label><label class="field"><span>Цветовая температура, K</span><input data-light="colorTempK" type="number" min="0" step="any"></label><label class="field"><span>PAR у грунта, мкмоль/м²/с</span><input data-light="par" type="number" min="0" step="any"></label></div></details>
+          <label class="field spaced-grid"><span>Общее примечание</span><textarea id="journal-note" rows="3" placeholder="Подмена, кормление, удобрения, наблюдения…"></textarea></label>
+          <div class="form-actions"><button id="journal-save" class="button primary" type="button">Сохранить измерение</button><button id="journal-cancel" class="button quiet" type="button" hidden>Отменить правку</button></div>
+          <details class="details"><summary>Добавить свой вид теста</summary><div class="field-grid two spaced-grid"><label class="field"><span>Название</span><input id="custom-test-name" type="text" placeholder="Например, фторид"></label><label class="field"><span>Единица</span><input id="custom-test-unit" type="text" placeholder="мг/л"></label></div><button id="custom-test-add" class="button secondary small-button" type="button">Добавить тест</button></details>
+        </div>
+        <div class="panel aux-panel">
+          <div class="section-heading split"><h2>История измерений</h2><div class="journal-history-actions"><span id="journal-count" class="count-pill"></span><button id="journal-export" class="button secondary" type="button">Экспорт в Excel</button></div></div>
+          <p class="help">Δ от предыдущего замера того же теста и воды; скорость пересчитана на 24 часа. Это чистое изменение: внесения и подмены не вычитаются.</p>
+          <div id="journal-list" class="journal-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="database-view" class="aux-view" hidden>
+      <div class="aux-columns database-columns">
+        <div class="panel aux-panel">
+          <div class="section-heading"><h2 id="custom-form-title">Добавить вещество или смесь</h2></div>
+          <div class="field-grid two"><label class="field"><span>Тип</span><select id="custom-kind"><option value="substance">Сухое вещество</option><option value="dry-mixture">Сухая смесь</option><option value="liquid-mixture">Жидкая смесь</option></select></label><label class="field"><span id="custom-solubility-label">Растворимость первой формы при 20 °C</span><div class="input-unit"><input id="custom-solubility" type="number" min="0.001" step="any" placeholder="обязательно"><span>г/л</span></div></label></div>
+          <div class="field-grid two spaced-grid"><label class="field"><span>Химическое название / название смеси</span><input id="custom-name" type="text" placeholder="Например, сульфат калия"></label><label class="field"><span>Альтернативные названия</span><input id="custom-aliases" type="text" placeholder="Через запятую"></label></div>
+          <div id="single-formula"><label class="field spaced-grid"><span>Формула первой формы</span><input id="custom-formula" type="text" placeholder="MgSO4·7H2O"></label><button id="suggest-name" class="text-button" type="button">Подставить известное химическое название</button><div id="additional-forms"></div><button id="add-form" class="text-button" type="button">+ Другая сухая форма этого вещества</button><p class="fine-print">У каждой формы своя растворимость и расчётная доля ионов. Например, MgSO4 и MgSO4·7H2O.</p></div>
+          <div id="mixture-formulas" hidden><div class="table-heading"><h3>Компоненты смеси</h3><span id="component-unit">массовая доля, %</span></div><div id="component-list"></div><button id="add-component" class="text-button" type="button">+ Компонент</button></div>
+          <details class="details"><summary>Ионный состав вручную <span>для сложных формул</span></summary><p class="fine-print">Укажите мг иона на 1 г сухого вещества либо на 1 мл жидкости. Формулы компонентов остаются обязательными.</p><textarea id="custom-manual" rows="3" placeholder="Ca=120; Mg=30; SO4=200"></textarea></details>
+          <div id="custom-preview" class="custom-preview"></div>
+          <div class="form-actions"><button id="custom-save" class="button primary" type="button">Сохранить в базу</button><button id="custom-cancel" class="button quiet" type="button" hidden>Отменить правку</button></div>
+        </div>
+        <div class="panel aux-panel database-catalog-panel">
+          <div class="section-heading split"><h2>База веществ</h2><span id="database-count" class="count-pill"></span></div>
+          <div class="catalog-filters"><input id="database-search" type="search" placeholder="Название, синоним или формула" aria-label="Поиск в базе"><div class="catalog-filter-row"><select id="database-effect" aria-label="Фильтр базы по эффекту"></select><select id="database-sort" aria-label="Сортировка базы"></select></div></div>
+          <p class="database-hint">Каталог включает расчётные добавки и материалы с эффектом, который нужно проверять тестами.</p>
+          <div id="database-list" class="database-list"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
