@@ -42,6 +42,7 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Целевое соотношение к одному|Target ratio to one|Zielverhältnis zu eins|Proporción objetivo a uno
 Программа сначала подбирает точную цель; диапазон используется при конфликте с остальными целями|The exact target is tried first; the range is used if targets conflict|Zuerst wird das exakte Ziel gesucht; bei Konflikten gilt der Bereich|Primero se busca el objetivo exacto; el rango se usa si hay conflictos
 Допустимый диапазон|Allowed range|Zulässiger Bereich|Rango permitido
+Диапазон|Range|Bereich|Rango
 Нижняя граница|Lower bound|Untere Grenze|Límite inferior
 Верхняя граница|Upper bound|Obere Grenze|Límite superior
 Нижняя граница соотношения к одному|Lower ratio bound|Untere Verhältnisgrenze|Límite inferior de la proporción
