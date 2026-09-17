@@ -184,14 +184,19 @@ export function customProductFromForm(form) {
 }
 
 export const EFFECTS = [
-  ['GH', 'GH+'], ['GH-', 'GH−'], ['KH', 'KH+'], ['KH-', 'KH−'], ['pH-', 'pH−'],
-  ['Ca', 'Ca+'], ['Ca-', 'Ca−'], ['Mg', 'Mg+'], ['Mg-', 'Mg−'],
-  ['macro', 'Макроэлементы +'], ['K', 'K+'], ['NO3', 'NO₃+'], ['PO4', 'PO₄+'], ['Fe', 'Fe+'],
-  ['NO3-', 'NO₃−'], ['PO4-', 'PO₄−'], ['NH4-', 'NH₄−'], ['NO2-', 'NO₂−'],
-  ['micro', 'Микроэлементы +'], ['SO4', 'SO₄+'], ['Cl', 'Cl+'], ['Na', 'Na+'],
-  ['NH4', 'NH₄+'], ['NO2', 'NO₂+'], ['HCO3', 'HCO₃+'], ['CO3', 'CO₃+'],
-  ['Mn', 'Mn+'], ['Cu', 'Cu+'], ['Cu-', 'Cu−'], ['B', 'B+'], ['Zn', 'Zn+'], ['Zn-', 'Zn−'],
+  ['GH', 'GH', '+'], ['GH-', 'GH', '−'], ['KH', 'KH', '+'], ['KH-', 'KH', '−'], ['pH-', 'pH', '−'],
+  ['Ca', 'Ca²⁺', '+'], ['Ca-', 'Ca²⁺', '−'], ['Mg', 'Mg²⁺', '+'], ['Mg-', 'Mg²⁺', '−'],
+  ['macro', 'Макроэлементы', '+'], ['K', 'K⁺', '+'], ['NO3', 'NO₃⁻', '+'], ['PO4', 'PO₄ (Σ)', '+'], ['Fe', 'Fe (Σ)', '+'],
+  ['NO3-', 'NO₃⁻', '−'], ['PO4-', 'PO₄ (Σ)', '−'], ['NH4-', 'NH₄⁺', '−'], ['NO2-', 'NO₂⁻', '−'],
+  ['micro', 'Микроэлементы', '+'], ['SO4', 'SO₄²⁻', '+'], ['Cl', 'Cl⁻', '+'], ['Na', 'Na⁺', '+'],
+  ['NH4', 'NH₄⁺', '+'], ['NO2', 'NO₂⁻', '+'], ['HCO3', 'HCO₃⁻', '+'], ['CO3', 'CO₃²⁻', '+'],
+  ['Mn', 'Mn (Σ)', '+'], ['Cu', 'Cu (Σ)', '+'], ['Cu-', 'Cu (Σ)', '−'], ['B', 'B (Σ)', '+'], ['Zn', 'Zn (Σ)', '+'], ['Zn-', 'Zn (Σ)', '−'],
 ];
+
+export const effectParts = key => {
+  const [, label, action] = EFFECTS.find(([id]) => id === key) ?? [key, key, ''];
+  return { label, action };
+};
 
 export function productEffects(product) {
   if (product.referenceOnly) return product.effects ?? [];
@@ -223,7 +228,10 @@ export function productKind(product) {
 
 const EFFECT_PRIORITY = ['KH-', 'GH-', 'pH-', 'NO3-', 'PO4-', 'NH4-', 'NO2-', 'Ca-', 'Mg-', 'Cu-', 'Zn-',
   'GH', 'KH', 'NO3', 'PO4', 'K', 'Fe', 'NH4', 'Ca', 'Mg', 'micro', 'SO4', 'Cl', 'Na', 'macro'];
-const labelForEffect = key => EFFECTS.find(([id]) => id === key)?.[1] ?? key;
+const labelForEffect = key => {
+  const { label, action } = effectParts(key);
+  return action ? `${action} · ${label}` : label;
+};
 
 export function primaryEffect(product, selectedEffect = '') {
   const effects = productEffects(product);

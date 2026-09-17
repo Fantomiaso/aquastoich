@@ -1,3 +1,5 @@
+import { MAX_LIGHT_CHANNELS, channelName } from './light-channels.mjs';
+
 const encoder = new TextEncoder();
 const xml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]);
 const columnName = index => {
@@ -26,13 +28,19 @@ const sheetCell = (value, column, row, bold = false) => {
 export function journalTable(entries, tests, aquariumName) {
   const used = [...new Set(entries.flatMap(entry => Object.keys(entry.values ?? {})))];
   const selectedTests = used.map(id => tests.find(test => test.id === id) ?? { id, label: id, unit: '' });
+  const channelCount = Math.min(MAX_LIGHT_CHANNELS, Math.max(0, ...entries.map(entry => entry.light?.channels?.length ?? 0)));
   const headers = ['Aquarium', 'Date and time', 'Water', 'General note',
     ...selectedTests.flatMap(test => [`${test.label}${test.unit ? ` (${test.unit})` : ''}`, `${test.label} note`]),
-    'Light fixture', 'Power (W)', 'Intensity (%)', 'Start time', 'Duration (h)', 'Color temperature (K)', 'PAR (µmol/m²/s)'];
+    'Light fixture', 'Power (W)', 'Intensity (%)', 'Start time', 'Duration (h)', 'Color temperature (K)', 'PAR (µmol/m²/s)',
+    ...Array.from({ length: channelCount }, (_, index) => [`Channel ${index + 1}`, `Channel ${index + 1} (%)`]).flat()];
   const rows = entries.map(entry => [aquariumName, entry.at?.replace('T', ' ') ?? '', entry.location ?? '', entry.note ?? '',
     ...selectedTests.flatMap(test => [entry.values?.[test.id] ?? '', entry.notes?.[test.id] ?? '']),
     entry.light?.fixture ?? '', entry.light?.powerW ?? '', entry.light?.intensityPercent ?? '', entry.light?.startTime ?? '',
-    entry.light?.durationHours ?? '', entry.light?.colorTempK ?? '', entry.light?.par ?? '']);
+    entry.light?.durationHours ?? '', entry.light?.colorTempK ?? '', entry.light?.par ?? '',
+    ...Array.from({ length: channelCount }, (_, index) => {
+      const channel = entry.light?.channels?.[index];
+      return channel ? [channelName(channel, undefined, true), channel.value] : ['', ''];
+    }).flat()]);
   return { headers, rows };
 }
 

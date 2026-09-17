@@ -1,6 +1,6 @@
 {
   "name": "aquastoich",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.1",
   "private": true,
   "packageManager": "pnpm@11.19.0",
   "description": "AquaStoich: aquarium water remineralization and dosing calculator (testing release)",
@@ -27,8 +27,10 @@
     ],
     "directories": { "output": "dist" },
     "win": { "target": ["nsis", "portable"], "icon": "assets/icon.ico" },
-    "mac": { "target": ["dmg", "zip"], "icon": "assets/icon.icns" },
-    "linux": { "target": ["deb", "AppImage"], "category": "Education", "icon": "assets/icon.png", "syncDesktopName": true },
+    "nsis": { "artifactName": "AquaStoich-Setup-1.0a.${ext}" },
+    "portable": { "artifactName": "AquaStoich-Portable-1.0a.${ext}" },
+    "mac": { "target": ["dmg", "zip"], "icon": "assets/icon.icns", "artifactName": "AquaStoich-1.0a-${arch}.${ext}" },
+    "linux": { "target": ["deb", "AppImage"], "category": "Education", "icon": "assets/icon.png", "syncDesktopName": true, "artifactName": "AquaStoich-1.0a-${arch}.${ext}" },
     "publish": { "provider": "github", "owner": "Fantomiaso", "repo": "aquastoich" }
   }
 }

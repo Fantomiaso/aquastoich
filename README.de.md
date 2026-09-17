@@ -2,13 +2,13 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
-## [⬇ AquaStoich 1.0 herunterladen · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0.0)
+## [⬇ AquaStoich 1.0a herunterladen · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a)
 
-**Version 1.0 befindet sich in der Testphase.** AquaStoich berechnet die Remineralisierung von Süßwasser-Aquarien, Dünger und Stammlösungen. Dosierungen und pH sollten vor der Verwendung des Wassers durch Messungen überprüft werden.
+**Version 1.0a befindet sich in der Testphase.** AquaStoich berechnet die Remineralisierung von Süßwasser-Aquarien, Dünger und Stammlösungen. Dosierungen und pH sollten vor der Verwendung des Wassers durch Messungen überprüft werden.
 
 ## Download und Installation
 
-Laden Sie im [Release 1.0](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0.0) das passende Paket herunter: Windows-Installer oder portable `.exe`, macOS-`.dmg`, Debian/Ubuntu-`.deb` oder Linux-`.AppImage`. Beim ersten Start ist Englisch eingestellt. Über die Sprachauswahl oben können Sie Deutsch, Englisch, Russisch oder Spanisch wählen. Die Testpakete sind nicht mit einem Entwicklerzertifikat signiert; das Betriebssystem kann daher eine Bestätigung verlangen.
+Laden Sie im [Release 1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a) das passende Paket herunter: Windows-Installer oder portable `.exe`, macOS-`.dmg`, Debian/Ubuntu-`.deb` oder Linux-`.AppImage`. Beim ersten Start ist Englisch eingestellt. Über die Sprachauswahl oben können Sie Deutsch, Englisch, Russisch oder Spanisch wählen. Die Testpakete sind nicht mit einem Entwicklerzertifikat signiert; das Betriebssystem kann daher eine Bestätigung verlangen.
 
 Die Anwendung arbeitet offline ohne Konto. Berechnung, eigene Stoffe, Messprotokoll und Sprache werden im Anwendungsdatenverzeichnis des jeweiligen Benutzers gespeichert:
 
@@ -29,7 +29,7 @@ Die Browser-Version speichert Daten getrennt im lokalen Speicher des Browsers; e
 - Kationen, Anionen, Beiträge einzelner Zusätze und die angenäherte Ladungsbilanz anzeigen. Die pH-Schätzung kann mit einem Messwert kalibriert werden.
 - Tropfentest-Messungen mit Uhrzeit und Notizen erfassen; absolute und tägliche Veränderungen für denselben Test und dieselbe Wasserquelle berechnen.
 - Mehrere Aquarien mit eigenen Profilen und Messprotokollen verwalten. Das Wasservolumen rechteckiger oder zylindrischer Becken aus Außenmaßen, Glasdicke, mittlerer Bodengrundhöhe und Abstand zum oberen Rand schätzen oder manuell eingeben.
-- Beleuchtung je Messung speichern: Leuchte, Leistung, Helligkeit, Beginn, Dauer, Farbtemperatur und PAR. Das Protokoll des gewählten Aquariums mit Testnotizen und Beleuchtungsdaten als Excel-Datei (`.xlsx`) exportieren.
+- Beleuchtung je Messung speichern: Leuchte, Leistung, Helligkeit, Beginn, Dauer, Farbtemperatur, PAR und bis zu acht einzeln einstellbare Kanäle. Anfangs sind keine Kanäle gewählt; vorhandene oder eigene Kanäle lassen sich mit 0–100 % eintragen. Das Protokoll des gewählten Aquariums mit Testnotizen und Kanalwerten als Excel-Datei (`.xlsx`) exportieren.
 - Eigene Stoffe und Mischungen anhand von Formeln oder angegebenem Ionengehalt hinzufügen. Harze sind nicht enthalten.
 
 ## Anleitung
@@ -38,7 +38,7 @@ Vor einer Wasserwechselberechnung unter **Aquarien** ein Becken anlegen oder aus
 
 1. **Aufbereitung** oder **Wasserwechsel** auswählen. Volumen, GH/KH des Ausgangswassers und bekannte Ionen eintragen. Beim Wasserwechsel auch Aquarienvolumen und Ausgangswerte des Aquariums angeben.
 2. Nur benötigte Zielwerte ausfüllen. Ein leeres Feld wird ignoriert; null ist ein gültiger Zielwert. Bei Bedarf ein Verhältnis wie NO₃:PO₄ = 12:1 mit Unter- und Obergrenze angeben.
-3. Stoffe in **Stoffe und Dosierungen** auswählen. Nach Name, Synonym oder Formel suchen; Wirkungen wie `Mg+` und `KH−` filtern. Nach Name, Wirkung oder Stoff/Mischung/Lösung sortieren.
+3. Stoffe in **Stoffe und Dosierungen** auswählen. Nach Name, Synonym oder Formel suchen. Das Tag `+` oder `−` zeigt die Änderungsrichtung getrennt von der Ionenladung, etwa `+` mit `Mg²⁺` oder `−` mit `NO₃⁻`. `PO₄ (Σ)` steht für Gesamtphosphat. Nach Name, Wirkung oder Stoff/Mischung/Lösung sortieren.
 4. Bei Trockensalzen Form, Reinheit und trockene Zugabe oder Stammlösung wählen. Einwaage und Endvolumen angeben; eine praktische Milliliter-Dosis kann berechnet werden.
 5. **Dosierungen berechnen** anklicken. Automatische Zeilen werden an die Ziele angepasst. Eine manuell bearbeitete Dosis bleibt manuell; **Sperren** fixiert Stoff, Form, Lösung und Dosis.
 6. Ergebnisfeld oder Ionentabelle öffnen, um Einzelbeiträge zu sehen. Nach dem Mischen und Abstehen einen gemessenen pH im Kalibrierfeld eintragen.

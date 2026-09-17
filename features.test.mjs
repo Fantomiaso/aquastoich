@@ -1,13 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { calculate, calibratePHCO2, setCustomProducts, PRODUCT_BY_ID, PRODUCTS, productComposition, solveTargets } from './chemistry.mjs';
-import { parseSaltFormula, customProductFromForm, productEffects } from './catalog.mjs';
+import { parseSaltFormula, customProductFromForm, effectParts, productEffects } from './catalog.mjs';
 import { mergePresets } from './presets.mjs';
 import { journalDifference } from './journal.mjs';
 
 const near = (actual, expected, tolerance = 1e-3) => assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} ≠ ${expected}`);
 const row = (id, dose, extra = {}) => ({ id, dose, enabled: true, mode: 'manual', doseMode: 'dry', purity: 100, ...extra });
 const base = rows => ({ mode: 'prepare', volume: 20, sourceGH: 0, sourceKH: 0, sourcePH: '', source: {}, phCO2: 5, targets: {}, rows });
+
+test('effect direction is separate from ionic charge', () => {
+  assert.deepEqual(effectParts('Ca'), { label: 'Ca²⁺', action: '+' });
+  assert.deepEqual(effectParts('NO3-'), { label: 'NO₃⁻', action: '−' });
+  assert.deepEqual(effectParts('PO4'), { label: 'PO₄ (Σ)', action: '+' });
+});
 
 test('подмена смешивает аквариум и приготовленную воду по объёмам', () => {
   const input = { ...base([]), mode: 'change', tankVolume: 100, tankGH: 10, tankKH: 4, tank: { Ca: 40, NO3: 20 }, sourceGH: 2, sourceKH: 1, source: { Ca: 5, NO3: 0 } };

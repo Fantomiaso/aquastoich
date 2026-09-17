@@ -2,6 +2,7 @@
 // the original DOM text so switching languages never translates a translation.
 const rows = `Расчёт воды для подмены|Aquarium water calculator|Aquarienwasser-Rechner|Calculadora de agua para acuarios
 Версия 1.0 · тестирование|Version 1.0 · testing|Version 1.0 · Testphase|Versión 1.0 · en pruebas
+Версия 1.0a · тестирование|Version 1.0a · testing|Version 1.0a · Testphase|Versión 1.0a · en pruebas
 Язык приложения|Application language|App-Sprache|Idioma de la aplicación
 Язык|Language|Sprache|Idioma
 Скопировать расчёт|Copy calculation|Berechnung kopieren|Copiar cálculo
@@ -418,6 +419,35 @@ O₂ растворённый|Dissolved O₂|Gelöstes O₂|O₂ disuelto
 и все его измерения?|and all its measurements?|und alle Messungen löschen?|y todas sus mediciones?
 измерений|measurements|Messungen|mediciones
 Настройки света|Lighting settings|Beleuchtungseinstellungen|Ajustes de iluminación
+Каналы светильника|Light channels|Lichtkanäle|Canales de luz
+Добавьте до 8 каналов и укажите яркость каждого в процентах.|Add up to 8 channels and set each intensity as a percentage.|Bis zu 8 Kanäle hinzufügen und die Helligkeit jedes Kanals in Prozent angeben.|Añada hasta 8 canales e indique la intensidad de cada uno en porcentaje.
+Каналы не заданы.|No channels selected.|Keine Kanäle ausgewählt.|No hay canales seleccionados.
+Выберите канал светильника|Choose a light channel|Lichtkanal auswählen|Elegir un canal de luz
+Выберите канал|Choose a channel|Kanal auswählen|Elegir un canal
+Свой канал…|Custom channel…|Eigener Kanal…|Canal personalizado…
+Название своего канала|Custom channel name|Name des eigenen Kanals|Nombre del canal personalizado
++ Канал|+ Channel|+ Kanal|+ Canal
+Яркость канала, %|Channel intensity, %|Kanalhelligkeit, %|Intensidad del canal, %
+Удалить канал|Remove channel|Kanal entfernen|Quitar canal
+Каналы|Channels|Kanäle|Canales
+Укажите название своего канала|Enter a custom channel name|Namen des eigenen Kanals eingeben|Introduzca el nombre del canal personalizado
+Этот канал уже добавлен|This channel is already added|Dieser Kanal wurde bereits hinzugefügt|Este canal ya está añadido
+Укажите для каждого канала яркость от 0 до 100%.|Set every channel intensity between 0 and 100%.|Für jeden Kanal eine Helligkeit von 0 bis 100 % angeben.|Indique para cada canal una intensidad entre 0 y 100 %.
+Белый|White|Weiß|Blanco
+Тёплый белый|Warm white|Warmweiß|Blanco cálido
+Холодный белый|Cool white|Kaltweiß|Blanco frío
+Красный|Red|Rot|Rojo
+Глубокий красный|Deep red|Tiefrot|Rojo profundo
+Зелёный|Green|Grün|Verde
+Синий|Blue|Blau|Azul
+Королевский синий|Royal blue|Königsblau|Azul real
+Голубой|Cyan|Cyan|Cian
+Фиолетовый|Violet|Violett|Violeta
+УФ|UV|UV|UV
+Янтарный|Amber|Bernstein|Ámbar
+Лунный свет|Moonlight|Mondlicht|Luz lunar
+Повышает|Increases|Erhöht|Aumenta
+Снижает|Decreases|Senkt|Disminuye
 Светильник|Light fixture|Leuchte|Luminaria
 Модель или название|Model or name|Modell oder Name|Modelo o nombre
 Мощность, Вт|Power, W|Leistung, W|Potencia, W

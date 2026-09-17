@@ -2,13 +2,13 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
-## [⬇ Descargar AquaStoich 1.0 · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0.0)
+## [⬇ Descargar AquaStoich 1.0a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a)
 
-**La versión 1.0 está en fase de pruebas.** AquaStoich calcula la remineralización del agua de acuarios de agua dulce, los fertilizantes y las soluciones madre. Compruebe las dosis y el pH con mediciones antes de usar el agua preparada.
+**La versión 1.0a está en fase de pruebas.** AquaStoich calcula la remineralización del agua de acuarios de agua dulce, los fertilizantes y las soluciones madre. Compruebe las dosis y el pH con mediciones antes de usar el agua preparada.
 
 ## Descarga e instalación
 
-Descargue el paquete correspondiente de la [versión 1.0](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0.0): instalador o `.exe` portátil para Windows, `.dmg` para macOS, `.deb` para Debian/Ubuntu o `.AppImage` para Linux. El primer inicio utiliza inglés; en la barra superior puede elegir inglés, ruso, alemán o español. Los paquetes de prueba no están firmados con un certificado de desarrollador y el sistema operativo puede pedir confirmación.
+Descargue el paquete correspondiente de la [versión 1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a): instalador o `.exe` portátil para Windows, `.dmg` para macOS, `.deb` para Debian/Ubuntu o `.AppImage` para Linux. El primer inicio utiliza inglés; en la barra superior puede elegir inglés, ruso, alemán o español. Los paquetes de prueba no están firmados con un certificado de desarrollador y el sistema operativo puede pedir confirmación.
 
 La aplicación funciona sin conexión ni cuenta. El cálculo, las sustancias propias, el registro y el idioma se guardan en la carpeta de datos del usuario:
 
@@ -29,7 +29,7 @@ La versión web guarda sus datos por separado en el navegador. No existe una mig
 - Muestra cationes, aniones, la contribución de cada aditivo y un balance de cargas aproximado. El pH estimado se puede calibrar con una medición.
 - Registra pruebas de gotas con hora, notas, diferencia absoluta y cambio diario para la misma prueba y origen del agua.
 - Gestiona varios acuarios con perfiles y registros separados. Estima el volumen de agua de acuarios rectangulares o cilíndricos a partir de medidas exteriores, espesor del vidrio, profundidad media del sustrato y distancia al borde; también permite introducirlo manualmente.
-- Guarda con cada medición la luminaria, potencia, intensidad, hora de inicio, duración, temperatura de color y PAR. Exporta a Excel (`.xlsx`) el registro del acuario elegido, con columnas para notas de pruebas e iluminación.
+- Guarda con cada medición la luminaria, potencia, intensidad, hora de inicio, duración, temperatura de color, PAR y hasta ocho canales ajustables. Al principio no hay canales seleccionados; se pueden añadir canales de la lista o propios y fijar cada uno entre 0 y 100 %. Exporta a Excel (`.xlsx`) el registro del acuario elegido, con columnas para notas y valores de los canales.
 - Permite añadir sustancias y mezclas propias mediante fórmulas o análisis iónico declarado. No incluye resinas.
 
 ## Instrucciones
@@ -38,7 +38,7 @@ Antes de calcular un cambio de agua, cree o elija un perfil en **Acuarios**. Par
 
 1. Elija **Preparación** o **Cambio de agua**. Introduzca el volumen, GH/KH del agua de origen y los iones conocidos. Para un cambio, añada también volumen y valores iniciales del acuario.
 2. Rellene solo los objetivos necesarios. Un campo vacío se ignora; cero es un objetivo válido. Puede establecer una proporción como NO₃:PO₄ = 12:1 y límites mínimo y máximo.
-3. Elija sustancias en **Sustancias y dosis**. Busque por nombre, sinónimo o fórmula; filtre efectos `Mg+`, `KH−`, etc. Ordene por nombre, efecto o sustancia/mezcla/solución.
+3. Elija sustancias en **Sustancias y dosis**. Busque por nombre, sinónimo o fórmula. La etiqueta `+` o `−` indica el sentido del cambio por separado de la carga iónica, por ejemplo `+` con `Mg²⁺` o `−` con `NO₃⁻`. `PO₄ (Σ)` indica fosfato total. Ordene por nombre, efecto o sustancia/mezcla/solución.
 4. Para una sal seca, elija forma y pureza, y dosificación seca o solución madre. Introduzca la masa y el volumen final; también puede calcular la masa para una dosis cómoda en mililitros.
 5. Pulse **Calcular dosis**. Las filas automáticas se ajustan a los objetivos. Si edita una dosis, la fila pasa a modo manual. **Bloquear** fija sustancia, forma, solución y dosis.
 6. Abra una tarjeta de resultado o una fila de la tabla para ver contribuciones. Tras mezclar y dejar reposar el agua, introduzca el pH medido en la calibración.

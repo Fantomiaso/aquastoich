@@ -242,6 +242,19 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .aux-panel .section-heading h2 { font-size: 13px; }
 .aux-panel .field > span { overflow: hidden; text-overflow: ellipsis; }
 .journal-add-test { display: flex; gap: 6px; margin: 12px 0 8px; }
+.light-channels { margin-top: 12px; padding-top: 9px; border-top: 1px solid #e4ebe4; }
+.light-channels .section-heading { margin-bottom: 2px; }
+.light-channels h3 { margin: 0; color: #416a51; font-size: 11px; }
+.light-channels .fine-print { margin: 3px 0 7px; }
+.light-channel-list { display: grid; gap: 4px; }
+.light-channel-row { display: grid; grid-template-columns: minmax(0, 1fr) 76px 20px; align-items: center; gap: 6px; padding: 4px 6px; border: 1px solid #e2eae3; border-radius: 5px; font-size: 10px; }
+.light-channel-row > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.light-channel-row label { display: flex; align-items: center; gap: 3px; }
+.light-channel-row input { width: 55px; min-width: 0; }
+.light-channel-add { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.light-channel-add select { flex: 1; min-width: 125px; }
+.light-channel-add input { flex: 1; min-width: 135px; }
+.light-channel-add .button { white-space: nowrap; }
 .journal-history-actions { display: flex; align-items: center; gap: 8px; }
 .aquarium-columns { grid-template-columns: minmax(260px, 340px) minmax(400px, 1fr); }
 .aquarium-list { display: grid; align-content: start; gap: 6px; }
@@ -296,7 +309,9 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .database-item-title span { white-space: nowrap; }
 .database-alias, .database-meta { margin: 5px 0 0; color: #798f7e; font-size: 10px; }
 .effect-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
-.effect-tags span { padding: 2px 5px; border-radius: 4px; background: #e9f4ed; color: #347b55; font-size: 9px; }
+.effect-tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 5px 2px 2px; border-radius: 4px; background: #e9f4ed; color: #347b55; font-size: 9px; }
+.effect-action { display: inline-flex; align-items: center; justify-content: center; width: 14px; min-height: 14px; border-radius: 3px; background: #cce9d5; color: #187047; font-size: 10px; font-weight: 800; }
+.effect-action.decrease { background: #f5e6d2; color: #9c6330; }
 .database-actions { display: flex; gap: 2px; margin-top: 7px; }
 .database-actions .text-button:disabled { color: #a4b1a6; cursor: default; text-decoration: none; }
 

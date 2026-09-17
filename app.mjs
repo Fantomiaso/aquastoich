@@ -1,10 +1,11 @@
 import { IONS, PRODUCTS, PRODUCT_BY_ID, TARGETS, RATIO_IONS, DEFAULT_PH_CO2_MG_L, activeRatios, actualRatio, ratioLimits, ratioSatisfied, ratioTargetSatisfied, invertRatio, number, stockGramsPerL, displayDoseToAmount, calculate, calibratePHCO2, ghFromIons, khFromIons, khFromProduct, productComposition, setCustomProducts, solveTargets } from './chemistry.mjs';
-import { EFFECTS, CATALOG_SORTS, customProductFromForm, normalizeFormula, primaryEffect, productEffects, productKind, sortedProducts, suggestChemicalName } from './catalog.mjs';
+import { EFFECTS, CATALOG_SORTS, customProductFromForm, effectParts, normalizeFormula, primaryEffect, productEffects, productKind, sortedProducts, suggestChemicalName } from './catalog.mjs';
 import { PRESETS, mergePresets } from './presets.mjs';
 import { JOURNAL_TESTS, journalDifference } from './journal.mjs';
 import { getLocale, intlLocale, startLocalization, translate } from './localization.mjs';
 import { estimateAquariumVolume, makeAquarium } from './aquarium.mjs';
 import { journalXlsx } from './journal-export.mjs';
+import { LIGHT_CHANNELS, MAX_LIGHT_CHANNELS, channelName, validLightChannels } from './light-channels.mjs';
 
 const STORAGE_KEY = 'rem-aquarium-v1';
 const $ = selector => document.querySelector(selector);
@@ -22,7 +23,7 @@ const defaultRatios = () => [
 ];
 const initialState = () => {
   const aquarium = makeAquarium(`${translate('Аквариум')} 1`);
-  return { mode: 'prepare', volume: 100, tankVolume: 100, tankGH: '', tankKH: '', tankPH: '', tank: {}, aquariums: [aquarium], activeAquariumId: aquarium.id, sourceGH: 0, sourceKH: 0, sourcePH: '', phCO2: DEFAULT_PH_CO2_MG_L, measuredPH: '', calibration: null, phModelV2: true, source: {}, targets: { GH: 6, KH: 3 }, ratios: defaultRatios(), selectedPresets: [], presetBackups: {}, customProducts: [], journal: [], customTests: [], ratioPresetsV4: true, rows: [makeRow('watersci-gh'), makeRow('watersci-kh')] };
+  return { mode: 'prepare', volume: 100, tankVolume: 100, tankGH: '', tankKH: '', tankPH: '', tank: {}, aquariums: [aquarium], activeAquariumId: aquarium.id, sourceGH: 0, sourceKH: 0, sourcePH: '', phCO2: DEFAULT_PH_CO2_MG_L, measuredPH: '', calibration: null, phModelV2: true, source: {}, targets: { GH: 6, KH: 3 }, ratios: defaultRatios(), selectedPresets: [], presetBackups: {}, customProducts: [], journal: [], customTests: [], customLightChannels: [], ratioPresetsV4: true, rows: [makeRow('watersci-gh'), makeRow('watersci-kh')] };
 };
 
 function loadState() {
@@ -67,7 +68,7 @@ function loadState() {
       tankKH: active.tankKH, tankPH: active.tankPH, tank: { ...(active.tank ?? {}) },
       customProducts: stored.customProducts ?? [],
       journal: (stored.journal ?? []).map(entry => ({ ...entry, aquariumId: entry.aquariumId ?? activeAquariumId })),
-      customTests: stored.customTests ?? [], selectedPresets: stored.selectedPresets ?? [],
+      customTests: stored.customTests ?? [], customLightChannels: Array.isArray(stored.customLightChannels) ? stored.customLightChannels : [], selectedPresets: stored.selectedPresets ?? [],
       phCO2: stored.phModelV2 && stored.phCO2 != null ? stored.phCO2 : DEFAULT_PH_CO2_MG_L,
       phModelV2: true, source: stored.source ?? {}, targets: stored.targets ?? {}, ratios,
       ratioPresetsV3: true, ratioPresetsV4: true,
@@ -80,6 +81,7 @@ let solverWarning = '';
 let selectedResultId = null;
 let editingMeasurementId = null;
 let journalDraft = { values: {}, notes: {} };
+let lightChannelDraft = [];
 let editingProductId = null;
 let componentDraft = [{ formula: '', amount: '' }];
 let additionalForms = [];
@@ -88,6 +90,10 @@ const fmt = (value, digits = 3) => new Intl.NumberFormat(intlLocale(), { maximum
 const raw = value => Number.isFinite(value) ? String(Math.round(value * 1e8) / 1e8) : '0';
 const rawDose = value => Number.isFinite(value) ? String(Math.round(value * 1e5) / 1e5) : '0';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const effectTag = key => {
+  const { label, action } = effectParts(key);
+  return `<span class="effect-tag"><span class="effect-action ${action === '−' ? 'decrease' : ''}" aria-label="${action === '−' ? translate('Снижает') : translate('Повышает')}">${action}</span><span>${esc(translate(label))}</span></span>`;
+};
 
 const activeAquarium = () => state.aquariums.find(item => item.id === state.activeAquariumId) ?? state.aquariums[0];
 function syncAquariumProfile() {
@@ -122,7 +128,7 @@ function buildStaticFields() {
   $('#target-fields').innerHTML = TARGETS.map(target => `<label class="field"><span>${target.label}</span><div class="input-unit"><input data-target="${target.id}" type="number" min="0" step="any" placeholder="—"><span>${target.unit}</span></div></label>`).join('');
   $('#source-fields').innerHTML = SOURCE_IONS.map(ion => `<label class="field"><span>${IONS[ion].label}</span><div class="input-unit"><input data-source="${ion}" type="number" min="0" step="any" placeholder="0"><span>мг/л</span></div></label>`).join('');
   $('#tank-fields').innerHTML = SOURCE_IONS.map(ion => `<label class="field"><span>${IONS[ion].label}</span><div class="input-unit"><input data-tank="${ion}" type="number" min="0" step="any" placeholder="—"><span>мг/л</span></div></label>`).join('');
-  for (const id of ['catalog-effect', 'database-effect']) $('#'+id).innerHTML = `<option value="">Все эффекты</option>${EFFECTS.map(([key, label]) => `<option value="${key}">${label}</option>`).join('')}`;
+  for (const id of ['catalog-effect', 'database-effect']) $('#'+id).innerHTML = `<option value="">Все эффекты</option>${EFFECTS.map(([key, label, action]) => `<option value="${key}">${action} · ${esc(translate(label))}</option>`).join('')}`;
   for (const id of ['catalog-sort', 'database-sort']) $('#'+id).innerHTML = CATALOG_SORTS.map(([key, label]) => `<option value="${key}">${label}</option>`).join('');
   renderCatalog();
   renderPresets();
@@ -470,6 +476,23 @@ const localTime = date => `${date.getFullYear()}-${String(date.getMonth() + 1).p
 const NUMERIC_LIGHT_FIELDS = new Set(['powerW', 'intensityPercent', 'durationHours', 'colorTempK', 'par']);
 const lightLabel = { fixture: 'Светильник', powerW: 'Мощность', intensityPercent: 'Яркость', startTime: 'Начало', durationHours: 'Длительность', colorTempK: 'Цветовая температура', par: 'PAR' };
 const lightUnit = { powerW: 'Вт', intensityPercent: '%', durationHours: 'ч', colorTempK: 'K', par: 'мкмоль/м²/с' };
+function renderLightChannels() {
+  const selected = $('#light-channel-select').value;
+  $('#light-channel-count').textContent = `${lightChannelDraft.length} / ${MAX_LIGHT_CHANNELS}`;
+  $('#light-channel-list').innerHTML = lightChannelDraft.length ? lightChannelDraft.map((channel, index) => {
+    const name = channelName(channel, translate);
+    return `<div class="light-channel-row"><span>${esc(name)}</span><label><input data-light-channel-value="${index}" type="number" min="0" max="100" step="any" value="${esc(channel.value ?? '')}" aria-label="${esc(name)}: ${translate('Яркость канала, %')}"><span>%</span></label><button type="button" class="icon-button" data-light-channel-remove="${index}" aria-label="${translate('Удалить канал')} ${esc(name)}">×</button></div>`;
+  }).join('') : `<p class="fine-print light-channel-empty">${translate('Каналы не заданы.')}</p>`;
+  const used = new Set(lightChannelDraft.map(channel => channel.id));
+  const presets = LIGHT_CHANNELS.filter(item => !used.has(item.id)).map(item => `<option value="${item.id}">${esc(translate(item.label))}</option>`);
+  const custom = state.customLightChannels.filter(name => !used.has(`custom:${name.toLocaleLowerCase()}`))
+    .map(name => `<option value="custom:${esc(name.toLocaleLowerCase())}">${esc(name)}</option>`);
+  $('#light-channel-select').innerHTML = `<option value="">${translate('Выберите канал')}</option>${[...presets, ...custom].join('')}<option value="__custom__">${translate('Свой канал…')}</option>`;
+  $('#light-channel-select').value = [...$('#light-channel-select').options].some(option => option.value === selected) ? selected : '';
+  $('#light-channel-custom').hidden = $('#light-channel-select').value !== '__custom__';
+  $('#light-channel-select').disabled = lightChannelDraft.length >= MAX_LIGHT_CHANNELS;
+  $('#light-channel-add').disabled = lightChannelDraft.length >= MAX_LIGHT_CHANNELS;
+}
 function countLabel(count, kind) {
   const locale = getLocale();
   if (locale === 'ru') {
@@ -538,10 +561,15 @@ function readLightForm() {
     const value = NUMERIC_LIGHT_FIELDS.has(input.dataset.light) ? Number(input.value) : input.value.trim();
     if (value !== '') light[input.dataset.light] = value;
   }
+  if (lightChannelDraft.length) light.channels = lightChannelDraft.map(channel => ({
+    id: channel.id, ...(channel.name ? { name: channel.name } : {}), value: Number(channel.value)
+  }));
   return light;
 }
 function setLightForm(light = {}) {
   document.querySelectorAll('[data-light]').forEach(input => { input.value = light[input.dataset.light] ?? ''; });
+  lightChannelDraft = Array.isArray(light.channels) ? light.channels.slice(0, MAX_LIGHT_CHANNELS).map(channel => ({ ...channel })) : [];
+  renderLightChannels();
   $('#journal-light').open = Object.keys(light).length > 0;
 }
 
@@ -590,8 +618,9 @@ function renderJournalList() {
       const differenceText = difference ? `<span class="journal-diff">Δ ${sign}${fmt(difference.delta, 3)} ${esc(test.unit)} · ${movement} ${fmt(Math.abs(difference.perDay), 3)} ${esc(test.unit)}/сут</span>` : '<span class="journal-diff quiet-diff">первый замер</span>';
       return `<details class="journal-result-test"><summary><span>${esc(test.label)} <strong>${fmt(number(value), 3)} ${esc(test.unit)}</strong></span>${differenceText}</summary><div class="journal-test-note">${entry.notes?.[id] ? esc(entry.notes[id]) : 'Примечание к тесту не указано.'}${difference ? `<small>Сравнение с ${new Date(difference.previous.at).toLocaleString(intlLocale())} · ${fmt(difference.days, 2)} сут.</small>` : ''}</div></details>`;
     }).join('');
-    const light = Object.entries(entry.light ?? {}).filter(([, value]) => value !== '' && value != null)
+    const light = Object.entries(entry.light ?? {}).filter(([key, value]) => key !== 'channels' && value !== '' && value != null)
       .map(([key, value]) => `${lightLabel[key] ?? key}: ${value}${lightUnit[key] ? ` ${lightUnit[key]}` : ''}`);
+    if (entry.light?.channels?.length) light.push(`${translate('Каналы')}: ${entry.light.channels.map(channel => `${channelName(channel, translate)} ${fmt(number(channel.value), 1)}%`).join(' · ')}`);
     return `<article class="journal-entry"><div class="journal-entry-head"><div><strong>${esc(locationLabel[entry.location] ?? entry.location)}</strong><span>${new Date(entry.at).toLocaleString(intlLocale())}</span></div><div><button type="button" class="text-button" data-journal-action="edit" data-id="${esc(entry.id)}">Изменить</button><button type="button" class="text-button danger-text" data-journal-action="delete" data-id="${esc(entry.id)}">Удалить</button></div></div>${entry.note ? `<p class="journal-general-note">${esc(entry.note)}</p>` : ''}${tests}${light.length ? `<details class="journal-result-test"><summary>Настройки света</summary><div class="journal-test-note">${esc(light.join(' · '))}</div></details>` : ''}</article>`;
   }).join('') : '<div class="empty">Пока нет измерений. Добавьте первый замер слева.</div>';
 }
@@ -654,8 +683,8 @@ function renderCustomPreview() {
     const product = customProductFromForm(form);
     const composition = productComposition(product);
     const unit = product.type === 'liquid' ? 'мг/мл' : 'мг/г';
-    const effects = productEffects(product).map(key => EFFECTS.find(item => item[0] === key)?.[1] ?? key);
-    element.innerHTML = `<strong>Автоматически рассчитано</strong><div>${Object.entries(composition).map(([ion, value]) => `${IONS[ion].label} ${fmt(value, 3)} ${unit}`).join(' · ')}</div><small>${effects.length ? effects.join(' · ') : 'Нет известных эффектов для доступных показателей'}</small>`;
+    const effects = productEffects(product);
+    element.innerHTML = `<strong>Автоматически рассчитано</strong><div>${Object.entries(composition).map(([ion, value]) => `${IONS[ion].label} ${fmt(value, 3)} ${unit}`).join(' · ')}</div><div class="effect-tags">${effects.length ? effects.map(effectTag).join('') : 'Нет известных эффектов для доступных показателей'}</div>`;
   } catch (error) {
     element.innerHTML = `<span class="preview-error">${esc(translate(error.message))}</span>`;
   }
@@ -698,13 +727,13 @@ function renderDatabaseList() {
   $('#database-count').textContent = `${products.length} из ${PRODUCTS.length}`;
   let previousGroup = '';
   $('#database-list').innerHTML = products.length ? products.map(product => {
-    const effects = productEffects(product).map(key => EFFECTS.find(item => item[0] === key)?.[1] ?? key).slice(0, 6);
+    const effects = productEffects(product).slice(0, 6);
     const chosen = state.rows.some(row => row.id === product.id);
     const forms = product.variants?.map(item => `${item.name}${item.solubilityGPerL ? ` · ${fmt(item.solubilityGPerL, 1)} г/л` : ''}`).join('; ');
     const group = sortMode === 'effect' ? primaryEffect(product, effect) : sortMode === 'type' ? productKind(product) : '';
     const heading = group && group !== previousGroup ? `<div class="database-group-heading">${esc(group)}</div>` : '';
     previousGroup = group;
-    return `${heading}<article class="database-item"><div class="database-item-title"><strong>${esc(translate(product.name))}</strong><span>${esc(product.short)}</span></div>${product.aliases ? `<p class="database-alias">Другие названия: ${esc(translate(product.aliases))}</p>` : ''}<p class="database-meta">${esc(forms ?? product.formulaText ?? product.short)}${!forms && product.solubilityGPerL ? ` · растворимость ${fmt(product.solubilityGPerL, 1)} г/л при 20 °C` : ''}</p><div class="effect-tags">${effects.map(label => `<span>${esc(label)}</span>`).join('')}</div>${product.referenceOnly ? `<p class="database-reference-note">Ориентир: расчётной дозы нет. ${esc(product.note)}</p>` : ''}<div class="database-actions">${product.referenceOnly ? '' : `<button type="button" class="text-button" data-db-action="add" data-id="${esc(product.id)}" ${chosen ? 'disabled' : ''}>${chosen ? 'В расчёте' : 'Добавить в расчёт'}</button>`}${product.custom ? `<button type="button" class="text-button" data-db-action="edit" data-id="${esc(product.id)}">Изменить</button><button type="button" class="text-button danger-text" data-db-action="delete" data-id="${esc(product.id)}">Удалить</button>` : ''}${product.source ? `<a class="text-button" href="${esc(product.source)}" target="_blank" rel="noopener noreferrer">Источник ↗</a>` : ''}</div></article>`;
+    return `${heading}<article class="database-item"><div class="database-item-title"><strong>${esc(translate(product.name))}</strong><span>${esc(product.short)}</span></div>${product.aliases ? `<p class="database-alias">Другие названия: ${esc(translate(product.aliases))}</p>` : ''}<p class="database-meta">${esc(forms ?? product.formulaText ?? product.short)}${!forms && product.solubilityGPerL ? ` · растворимость ${fmt(product.solubilityGPerL, 1)} г/л при 20 °C` : ''}</p><div class="effect-tags">${effects.map(effectTag).join('')}</div>${product.referenceOnly ? `<p class="database-reference-note">Ориентир: расчётной дозы нет. ${esc(product.note)}</p>` : ''}<div class="database-actions">${product.referenceOnly ? '' : `<button type="button" class="text-button" data-db-action="add" data-id="${esc(product.id)}" ${chosen ? 'disabled' : ''}>${chosen ? 'В расчёте' : 'Добавить в расчёт'}</button>`}${product.custom ? `<button type="button" class="text-button" data-db-action="edit" data-id="${esc(product.id)}">Изменить</button><button type="button" class="text-button danger-text" data-db-action="delete" data-id="${esc(product.id)}">Удалить</button>` : ''}${product.source ? `<a class="text-button" href="${esc(product.source)}" target="_blank" rel="noopener noreferrer">Источник ↗</a>` : ''}</div></article>`;
   }).join('') : '<div class="empty">Ничего не найдено по заданным фильтрам.</div>';
 }
 
@@ -968,6 +997,52 @@ $('#journal-auto-time').addEventListener('change', event => {
   $('#journal-at').disabled = event.target.checked;
   if (event.target.checked) $('#journal-at').value = localTime(new Date());
 });
+$('#light-channel-select').addEventListener('change', event => {
+  $('#light-channel-custom').hidden = event.target.value !== '__custom__';
+  if (!$('#light-channel-custom').hidden) $('#light-channel-custom').focus();
+});
+$('#light-channel-custom').addEventListener('keydown', event => {
+  if (event.key === 'Enter') { event.preventDefault(); $('#light-channel-add').click(); }
+});
+$('#light-channel-add').addEventListener('click', () => {
+  if (lightChannelDraft.length >= MAX_LIGHT_CHANNELS) return;
+  const selected = $('#light-channel-select').value;
+  if (!selected) { toast('Выберите канал'); return; }
+  let channel;
+  if (selected === '__custom__') {
+    const name = $('#light-channel-custom').value.trim();
+    if (!name) { toast('Укажите название своего канала'); return; }
+    const id = `custom:${name.toLocaleLowerCase()}`;
+    if (lightChannelDraft.some(item => item.id === id) || LIGHT_CHANNELS.some(item => translate(item.label).toLocaleLowerCase() === name.toLocaleLowerCase())) {
+      toast('Этот канал уже добавлен'); return;
+    }
+    channel = { id, name, value: '' };
+    if (!state.customLightChannels.some(item => item.toLocaleLowerCase() === name.toLocaleLowerCase())) state.customLightChannels.push(name);
+    $('#light-channel-custom').value = '';
+    save();
+  } else if (selected.startsWith('custom:')) {
+    const name = state.customLightChannels.find(item => `custom:${item.toLocaleLowerCase()}` === selected);
+    if (!name) return;
+    channel = { id: selected, name, value: '' };
+  } else {
+    if (!LIGHT_CHANNELS.some(item => item.id === selected)) return;
+    channel = { id: selected, value: '' };
+  }
+  lightChannelDraft.push(channel);
+  $('#light-channel-select').value = '';
+  renderLightChannels();
+  [...document.querySelectorAll('#light-channel-list input')].at(-1)?.focus();
+});
+$('#light-channel-list').addEventListener('input', event => {
+  const index = Number(event.target.dataset.lightChannelValue);
+  if (Number.isInteger(index) && lightChannelDraft[index]) lightChannelDraft[index].value = event.target.value;
+});
+$('#light-channel-list').addEventListener('click', event => {
+  const button = event.target.closest('[data-light-channel-remove]');
+  if (!button) return;
+  lightChannelDraft.splice(Number(button.dataset.lightChannelRemove), 1);
+  renderLightChannels();
+});
 $('#journal-add-test').addEventListener('click', () => {
   const id = $('#journal-test-select').value;
   if (!id || id in journalDraft.values) return;
@@ -990,6 +1065,7 @@ $('#journal-save').addEventListener('click', () => {
   if (!at || !Number.isFinite(new Date(at).getTime())) { toast('Укажите корректные дату и время измерения'); return; }
   const values = Object.fromEntries(Object.entries(journalDraft.values).filter(([, value]) => value !== '' && value != null)
     .map(([id, value]) => [id, Number(String(value).replace(',', '.'))]));
+  if (!validLightChannels(lightChannelDraft)) { toast('Укажите для каждого канала яркость от 0 до 100%.'); return; }
   const light = readLightForm();
   if ((!Object.keys(values).length && !Object.keys(light).length) || Object.values(values).some(value => !Number.isFinite(value))) { toast('Укажите результат теста или настройки света'); return; }
   const notes = Object.fromEntries(Object.entries(journalDraft.notes).filter(([id, note]) => id in values && note.trim()));

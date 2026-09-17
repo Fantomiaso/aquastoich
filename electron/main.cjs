@@ -6,7 +6,7 @@ app.setName('AquaStoich');
 protocol.registerSchemesAsPrivileged([{ scheme: 'rem', privileges: { standard: true, secure: true, supportFetchAPI: true } }]);
 
 const root = path.resolve(__dirname, '..');
-const allowed = new Set(['index.html', 'styles.css', 'app.mjs', 'builtin-catalog.mjs', 'catalog.mjs', 'chemistry.mjs', 'journal.mjs', 'presets.mjs', 'localization.mjs', 'aquarium.mjs', 'journal-export.mjs', 'README.md']);
+const allowed = new Set(['index.html', 'styles.css', 'app.mjs', 'builtin-catalog.mjs', 'catalog.mjs', 'chemistry.mjs', 'journal.mjs', 'presets.mjs', 'localization.mjs', 'aquarium.mjs', 'journal-export.mjs', 'light-channels.mjs', 'README.md']);
 
 app.whenReady().then(() => {
   // Electron stores the default session (and its localStorage) under app.getPath('userData').
