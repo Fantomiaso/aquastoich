@@ -24,7 +24,7 @@ La versión web guarda sus datos por separado en el navegador. No existe una mig
 
 - Calcula dosis a partir de objetivos de GH, KH, Ca, Mg, K, NO₃, PO₄, Fe y otros iones, y actualiza los resultados al cambiar una dosis.
 - Calcula dosis secas y concentración de soluciones madre, con formas anhidras e hidratadas, pureza y aviso de solubilidad.
-- Intenta primero la proporción iónica exacta y utiliza el rango permitido solo si esa proporción entra en conflicto con otros objetivos. Se pueden combinar preajustes con explicación de conflictos.
+- Busca primero los parámetros de agua y las proporciones iónicas exactos; usa los rangos permitidos si los valores exactos entran en conflicto. Los preajustes rellenan tanto los objetivos de agua como las proporciones y explican los conflictos al combinarse.
 - Calcula el cambio de agua mezclando por separado el agua preparada y la que queda en el acuario. Las dosis bloqueadas no cambian.
 - Muestra cationes, aniones, la contribución de cada aditivo y un balance de cargas aproximado. El pH estimado se puede calibrar con una medición.
 - Registra pruebas de gotas con hora, notas, diferencia absoluta y cambio diario para la misma prueba y origen del agua.
@@ -37,7 +37,7 @@ La versión web guarda sus datos por separado en el navegador. No existe una mig
 Antes de calcular un cambio de agua, cree o elija un perfil en **Acuarios**. Para **Según dimensiones**, introduzca las medidas exteriores y los descuentos. La estimación no descuenta el agua desplazada por decoración o equipos. El selector superior determina el acuario activo; su volumen, valores iniciales y registro se guardan por separado. En **Registro de mediciones**, puede anotar la iluminación y usar **Exportar a Excel** para guardar los datos del acuario elegido. Las mediciones nuevas proponen los últimos ajustes de luz guardados para ese acuario. Al actualizar, el registro existente se asigna al primer acuario.
 
 1. Elija **Preparación** o **Cambio de agua**. Introduzca el volumen, GH/KH del agua de origen y los iones conocidos. Para un cambio, añada también volumen y valores iniciales del acuario.
-2. Rellene solo los objetivos necesarios. Un campo vacío se ignora; cero es un objetivo válido. Puede establecer una proporción como NO₃:PO₄ = 12:1 y límites mínimo y máximo.
+2. Rellene solo los objetivos necesarios. Un campo vacío se ignora; cero es válido. Abra **Rango permitido** bajo cada parámetro para fijar uno o ambos límites, incluso sin objetivo exacto. Uno o varios preajustes establecen objetivos de agua, sus rangos y proporciones iónicas. Los rangos que se solapan se intersectan; los incompatibles se explican. Ajuste estos ejemplos a sus especies y mediciones. También puede establecer NO₃:PO₄ = 12:1 con límites opcionales.
 3. Elija sustancias en **Sustancias y dosis**. Busque por nombre, sinónimo o fórmula. La etiqueta `+` o `−` indica el sentido del cambio por separado de la carga iónica, por ejemplo `+` con `Mg²⁺` o `−` con `NO₃⁻`. `PO₄ (Σ)` indica fosfato total. Ordene por nombre, efecto o sustancia/mezcla/solución.
 4. Para una sal seca, elija forma y pureza, y dosificación seca o solución madre. Introduzca la masa y el volumen final; también puede calcular la masa para una dosis cómoda en mililitros.
 5. Pulse **Calcular dosis**. Las filas automáticas se ajustan a los objetivos. Si edita una dosis, la fila pasa a modo manual. **Bloquear** fija sustancia, forma, solución y dosis.

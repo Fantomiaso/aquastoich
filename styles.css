@@ -77,6 +77,10 @@ textarea { height: auto; min-height: 55px; resize: vertical; font: inherit; }
 .check-line { display: flex; align-items: center; gap: 6px; color: #526d5b; font-size: 10px; cursor: pointer; }
 .check-line input, .lock-line input { accent-color: #197852; }
 .preset-list { display: grid; gap: 6px; margin-top: 9px; }
+.preset-list .check-line { align-items: flex-start; }
+.preset-list .check-line input { margin-top: 2px; flex: none; }
+.preset-list .check-line span { min-width: 0; }
+.preset-list .check-line small { display: block; margin-top: 1px; color: #819386; font-size: 9px; line-height: 1.35; }
 .preset-warning { margin: 7px 0 0; color: #56785f; font-size: 10px; line-height: 1.35; }
 .preset-warning.conflict { color: #ad6737; }
 .input-unit { position: relative; min-width: 0; }
@@ -110,6 +114,14 @@ textarea { height: auto; min-height: 55px; resize: vertical; font: inherit; }
 .ratio-range-fields label { display: flex; align-items: center; gap: 4px; }
 .ratio-range-fields input { width: 52px; height: 25px; padding: 3px 4px; border: 1px solid #d5e0d7; border-radius: 5px; color: #243c31; font-size: 10px; }
 .ratio-range-fields input:focus { border-color: #39a573; outline: none; }
+.target-item { min-width: 0; }
+.target-range { margin: 3px 0 0 1px; color: #738c7b; font-size: 9px; }
+.target-range summary { cursor: pointer; width: max-content; max-width: 100%; }
+.target-range[open] summary { color: #227653; }
+.target-range-fields { display: flex; align-items: center; gap: 5px; margin-top: 4px; }
+.target-range-fields label { display: flex; align-items: center; gap: 3px; }
+.target-range-fields input { width: 48px; height: 25px; padding: 3px 4px; border: 1px solid #d5e0d7; border-radius: 5px; color: #243c31; font-size: 10px; }
+.target-range-fields input:focus { border-color: #39a573; outline: none; }
 
 .add-bar { display: flex; gap: 6px; margin-bottom: 9px; }
 .add-bar select { flex: 1; height: 32px; background: #fbfcfb; }
@@ -175,6 +187,7 @@ textarea { height: auto; min-height: 55px; resize: vertical; font: inherit; }
 .result-card strong small { color: #829588; font-size: 9px; font-weight: 400; }
 .result-card em { margin-top: auto; color: #9baa9f; font-size: 9px; font-style: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .result-card em.on-target { color: #26815e; }
+.result-card em.within-range { color: #a47537; }
 .result-card em.off-target { color: #b17a38; }
 .result-breakdown { max-height: 210px; overflow-y: auto; margin-top: 6px; padding: 5px 9px; border: 1px solid #dce9df; border-radius: 5px; background: #fbfdfb; }
 .result-breakdown[hidden] { display: none; }

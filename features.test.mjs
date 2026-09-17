@@ -111,13 +111,17 @@ test('расширенная база содержит солевые формы
 test('несколько пресетов пересекаются или предупреждают о несовместимости', () => {
   const compatible = mergePresets(['slow-planted', 'co2-planted']);
   assert.equal(compatible.conflicts.length, 0);
+  assert.deepEqual(compatible.targets.find(item => item.id === 'GH'), { id: 'GH', target: 6, min: 4, max: 8 });
+  assert.deepEqual(compatible.targets.find(item => item.id === 'NO3'), { id: 'NO3', target: 11.5, min: 10, max: 15 });
   const nutrient = compatible.ratios.find(ratio => ratio.numerator === 'NO3');
   near(nutrient.min, 12);
   near(nutrient.max, 15);
   const incompatible = mergePresets(['snails', 'softwater']);
   assert.ok(incompatible.conflicts.some(item => item.includes('Ca:Mg')));
-  assert.ok(incompatible.conflicts[0].includes('нижняя граница 4:1'));
-  assert.ok(incompatible.conflicts[0].includes('верхней 3:1'));
+  const ratioConflict = incompatible.conflicts.find(item => item.includes('Ca:Mg'));
+  assert.ok(ratioConflict.includes('нижняя граница 4:1'));
+  assert.ok(ratioConflict.includes('верхней 3:1'));
+  assert.ok(incompatible.conflicts.some(item => item.includes('GH:') && item.includes('Диапазоны не пересекаются')));
 });
 
 test('журнал считает разницу и скорость в сутки только для той же воды и теста', () => {

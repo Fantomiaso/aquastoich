@@ -24,7 +24,7 @@ The optional browser version keeps separate data in that browser's local storage
 
 - Calculates doses from target GH, KH, Ca, Mg, K, NO₃, PO₄, Fe and other measurable ions, and recalculates results as doses change.
 - Calculates dry doses and stock-solution concentrations, with separate anhydrous and hydrated forms, purity, and a solubility reminder.
-- Fits exact ion-ratio targets first and uses the allowed range only when the exact target conflicts with other constraints. Ratio presets can be combined; conflicting ranges are explained.
+- Fits exact water targets and ion ratios first, using their allowed ranges when exact values conflict. Presets fill both water targets and ratios; several can be combined, with detailed conflict explanations.
 - Treats a water change as a separate prepared-water volume mixed with the aquarium's existing water. Locked doses stay fixed during solving.
 - Shows cations and anions, each additive's contribution, and an approximate ion-charge balance. The pH estimate can be calibrated against a measurement after mixing.
 - Records drop-test measurements, notes, absolute changes, and per-day change for the same test and water source.
@@ -36,7 +36,7 @@ The optional browser version keeps separate data in that browser's local storage
 
 1. In **Aquariums**, create or select a tank. Set its working water volume manually or choose **From dimensions** and enter the outside dimensions, glass thickness, average substrate depth, and top gap. The active aquarium selector stays in the top bar.
 2. Choose **Preparation** or **Water change**. Enter prepared-water volume, source-water GH/KH and any known ions. For a change, also enter the selected aquarium's starting values.
-3. Enter only the absolute targets you need. A blank target is ignored; zero is a valid target. Add ion ratios such as NO₃:PO₄ = 12:1 and, if needed, a minimum and maximum.
+3. Enter only the water targets you need. A blank target is ignored; zero is valid. Open **Allowed range** under a target to set a minimum, maximum, or both. A range can also be used without an exact target. Select one or more presets to fill water targets, their ranges, and ion ratios, then adjust them for your species and measurements. Overlapping presets use the intersection of their ranges; incompatible ranges are explained. Add ratios such as NO₃:PO₄ = 12:1 with optional bounds.
 4. Choose substances in **Substances and doses**. Search by name, synonym, or formula and filter by effect. The `+` or `−` tag shows the direction of change separately from ionic charge, such as `+` with `Mg²⁺` or `−` with `NO₃⁻`. `PO₄ (Σ)` means total phosphate, not one ionic species. Sort by name, effect, or substance/mixture/solution.
 5. For a dry substance, choose its chemical form and purity, then a dry dose or a stock solution. Enter the mass and final solution volume. You can also calculate the mass for a convenient millilitre dose.
 6. Click **Calculate doses**. Automatic rows are fitted to targets. Editing a dose switches that row to manual mode. **Lock** holds its substance, form, stock settings, and dose fixed.

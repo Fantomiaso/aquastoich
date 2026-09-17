@@ -92,6 +92,20 @@ const RATIO_SCALES = { Ca: 30, Mg: 8, K: 10, Na: 20, Cl: 20, SO4: 20, NO3: 10, P
 const filled = value => value !== '' && value != null;
 const validLimit = value => filled(value) && Number.isFinite(number(value, NaN)) && number(value) >= 0;
 
+// undefined means no constraint; null means an invalid value or range.
+export function targetLimits(value, range = {}) {
+  const hasTarget = filled(value);
+  const hasMin = filled(range?.min);
+  const hasMax = filled(range?.max);
+  if (!hasTarget && !hasMin && !hasMax) return undefined;
+  if ([value, range?.min, range?.max].some(item => filled(item) && !validLimit(item))) return null;
+  const target = hasTarget ? number(value) : null;
+  const min = hasMin ? number(range.min) : null;
+  const max = hasMax ? number(range.max) : null;
+  if (min != null && max != null && min > max || target != null && (min != null && target < min || max != null && target > max)) return null;
+  return { target, min, max, ranged: hasMin || hasMax };
+}
+
 export function ratioLimits(ratio) {
   const ranged = filled(ratio.min) || filled(ratio.max);
   if (ranged) {
@@ -335,11 +349,52 @@ export function metric(result, id) {
   return result.ions[id] ?? 0;
 }
 
-// Try preferred ratios first. If they conflict with other targets, solve again
-// with their permitted bounds. Manual rows stay fixed in both passes.
-export function solveTargets(state) {
-  const absoluteTargets = TARGETS.filter(target => state.targets?.[target.id] !== '' && state.targets?.[target.id] != null)
-    .map(target => ({ ...target, kind: 'absolute' }));
+const solverMessages = {
+  ru: {
+    invalid: labels => `Проверьте целевой диапазон: ${labels}. Цель должна находиться между границами «от» и «до».`,
+    empty: 'Задайте хотя бы одну цель.', auto: 'Выберите хотя бы одно вещество в режиме «Авто».',
+    ratioOnly: 'Одного соотношения недостаточно для определения дозы. Задайте абсолютную цель или ручную дозу.',
+    impossible: labels => `Цели недостижимы одновременно выбранными веществами: ${labels}. Показано ближайшее неотрицательное решение.`,
+    relaxed: labels => `Точная цель ${labels} недостижима при заданных параметрах. Дозы подобраны в допустимом диапазоне.`,
+  },
+  en: {
+    invalid: labels => `Check the target range for ${labels}. The target must lie between the lower and upper bounds.`,
+    empty: 'Set at least one target.', auto: 'Choose at least one substance in Auto mode.',
+    ratioOnly: 'A ratio alone cannot determine a dose. Set an absolute target or a manual dose.',
+    impossible: labels => `These targets cannot all be reached with the selected substances: ${labels}. The closest nonnegative solution is shown.`,
+    relaxed: labels => `The exact target for ${labels} cannot be reached with these settings. Doses were fitted within the allowed range.`,
+  },
+  de: {
+    invalid: labels => `Zielbereich für ${labels} prüfen. Das Ziel muss zwischen Unter- und Obergrenze liegen.`,
+    empty: 'Mindestens einen Zielwert eingeben.', auto: 'Mindestens einen Stoff im Automatikmodus auswählen.',
+    ratioOnly: 'Ein Verhältnis allein bestimmt keine Dosis. Einen absoluten Zielwert oder eine manuelle Dosis eingeben.',
+    impossible: labels => `Diese Ziele sind mit den gewählten Stoffen nicht gleichzeitig erreichbar: ${labels}. Die nächste nichtnegative Lösung wird angezeigt.`,
+    relaxed: labels => `Das exakte Ziel für ${labels} ist mit diesen Einstellungen nicht erreichbar. Die Dosierungen liegen im zulässigen Bereich.`,
+  },
+  es: {
+    invalid: labels => `Compruebe el rango objetivo de ${labels}. El objetivo debe estar entre los límites inferior y superior.`,
+    empty: 'Establezca al menos un objetivo.', auto: 'Elija al menos una sustancia en modo automático.',
+    ratioOnly: 'Una proporción sola no determina la dosis. Establezca un objetivo absoluto o una dosis manual.',
+    impossible: labels => `No se pueden alcanzar todos estos objetivos con las sustancias elegidas: ${labels}. Se muestra la solución no negativa más cercana.`,
+    relaxed: labels => `El objetivo exacto de ${labels} no es alcanzable con estos ajustes. Las dosis se ajustaron dentro del rango permitido.`,
+  },
+};
+
+// Try exact water targets and ratios first; relax them to permitted bounds only
+// when necessary. Manual rows stay fixed in both passes.
+export function solveTargets(state, locale = 'ru') {
+  const words = solverMessages[locale] ?? solverMessages.ru;
+  const targetSpecs = TARGETS.map(target => ({ ...target,
+    limits: targetLimits(state.targets?.[target.id], state.targetRanges?.[target.id]) }));
+  const invalid = targetSpecs.filter(target => target.limits === null);
+  if (invalid.length) return { state, targets: [], warning: words.invalid(invalid.map(target => target.label).join(', ')) };
+  const activeTargets = targetSpecs.filter(target => target.limits);
+  const makeAbsoluteTargets = relaxed => activeTargets.flatMap(target => {
+    const { limits, id, label, scale } = target;
+    if (limits.target != null && !relaxed.has(id)) return [{ id, label, scale, bound: limits.target, kind: 'absolute' }];
+    return [limits.min == null ? null : { id, label, scale, bound: limits.min, kind: 'lower' },
+      limits.max == null ? null : { id, label, scale, bound: limits.max, kind: 'upper' }].filter(Boolean);
+  });
   const ratios = activeRatios(state);
   const makeRatioTargets = relaxed => ratios.flatMap(ratio => {
     const limits = ratioLimits(ratio);
@@ -352,9 +407,9 @@ export function solveTargets(state) {
       ? [limits.min == null ? null : make('lower', limits.min), limits.max == null ? null : make('upper', limits.max)].filter(Boolean)
       : [make('ratio', limits.min)];
   });
-  const preferredTargets = [...absoluteTargets, ...makeRatioTargets(new Set())];
+  const preferredTargets = [...makeAbsoluteTargets(new Set()), ...makeRatioTargets(new Set())];
   const autoRows = (state.rows ?? []).filter(row => row.enabled && row.mode === 'auto' && !row.locked && PRODUCT_BY_ID[row.id]);
-  if (!preferredTargets.length || !autoRows.length) return { state, targets: preferredTargets, warning: !preferredTargets.length ? 'Задайте хотя бы одну цель.' : 'Выберите хотя бы одно вещество в режиме «Авто».' };
+  if (!preferredTargets.length || !autoRows.length) return { state, targets: preferredTargets, warning: !preferredTargets.length ? words.empty : words.auto };
 
   const fixedState = { ...state, rows: state.rows.map(row => row.mode === 'auto' && !row.locked ? { ...row, dose: 0 } : row) };
   const fixedResult = calculate(fixedState);
@@ -362,9 +417,9 @@ export function solveTargets(state) {
   const constrainedMetric = (result, target) => target.ratio
     ? (result.ions[target.ratio.numerator] ?? 0) - target.bound * (result.ions[target.ratio.denominator] ?? 0)
     : metric(result, target.id);
-  if (!absoluteTargets.length && preferredTargets.every(target =>
+  if (!activeTargets.length && preferredTargets.every(target =>
     (fixedResult.ions[target.ratio.numerator] ?? 0) < 1e-9 && (fixedResult.ions[target.ratio.denominator] ?? 0) < 1e-9)) {
-    return { state, targets: preferredTargets, warning: 'Одного соотношения недостаточно для определения дозы. Задайте абсолютную цель или ручную дозу.' };
+    return { state, targets: preferredTargets, warning: words.ratioOnly };
   }
   const unitResults = autoRows.map(row => {
     const product = PRODUCT_BY_ID[row.id];
@@ -372,8 +427,8 @@ export function solveTargets(state) {
     return calculate(unitState);
   });
   const solvePass = (targets, absoluteWeight = 1, seed = null) => {
-    const scale = target => target.scale / (target.kind === 'absolute' ? absoluteWeight : 1);
-    const desired = targets.map(target => ((target.ratio ? 0 : number(state.targets[target.id])) - constrainedMetric(fixedResult, target)) / scale(target));
+    const scale = target => target.scale / (target.ratio ? 1 : absoluteWeight);
+    const desired = targets.map(target => ((target.ratio ? 0 : target.bound) - constrainedMetric(fixedResult, target)) / scale(target));
     const columns = unitResults.map(unitResult => targets.map((target, i) => (constrainedMetric(unitResult, target) - constrainedMetric(baselineResult, target)) / scale(target)));
     const norms = columns.map(column => Math.sqrt(column.reduce((sum, value) => sum + value * value, 0)));
     const normalized = columns.map((column, j) => column.map(value => norms[j] > 0 ? value / norms[j] : 0));
@@ -424,7 +479,14 @@ export function solveTargets(state) {
     const solvedState = { ...state, rows: solvedRows };
     return { state: solvedState, result: calculate(solvedState), targets };
   };
-  const absoluteMisses = result => absoluteTargets.filter(target => Math.abs(metric(result, target.id) - number(state.targets[target.id])) > Math.max(target.scale * 0.01, 0.001));
+  const tolerance = target => Math.max(target.scale * 0.01, 0.001);
+  const exactMisses = result => activeTargets.filter(target => target.limits.target != null
+    && Math.abs(metric(result, target.id) - target.limits.target) > tolerance(target));
+  const rangeMisses = result => activeTargets.filter(target => {
+    const value = metric(result, target.id);
+    return target.limits.min != null && value < target.limits.min - tolerance(target)
+      || target.limits.max != null && value > target.limits.max + tolerance(target);
+  });
   const preferred = solvePass(preferredTargets);
   const preferredMisses = ratios.filter(ratio => {
     const limits = ratioLimits(ratio);
@@ -432,23 +494,36 @@ export function solveTargets(state) {
       ? !ratioTargetSatisfied(preferred.result, ratio) || !ratioSatisfied(preferred.result, ratio)
       : !ratioSatisfied(preferred.result, ratio);
   });
-  if (!absoluteMisses(preferred.result).length && !preferredMisses.length) return { state: preferred.state, targets: preferredTargets, warning: '' };
+  if (!exactMisses(preferred.result).length && !rangeMisses(preferred.result).length && !preferredMisses.length)
+    return { state: preferred.state, targets: preferredTargets, warning: '' };
 
-  const canRelax = ratios.filter(ratio => ratioLimits(ratio).ranged && validLimit(ratio.target));
-  const relaxedSet = new Set(preferredMisses.filter(ratio => canRelax.includes(ratio)));
-  if (absoluteMisses(preferred.result).length && !relaxedSet.size) canRelax.forEach(ratio => relaxedSet.add(ratio));
-  let fallbackTargets = relaxedSet.size ? [...absoluteTargets, ...makeRatioTargets(relaxedSet)] : preferredTargets;
-  let fallback = relaxedSet.size ? solvePass(fallbackTargets, absoluteTargets.length ? 100 : 1, preferred.state) : preferred;
-  if (absoluteMisses(fallback.result).length && relaxedSet.size < canRelax.length) {
-    canRelax.forEach(ratio => relaxedSet.add(ratio));
-    fallbackTargets = [...absoluteTargets, ...makeRatioTargets(relaxedSet)];
-    fallback = solvePass(fallbackTargets, absoluteTargets.length ? 100 : 1, fallback.state);
+  const canRelaxRatios = ratios.filter(ratio => ratioLimits(ratio).ranged && validLimit(ratio.target));
+  const canRelaxTargets = activeTargets.filter(target => target.limits.target != null && target.limits.ranged);
+  const relaxedRatios = new Set(preferredMisses.filter(ratio => canRelaxRatios.includes(ratio)));
+  const relaxedTargets = new Set(exactMisses(preferred.result).filter(target => canRelaxTargets.includes(target)).map(target => target.id));
+  if (exactMisses(preferred.result).length && !relaxedRatios.size && !relaxedTargets.size)
+    canRelaxRatios.forEach(ratio => relaxedRatios.add(ratio));
+  const constraints = () => [...makeAbsoluteTargets(relaxedTargets), ...makeRatioTargets(relaxedRatios)];
+  let fallbackTargets = constraints();
+  let fallback = solvePass(fallbackTargets, activeTargets.length ? 100 : 1, preferred.state);
+  const requiredMisses = result => exactMisses(result).filter(target => !relaxedTargets.has(target.id)).length
+    || rangeMisses(result).length || ratios.some(ratio => !ratioSatisfied(result, ratio));
+  if (requiredMisses(fallback.result) && (relaxedRatios.size < canRelaxRatios.length || relaxedTargets.size < canRelaxTargets.length)) {
+    canRelaxRatios.forEach(ratio => relaxedRatios.add(ratio));
+    canRelaxTargets.forEach(target => relaxedTargets.add(target.id));
+    fallbackTargets = constraints();
+    fallback = solvePass(fallbackTargets, activeTargets.length ? 100 : 1, fallback.state);
   }
   const misses = [
-    ...absoluteMisses(fallback.result),
+    ...exactMisses(fallback.result).filter(target => !relaxedTargets.has(target.id)),
+    ...rangeMisses(fallback.result),
     ...ratios.filter(ratio => !ratioSatisfied(fallback.result, ratio)).map(ratio => ({ label: `${IONS[ratio.numerator].label}:${IONS[ratio.denominator].label}` })),
   ];
-  if (misses.length) return { state: fallback.state, targets: fallbackTargets, warning: `Цели недостижимы одновременно выбранными веществами: ${misses.map(item => item.label).join(', ')}. Показано ближайшее неотрицательное решение.` };
-  const relaxed = ratios.filter(ratio => ratioLimits(ratio).ranged && validLimit(ratio.target) && !ratioTargetSatisfied(fallback.result, ratio));
-  return { state: fallback.state, targets: fallbackTargets, warning: relaxed.length ? `Точная цель ${relaxed.map(ratio => `${IONS[ratio.numerator].label}:${IONS[ratio.denominator].label}`).join(', ')} недостижима при заданных параметрах. Дозы подобраны в допустимом диапазоне.` : '' };
+  if (misses.length) return { state: fallback.state, targets: fallbackTargets, warning: words.impossible([...new Set(misses.map(item => item.label))].join(', ')) };
+  const relaxed = [
+    ...exactMisses(fallback.result).filter(target => relaxedTargets.has(target.id)).map(target => target.label),
+    ...ratios.filter(ratio => relaxedRatios.has(ratio) && !ratioTargetSatisfied(fallback.result, ratio))
+      .map(ratio => `${IONS[ratio.numerator].label}:${IONS[ratio.denominator].label}`),
+  ];
+  return { state: fallback.state, targets: fallbackTargets, warning: relaxed.length ? words.relaxed(relaxed.join(', ')) : '' };
 }

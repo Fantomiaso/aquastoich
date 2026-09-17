@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PRODUCT_BY_ID, productComposition, calculate, solveTargets, stockGramsPerL, actualRatio, ratioLimits, ratioSatisfied, invertRatio } from './chemistry.mjs';
+import { PRODUCT_BY_ID, productComposition, calculate, solveTargets, stockGramsPerL, actualRatio, ratioLimits, ratioSatisfied, targetLimits, invertRatio } from './chemistry.mjs';
 
 const close = (actual, expected, tolerance = 1e-3) => assert.ok(Math.abs(actual - expected) < tolerance, `${actual} ≠ ${expected}`);
 const row = (id, dose, extra = {}) => ({ id, enabled: true, mode: 'manual', dose, doseMode: 'dry', purity: 100, ...extra });
@@ -146,6 +146,30 @@ test('ослабление одной пропорции сохраняет до
   close(actualRatio(result, nitratePhosphate), 10 / 0.7, 0.01);
   assert.ok(solved.warning.includes('NO₃:PO₄'));
   assert.ok(!solved.warning.includes('Ca:Mg'));
+});
+
+test('допуск параметра применяется только при конфликте точных целей', () => {
+  const rows = [row('kno3', 0, { mode: 'auto' }), row('kh2po4', 0, { mode: 'auto' })];
+  const input = { ...state(rows), targets: { NO3: 10, PO4: 1 }, targetRanges: { PO4: { min: 0.5, max: 1.5 } },
+    ratios: [{ numerator: 'NO3', denominator: 'PO4', target: 20, min: 15, max: 25 }] };
+  const relaxed = solveTargets(input);
+  const actual = calculate(relaxed.state);
+  close(actual.ions.NO3, 10, 0.01);
+  close(actual.ions.PO4, 0.5, 0.01);
+  assert.match(relaxed.warning, /PO₄/);
+  const exact = solveTargets({ ...input, ratios: [{ numerator: 'NO3', denominator: 'PO4', target: 10, min: 8, max: 12 }] });
+  close(calculate(exact.state).ions.PO4, 1, 0.01);
+  assert.equal(exact.warning, '');
+});
+
+test('параметр может задаваться только односторонним диапазоном', () => {
+  assert.deepEqual(targetLimits('', { min: 5 }), { target: null, min: 5, max: null, ranged: true });
+  assert.equal(targetLimits(4, { min: 5, max: 10 }), null);
+  assert.equal(targetLimits('', { min: 10, max: 5 }), null);
+  const input = { ...state([row('kno3', 0, { mode: 'auto' })]), targetRanges: { NO3: { min: 5, max: 10 } } };
+  const solved = solveTargets(input);
+  close(calculate(solved.state).ions.NO3, 5, 0.01);
+  assert.equal(solved.warning, '');
 });
 
 test('односторонние границы и несовместимый диапазон', () => {

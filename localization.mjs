@@ -30,15 +30,20 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Цели после подмены в аквариуме|Aquarium targets after the change|Zielwerte im Aquarium nach dem Wechsel|Objetivos del acuario tras el cambio
 Целевые параметры|Target parameters|Zielwerte|Parámetros objetivo
 Пустое поле пропускается · 0 — заданная цель|Blank fields are ignored · 0 is a valid target|Leere Felder werden ignoriert · 0 ist ein gültiger Zielwert|Se ignoran los campos vacíos · 0 es un objetivo válido
+Пустое поле пропускается · 0 — заданная цель · точная цель имеет приоритет над диапазоном|Blank fields are ignored · 0 is a valid target · exact targets take priority over ranges|Leere Felder werden ignoriert · 0 ist ein gültiger Zielwert · exakte Ziele haben Vorrang vor Bereichen|Se ignoran los campos vacíos · 0 es un objetivo válido · los objetivos exactos tienen prioridad sobre los rangos
 Пресеты пропорций|Ratio presets|Verhältnis-Vorlagen|Preajustes de proporciones
+Пресеты параметров и пропорций|Water targets and ratio presets|Vorlagen für Wasserwerte und Verhältnisse|Preajustes de parámetros y proporciones
 можно несколько|select several|mehrere möglich|se pueden elegir varios
 Стартовые примеры. Подстройте пропорции под виды и измерения.|Starting examples. Adjust ratios for your species and measurements.|Ausgangsbeispiele. Verhältnisse an Arten und Messungen anpassen.|Ejemplos iniciales. Ajuste las proporciones a sus especies y mediciones.
+Стартовые примеры. Подстройте цели, диапазоны и пропорции под виды и измерения.|Starting examples. Adjust targets, ranges, and ratios for your species and measurements.|Ausgangsbeispiele. Ziele, Bereiche und Verhältnisse an Arten und Messungen anpassen.|Ejemplos iniciales. Ajuste los objetivos, rangos y proporciones a sus especies y mediciones.
 Соотношения ионов|Ion ratios|Ionenverhältnisse|Proporciones de iones
 Соотношения по массе|Mass ratios|Massenverhältnisse|Proporciones en masa
 По массе, мг/л · сначала цель, при конфликте — допуск|By mass, mg/L · exact target first, allowed range if needed|Nach Masse, mg/l · erst Zielwert, dann Toleranz|Por masa, mg/l · primero el objetivo, luego el rango
 Целевое соотношение к одному|Target ratio to one|Zielverhältnis zu eins|Proporción objetivo a uno
 Программа сначала подбирает точную цель; диапазон используется при конфликте с остальными целями|The exact target is tried first; the range is used if targets conflict|Zuerst wird das exakte Ziel gesucht; bei Konflikten gilt der Bereich|Primero se busca el objetivo exacto; el rango se usa si hay conflictos
 Допустимый диапазон|Allowed range|Zulässiger Bereich|Rango permitido
+Нижняя граница|Lower bound|Untere Grenze|Límite inferior
+Верхняя граница|Upper bound|Obere Grenze|Límite superior
 Нижняя граница соотношения к одному|Lower ratio bound|Untere Verhältnisgrenze|Límite inferior de la proporción
 Верхняя граница соотношения к одному|Upper ratio bound|Obere Verhältnisgrenze|Límite superior de la proporción
 Первый ион|First ion|Erstes Ion|Primer ion

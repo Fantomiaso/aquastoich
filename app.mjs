@@ -1,4 +1,4 @@
-import { IONS, PRODUCTS, PRODUCT_BY_ID, TARGETS, RATIO_IONS, DEFAULT_PH_CO2_MG_L, activeRatios, actualRatio, ratioLimits, ratioSatisfied, ratioTargetSatisfied, invertRatio, number, stockGramsPerL, displayDoseToAmount, calculate, calibratePHCO2, ghFromIons, khFromIons, khFromProduct, productComposition, setCustomProducts, solveTargets } from './chemistry.mjs';
+import { IONS, PRODUCTS, PRODUCT_BY_ID, TARGETS, RATIO_IONS, DEFAULT_PH_CO2_MG_L, activeRatios, actualRatio, ratioLimits, ratioSatisfied, ratioTargetSatisfied, targetLimits, invertRatio, number, stockGramsPerL, displayDoseToAmount, calculate, calibratePHCO2, ghFromIons, khFromIons, khFromProduct, productComposition, setCustomProducts, solveTargets } from './chemistry.mjs';
 import { EFFECTS, CATALOG_SORTS, customProductFromForm, effectParts, normalizeFormula, primaryEffect, productEffects, productKind, sortedProducts, suggestChemicalName } from './catalog.mjs';
 import { PRESETS, mergePresets } from './presets.mjs';
 import { JOURNAL_TESTS, journalDifference } from './journal.mjs';
@@ -23,7 +23,7 @@ const defaultRatios = () => [
 ];
 const initialState = () => {
   const aquarium = makeAquarium(`${translate('Аквариум')} 1`);
-  return { mode: 'prepare', volume: 100, tankVolume: 100, tankGH: '', tankKH: '', tankPH: '', tank: {}, aquariums: [aquarium], activeAquariumId: aquarium.id, sourceGH: 0, sourceKH: 0, sourcePH: '', phCO2: DEFAULT_PH_CO2_MG_L, measuredPH: '', calibration: null, phModelV2: true, source: {}, targets: { GH: 6, KH: 3 }, ratios: defaultRatios(), selectedPresets: [], presetBackups: {}, customProducts: [], journal: [], customTests: [], customLightChannels: [], ratioPresetsV4: true, rows: [makeRow('watersci-gh'), makeRow('watersci-kh')] };
+  return { mode: 'prepare', volume: 100, tankVolume: 100, tankGH: '', tankKH: '', tankPH: '', tank: {}, aquariums: [aquarium], activeAquariumId: aquarium.id, sourceGH: 0, sourceKH: 0, sourcePH: '', phCO2: DEFAULT_PH_CO2_MG_L, measuredPH: '', calibration: null, phModelV2: true, source: {}, targets: { GH: 6, KH: 3 }, targetRanges: {}, ratios: defaultRatios(), selectedPresets: [], presetBackups: {}, presetTargetBackups: {}, presetWaterTargetsV1: true, customProducts: [], journal: [], customTests: [], customLightChannels: [], ratioPresetsV4: true, rows: [makeRow('watersci-gh'), makeRow('watersci-kh')] };
 };
 
 function loadState() {
@@ -63,6 +63,16 @@ function loadState() {
     const activeAquariumId = aquariums.some(item => item.id === stored.activeAquariumId)
       ? stored.activeAquariumId : aquariums[0].id;
     const active = aquariums.find(item => item.id === activeAquariumId);
+    const targets = { ...(stored.targets ?? {}) };
+    const targetRanges = { ...(stored.targetRanges ?? {}) };
+    const presetTargetBackups = { ...(stored.presetTargetBackups ?? {}) };
+    if (!stored.presetWaterTargetsV1 && stored.selectedPresets?.length) {
+      for (const item of mergePresets(stored.selectedPresets, getLocale()).targets) {
+        presetTargetBackups[item.id] = { target: targets[item.id] ?? '', range: { ...(targetRanges[item.id] ?? {}) } };
+        targets[item.id] = item.target;
+        targetRanges[item.id] = { min: item.min, max: item.max };
+      }
+    }
     return { ...base, ...stored, mode: stored.mode === 'change' ? 'change' : 'prepare',
       aquariums, activeAquariumId, tankVolume: active.tankVolume, tankGH: active.tankGH,
       tankKH: active.tankKH, tankPH: active.tankPH, tank: { ...(active.tank ?? {}) },
@@ -70,7 +80,7 @@ function loadState() {
       journal: (stored.journal ?? []).map(entry => ({ ...entry, aquariumId: entry.aquariumId ?? activeAquariumId })),
       customTests: stored.customTests ?? [], customLightChannels: Array.isArray(stored.customLightChannels) ? stored.customLightChannels : [], selectedPresets: stored.selectedPresets ?? [],
       phCO2: stored.phModelV2 && stored.phCO2 != null ? stored.phCO2 : DEFAULT_PH_CO2_MG_L,
-      phModelV2: true, source: stored.source ?? {}, targets: stored.targets ?? {}, ratios,
+      phModelV2: true, source: stored.source ?? {}, targets, targetRanges, presetTargetBackups, presetWaterTargetsV1: true, ratios,
       ratioPresetsV3: true, ratioPresetsV4: true,
       rows: stored.rows.filter(row => PRODUCT_BY_ID[row.id]).map(row => ({ ...makeRow(row.id), ...row })) };
   } catch { return initialState(); }
@@ -110,10 +120,10 @@ function applyAquariumProfile(profile) {
 }
 function save() { try { syncAquariumProfile(); localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* private browsing */ } }
 function getRow(id) { return state.rows.find(row => row.id === id); }
-function hasConstraints() { return TARGETS.some(target => state.targets?.[target.id] !== '' && state.targets?.[target.id] != null) || activeRatios(state).length > 0; }
+function hasConstraints() { return TARGETS.some(target => !!targetLimits(state.targets?.[target.id], state.targetRanges?.[target.id])) || activeRatios(state).length > 0; }
 function missingTankInputs() {
   if (state.mode !== 'change') return [];
-  const ids = new Set(TARGETS.filter(target => state.targets?.[target.id] !== '' && state.targets?.[target.id] != null).map(target => target.id));
+  const ids = new Set(TARGETS.filter(target => !!targetLimits(state.targets?.[target.id], state.targetRanges?.[target.id])).map(target => target.id));
   activeRatios(state).forEach(ratio => { ids.add(ratio.numerator); ids.add(ratio.denominator); });
   return [...ids].filter(id => id === 'GH' ? state.tankGH === '' || state.tankGH == null
     : id === 'KH' ? state.tankKH === '' || state.tankKH == null : state.tank?.[id] === '' || state.tank?.[id] == null);
@@ -125,7 +135,7 @@ function renderRatios() {
 }
 
 function buildStaticFields() {
-  $('#target-fields').innerHTML = TARGETS.map(target => `<label class="field"><span>${target.label}</span><div class="input-unit"><input data-target="${target.id}" type="number" min="0" step="any" placeholder="—"><span>${target.unit}</span></div></label>`).join('');
+  $('#target-fields').innerHTML = TARGETS.map(target => `<div class="target-item"><label class="field"><span>${target.label}</span><div class="input-unit"><input data-target="${target.id}" type="number" min="0" step="any" placeholder="—"><span>${target.unit}</span></div></label><details class="target-range" ${state.targetRanges?.[target.id]?.min !== '' && state.targetRanges?.[target.id]?.min != null || state.targetRanges?.[target.id]?.max !== '' && state.targetRanges?.[target.id]?.max != null ? 'open' : ''}><summary>Допустимый диапазон</summary><div class="target-range-fields"><label>от <input aria-label="${translate('Нижняя граница')}: ${target.label}" data-target-bound="${target.id}" data-bound="min" type="number" min="0" step="any" placeholder="—"></label><label>до <input aria-label="${translate('Верхняя граница')}: ${target.label}" data-target-bound="${target.id}" data-bound="max" type="number" min="0" step="any" placeholder="—"></label><span>${target.unit}</span></div></details></div>`).join('');
   $('#source-fields').innerHTML = SOURCE_IONS.map(ion => `<label class="field"><span>${IONS[ion].label}</span><div class="input-unit"><input data-source="${ion}" type="number" min="0" step="any" placeholder="0"><span>мг/л</span></div></label>`).join('');
   $('#tank-fields').innerHTML = SOURCE_IONS.map(ion => `<label class="field"><span>${IONS[ion].label}</span><div class="input-unit"><input data-tank="${ion}" type="number" min="0" step="any" placeholder="—"><span>мг/л</span></div></label>`).join('');
   for (const id of ['catalog-effect', 'database-effect']) $('#'+id).innerHTML = `<option value="">Все эффекты</option>${EFFECTS.map(([key, label, action]) => `<option value="${key}">${action} · ${esc(translate(label))}</option>`).join('')}`;
@@ -155,9 +165,9 @@ function renderCatalog() {
 }
 
 function renderPresets() {
-  $('#preset-list').innerHTML = PRESETS.map(preset => `<label class="check-line"><input type="checkbox" data-preset="${preset.id}" ${state.selectedPresets.includes(preset.id) ? 'checked' : ''}>${preset.name}</label>`).join('');
+  $('#preset-list').innerHTML = PRESETS.map(preset => `<label class="check-line"><input type="checkbox" data-preset="${preset.id}" ${state.selectedPresets.includes(preset.id) ? 'checked' : ''}><span>${translate(preset.name)}<small>${Object.entries(preset.targets ?? {}).map(([id, [target, min, max]]) => `${IONS[id]?.label ?? id} ${fmt(target)} [${fmt(min)}–${fmt(max)}]`).join(' · ')}</small></span></label>`).join('');
   const merged = mergePresets(state.selectedPresets, getLocale());
-  $('#preset-warning').innerHTML = [...merged.conflicts.map(value => `Несовместимо: ${esc(value)}`), ...merged.notices.map(esc)].join('<br>');
+  $('#preset-warning').innerHTML = [...merged.conflicts.map(value => `${translate('Несовместимо:')} ${esc(value)}`), ...merged.notices.map(esc)].join('<br>');
   $('#preset-warning').classList.toggle('conflict', merged.conflicts.length > 0);
 }
 
@@ -189,6 +199,7 @@ function syncStaticFields() {
   $('#ph-co2').value = state.phCO2 ?? DEFAULT_PH_CO2_MG_L;
   $('#measured-ph').value = state.measuredPH ?? '';
   document.querySelectorAll('[data-target]').forEach(input => { input.value = state.targets[input.dataset.target] ?? ''; });
+  document.querySelectorAll('[data-target-bound]').forEach(input => { input.value = state.targetRanges?.[input.dataset.targetBound]?.[input.dataset.bound] ?? ''; });
   document.querySelectorAll('[data-source]').forEach(input => { input.value = state.source[input.dataset.source] ?? ''; });
   document.querySelectorAll('[data-tank]').forEach(input => { input.value = state.tank[input.dataset.tank] ?? ''; });
   renderMode();
@@ -219,10 +230,12 @@ function recalculate({ solve = true, render = false } = {}) {
   if (solve) {
     const hasAuto = state.rows.some(row => row.mode === 'auto' && !row.locked);
     const missing = missingTankInputs();
-    if (missing.length) solverWarning = `Для подбора после подмены укажите в аквариуме: ${missing.map(id => IONS[id]?.label ?? id).join(', ')}.`;
+    const invalidTargets = TARGETS.filter(target => targetLimits(state.targets?.[target.id], state.targetRanges?.[target.id]) === null);
+    if (invalidTargets.length) solverWarning = solveTargets(state, getLocale()).warning;
+    else if (missing.length) solverWarning = `Для подбора после подмены укажите в аквариуме: ${missing.map(id => IONS[id]?.label ?? id).join(', ')}.`;
     else if (state.mode === 'change' && (number(state.tankVolume) <= 0 || number(state.volume) > number(state.tankVolume))) solverWarning = 'Объём подмены должен быть больше нуля и не превышать объём воды в аквариуме.';
     else if (hasConstraints() && hasAuto) {
-      const solution = solveTargets(state);
+      const solution = solveTargets(state, getLocale());
       state = solution.state;
       solverWarning = solution.warning;
     } else solverWarning = '';
@@ -324,12 +337,16 @@ function renderResults() {
     { label: 'Железо', value: result.ions.Fe, unit: 'мг/л', id: 'Fe' },
   ];
   $('#result-cards').innerHTML = cards.map(card => {
-    const target = state.targets[card.id];
-    const hasTarget = target !== '' && target != null;
-    const delta = hasTarget ? card.value - number(target) : 0;
+    const limits = targetLimits(state.targets[card.id], state.targetRanges?.[card.id]);
+    const hasTarget = limits?.target != null;
+    const delta = hasTarget ? card.value - limits.target : 0;
     const precision = card.id === 'Fe' || card.id === 'PO4' ? 3 : 2;
     const open = selectedResultId === card.id;
-    return `<button type="button" class="result-card ${card.accent ? 'accent' : ''} ${open ? 'selected' : ''}" data-result-id="${card.id}" aria-expanded="${open}" aria-controls="result-breakdown"><span>${card.label}</span><strong>${fmt(card.value, precision)} <small>${card.unit}</small></strong>${hasTarget ? `<em class="${Math.abs(delta) <= 0.01 ? 'on-target' : 'off-target'}">цель ${fmt(number(target), precision)}${Math.abs(delta) > 0.01 ? ` · Δ ${delta > 0 ? '+' : ''}${fmt(delta, precision)}` : ''}</em>` : '<em>без цели</em>'}</button>`;
+    const tolerance = Math.max((TARGETS.find(item => item.id === card.id)?.scale ?? 1) * 0.01, 0.001);
+    const inRange = limits && (limits.min == null || card.value >= limits.min - tolerance) && (limits.max == null || card.value <= limits.max + tolerance);
+    const range = limits?.ranged ? ` · ${translate('допуск')} ${limits.min == null ? '—' : fmt(limits.min, precision)}–${limits.max == null ? '—' : fmt(limits.max, precision)}` : '';
+    const description = limits ? `${hasTarget ? `${translate('цель')} ${fmt(limits.target, precision)}` : ''}${range}${hasTarget && Math.abs(delta) > tolerance ? ` · Δ ${delta > 0 ? '+' : ''}${fmt(delta, precision)}` : ''}`.replace(/^ · /, '') : translate('без цели');
+    return `<button type="button" class="result-card ${card.accent ? 'accent' : ''} ${open ? 'selected' : ''}" data-result-id="${card.id}" aria-expanded="${open}" aria-controls="result-breakdown"><span>${card.label}</span><strong>${fmt(card.value, precision)} <small>${card.unit}</small></strong><em class="${limits ? !inRange ? 'off-target' : hasTarget && Math.abs(delta) > tolerance ? 'within-range' : 'on-target' : ''}" title="${esc(description)}">${esc(description)}</em></button>`;
   }).join('');
   renderResultBreakdown(result, cards);
   renderIonTable(result);
@@ -369,7 +386,7 @@ function renderResults() {
   if (state.phCO2 === '' || number(state.phCO2) <= 0) messages.push('Для оценки pH задайте CO₂ больше нуля.');
   if (result.kh < 0) messages.push('Расчётная кислотность превысила исходную щёлочность: KH ниже нуля. Уменьшите дозу и проверьте воду капельным тестом.');
   const presetConflicts = mergePresets(state.selectedPresets, getLocale()).conflicts;
-  if (presetConflicts.length) messages.push(`Несовместимые пресеты: ${presetConflicts.join(' ')}`);
+  if (presetConflicts.length) messages.push(`${translate('Несовместимые пресеты:')} ${presetConflicts.join(' ')}`);
   if (solverWarning) messages.push(solverWarning);
   if (state.rows.some(row => PRODUCT_BY_ID[row.id]?.type === 'dry' && row.doseMode === 'stock' && stockGramsPerL(row) <= 0)) messages.push('У маточного раствора должны быть положительные навеска и объём.');
   const concentrated = state.rows.filter(row => {
@@ -435,6 +452,21 @@ function showView(view) {
 
 function applySelectedPresets() {
   const merged = mergePresets(state.selectedPresets, getLocale());
+  const beforeTargets = Object.fromEntries(TARGETS.map(item => [item.id, { target: state.targets[item.id] ?? '', min: state.targetRanges?.[item.id]?.min ?? '', max: state.targetRanges?.[item.id]?.max ?? '' }]));
+  const targetBackups = state.presetTargetBackups ?? {};
+  const activeTargets = new Set(merged.targets.map(item => item.id));
+  for (const [id, original] of Object.entries(targetBackups)) {
+    if (activeTargets.has(id)) continue;
+    state.targets[id] = original.target;
+    state.targetRanges[id] = { ...original.range };
+    delete targetBackups[id];
+  }
+  for (const item of merged.targets) {
+    if (!Object.hasOwn(targetBackups, item.id)) targetBackups[item.id] = { target: state.targets[item.id] ?? '', range: { ...(state.targetRanges[item.id] ?? {}) } };
+    state.targets[item.id] = item.target;
+    state.targetRanges[item.id] = { min: item.min, max: item.max };
+  }
+  state.presetTargetBackups = targetBackups;
   const backups = state.presetBackups ?? {};
   const key = ratio => `${ratio.numerator}:${ratio.denominator}`;
   const previous = new Map(state.ratios.map(ratio => [key(ratio), ratio]));
@@ -459,6 +491,25 @@ function applySelectedPresets() {
   state.presetBackups = backups;
   renderPresets();
   renderRatios();
+  syncStaticFields();
+  for (const item of TARGETS) {
+    if (state.targetRanges?.[item.id]?.min === '' || state.targetRanges?.[item.id]?.min == null) {
+      if (state.targetRanges?.[item.id]?.max === '' || state.targetRanges?.[item.id]?.max == null)
+        document.querySelector(`[data-target="${item.id}"]`)?.closest('.target-item')?.querySelector('details')?.removeAttribute('open');
+    }
+    for (const field of ['target', 'min', 'max']) {
+      const after = field === 'target' ? state.targets[item.id] : state.targetRanges?.[item.id]?.[field];
+      if (String(beforeTargets[item.id][field] ?? '') === String(after ?? '')) continue;
+      const input = field === 'target' ? document.querySelector(`[data-target="${item.id}"]`)
+        : document.querySelector(`[data-target-bound="${item.id}"][data-bound="${field}"]`);
+      if (input) {
+        if (after !== '' && after != null) input.closest('details')?.setAttribute('open', '');
+        input.classList.remove('preset-flash');
+        void input.offsetWidth;
+        input.classList.add('preset-flash');
+      }
+    }
+  }
   for (const ratio of state.ratios) {
     const before = previous.get(key(ratio));
     for (const field of ['target', 'min', 'max']) {
@@ -869,8 +920,12 @@ $('#ion-table').addEventListener('click', event => {
   row.querySelector('button').setAttribute('aria-expanded', String(open));
 });
 $('#target-fields').addEventListener('input', event => {
-  if (!event.target.dataset.target) return;
-  state.targets[event.target.dataset.target] = event.target.value;
+  if (event.target.dataset.target) state.targets[event.target.dataset.target] = event.target.value;
+  else if (event.target.dataset.targetBound) {
+    const id = event.target.dataset.targetBound;
+    state.targetRanges[id] ??= {};
+    state.targetRanges[id][event.target.dataset.bound] = event.target.value;
+  } else return;
   recalculate();
 });
 $('#ratio-fields').addEventListener('input', event => {
@@ -1239,9 +1294,14 @@ $('#database-list').addEventListener('click', event => {
 
 document.addEventListener('aqua-locale-change', () => {
   $('.source-note a').href = `https://github.com/Fantomiaso/aquastoich/blob/main/README${getLocale() === 'en' ? '' : `.${getLocale()}`}.md`;
+  document.querySelectorAll('[data-target-bound]').forEach(input => {
+    const label = TARGETS.find(item => item.id === input.dataset.targetBound)?.label ?? input.dataset.targetBound;
+    input.setAttribute('aria-label', `${translate(input.dataset.bound === 'min' ? 'Нижняя граница' : 'Верхняя граница')}: ${label}`);
+  });
+  renderPresets();
   renderCatalog();
   renderRows();
-  renderResults();
+  recalculate();
   renderJournalList();
   renderAquariums();
   renderDatabaseList();
