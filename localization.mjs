@@ -36,6 +36,28 @@ GH и KH задаются отдельно по тестам. Если ввод�
 можно несколько|select several|mehrere möglich|se pueden elegir varios
 Стартовые примеры. Подстройте пропорции под виды и измерения.|Starting examples. Adjust ratios for your species and measurements.|Ausgangsbeispiele. Verhältnisse an Arten und Messungen anpassen.|Ejemplos iniciales. Ajuste las proporciones a sus especies y mediciones.
 Стартовые примеры. Подстройте цели, диапазоны и пропорции под виды и измерения.|Starting examples. Adjust targets, ranges, and ratios for your species and measurements.|Ausgangsbeispiele. Ziele, Bereiche und Verhältnisse an Arten und Messungen anpassen.|Ejemplos iniciales. Ajuste los objetivos, rangos y proporciones a sus especies y mediciones.
+мой|custom|angepasst|propio
++ Свой пресет|+ Custom preset|+ Eigene Vorlage|+ Preajuste propio
+Новый пресет|New preset|Neue Vorlage|Nuevo preajuste
+Изменить пресет|Edit preset|Vorlage bearbeiten|Editar preajuste
+Название пресета|Preset name|Name der Vorlage|Nombre del preajuste
+Цель|Target|Ziel|Objetivo
++ Добавить соотношение|+ Add ratio|+ Verhältnis hinzufügen|+ Añadir proporción
+Сохранить пресет|Save preset|Vorlage speichern|Guardar preajuste
+Отмена|Cancel|Abbrechen|Cancelar
+Восстановить исходный|Restore default|Standard wiederherstellen|Restaurar predeterminado
+Удалить пресет|Delete preset|Vorlage löschen|Eliminar preajuste
+Удалить этот пресет?|Delete this preset?|Diese Vorlage löschen?|¿Eliminar este preajuste?
+Недопустимый идентификатор пресета.|Invalid preset identifier.|Ungültige Vorlagenkennung.|Identificador de preajuste no válido.
+Введите название пресета (до 80 символов).|Enter a preset name (up to 80 characters).|Einen Vorlagennamen eingeben (bis zu 80 Zeichen).|Introduzca un nombre (hasta 80 caracteres).
+Неизвестный параметр воды.|Unknown water parameter.|Unbekannter Wasserwert.|Parámetro de agua desconocido.
+Проверьте список пропорций.|Check the ratio list.|Verhältnisliste prüfen.|Compruebe la lista de proporciones.
+Введите неотрицательное число.|Enter a nonnegative number.|Eine nichtnegative Zahl eingeben.|Introduzca un número no negativo.
+Введите цель или границу диапазона.|Enter a target or range bound.|Zielwert oder Bereichsgrenze eingeben.|Introduzca un objetivo o límite del rango.
+Цель должна находиться в диапазоне min–max.|The target must be within the min–max range.|Das Ziel muss im Bereich min–max liegen.|El objetivo debe estar dentro del rango min–max.
+Выберите разные ионы без повторения пары.|Choose different ions without repeating a pair.|Verschiedene Ionen ohne doppelte Paare wählen.|Elija iones distintos sin repetir el par.
+Добавьте хотя бы один параметр или соотношение.|Add at least one parameter or ratio.|Mindestens einen Wasserwert oder ein Verhältnis hinzufügen.|Añada al menos un parámetro o proporción.
+Проверьте данные пресета.|Check the preset values.|Vorlagenwerte prüfen.|Compruebe los valores del preajuste.
 Соотношения ионов|Ion ratios|Ionenverhältnisse|Proporciones de iones
 Соотношения по массе|Mass ratios|Massenverhältnisse|Proporciones en masa
 По массе, мг/л · сначала цель, при конфликте — допуск|By mass, mg/L · exact target first, allowed range if needed|Nach Masse, mg/l · erst Zielwert, dann Toleranz|Por masa, mg/l · primero el objetivo, luego el rango

@@ -1,6 +1,6 @@
 import { IONS, PRODUCTS, PRODUCT_BY_ID, TARGETS, RATIO_IONS, DEFAULT_PH_CO2_MG_L, activeRatios, actualRatio, ratioLimits, ratioSatisfied, ratioTargetSatisfied, targetLimits, invertRatio, number, stockGramsPerL, displayDoseToAmount, calculate, calibratePHCO2, ghFromIons, khFromIons, khFromProduct, productComposition, setCustomProducts, solveTargets } from './chemistry.mjs';
 import { EFFECTS, CATALOG_SORTS, customProductFromForm, effectParts, normalizeFormula, primaryEffect, productEffects, productKind, sortedProducts, suggestChemicalName } from './catalog.mjs';
-import { PRESETS, mergePresets } from './presets.mjs';
+import { PRESETS, getPresets, mergePresets, normalizeUserPreset } from './presets.mjs';
 import { JOURNAL_TESTS, journalDifference } from './journal.mjs';
 import { getLocale, intlLocale, startLocalization, translate } from './localization.mjs';
 import { estimateAquariumVolume, makeAquarium } from './aquarium.mjs';
@@ -23,7 +23,7 @@ const defaultRatios = () => [
 ];
 const initialState = () => {
   const aquarium = makeAquarium(`${translate('Аквариум')} 1`);
-  return { mode: 'prepare', volume: 100, tankVolume: 100, tankGH: '', tankKH: '', tankPH: '', tank: {}, aquariums: [aquarium], activeAquariumId: aquarium.id, sourceGH: 0, sourceKH: 0, sourcePH: '', phCO2: DEFAULT_PH_CO2_MG_L, measuredPH: '', calibration: null, phModelV2: true, source: {}, targets: { GH: 6, KH: 3 }, targetRanges: {}, ratios: defaultRatios(), selectedPresets: [], presetBackups: {}, presetTargetBackups: {}, presetWaterTargetsV1: true, customProducts: [], journal: [], customTests: [], customLightChannels: [], ratioPresetsV4: true, rows: [makeRow('watersci-gh'), makeRow('watersci-kh')] };
+  return { mode: 'prepare', volume: 100, tankVolume: 100, tankGH: '', tankKH: '', tankPH: '', tank: {}, aquariums: [aquarium], activeAquariumId: aquarium.id, sourceGH: 0, sourceKH: 0, sourcePH: '', phCO2: DEFAULT_PH_CO2_MG_L, measuredPH: '', calibration: null, phModelV2: true, source: {}, targets: { GH: 6, KH: 3 }, targetRanges: {}, ratios: defaultRatios(), selectedPresets: [], userPresets: [], presetBackups: {}, presetTargetBackups: {}, presetWaterTargetsV1: true, customProducts: [], journal: [], customTests: [], customLightChannels: [], ratioPresetsV4: true, rows: [makeRow('watersci-gh'), makeRow('watersci-kh')] };
 };
 
 function loadState() {
@@ -63,11 +63,14 @@ function loadState() {
     const activeAquariumId = aquariums.some(item => item.id === stored.activeAquariumId)
       ? stored.activeAquariumId : aquariums[0].id;
     const active = aquariums.find(item => item.id === activeAquariumId);
+    const userPresets = (Array.isArray(stored.userPresets) ? stored.userPresets : []).flatMap(item => {
+      try { return [normalizeUserPreset(item)]; } catch { return []; }
+    });
     const targets = { ...(stored.targets ?? {}) };
     const targetRanges = { ...(stored.targetRanges ?? {}) };
     const presetTargetBackups = { ...(stored.presetTargetBackups ?? {}) };
     if (!stored.presetWaterTargetsV1 && stored.selectedPresets?.length) {
-      for (const item of mergePresets(stored.selectedPresets, getLocale()).targets) {
+      for (const item of mergePresets(stored.selectedPresets, getLocale(), userPresets).targets) {
         presetTargetBackups[item.id] = { target: targets[item.id] ?? '', range: { ...(targetRanges[item.id] ?? {}) } };
         targets[item.id] = item.target;
         targetRanges[item.id] = { min: item.min, max: item.max };
@@ -78,7 +81,7 @@ function loadState() {
       tankKH: active.tankKH, tankPH: active.tankPH, tank: { ...(active.tank ?? {}) },
       customProducts: stored.customProducts ?? [],
       journal: (stored.journal ?? []).map(entry => ({ ...entry, aquariumId: entry.aquariumId ?? activeAquariumId })),
-      customTests: stored.customTests ?? [], customLightChannels: Array.isArray(stored.customLightChannels) ? stored.customLightChannels : [], selectedPresets: stored.selectedPresets ?? [],
+      customTests: stored.customTests ?? [], customLightChannels: Array.isArray(stored.customLightChannels) ? stored.customLightChannels : [], selectedPresets: stored.selectedPresets ?? [], userPresets,
       phCO2: stored.phModelV2 && stored.phCO2 != null ? stored.phCO2 : DEFAULT_PH_CO2_MG_L,
       phModelV2: true, source: stored.source ?? {}, targets, targetRanges, presetTargetBackups, presetWaterTargetsV1: true, ratios,
       ratioPresetsV3: true, ratioPresetsV4: true,
@@ -95,6 +98,8 @@ let lightChannelDraft = [];
 let editingProductId = null;
 let componentDraft = [{ formula: '', amount: '' }];
 let additionalForms = [];
+let presetDraft = null;
+let presetOriginalName = '';
 const nf = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 3 });
 const fmt = (value, digits = 3) => new Intl.NumberFormat(intlLocale(), { maximumFractionDigits: digits }).format(Math.abs(value) < 1e-9 ? 0 : value);
 const raw = value => Number.isFinite(value) ? String(Math.round(value * 1e8) / 1e8) : '0';
@@ -165,10 +170,97 @@ function renderCatalog() {
 }
 
 function renderPresets() {
-  $('#preset-list').innerHTML = PRESETS.map(preset => `<label class="check-line"><input type="checkbox" data-preset="${preset.id}" ${state.selectedPresets.includes(preset.id) ? 'checked' : ''}><span>${translate(preset.name)}<small>${Object.entries(preset.targets ?? {}).map(([id, [target, min, max]]) => `${IONS[id]?.label ?? id} ${fmt(target)} [${fmt(min)}–${fmt(max)}]`).join(' · ')}</small></span></label>`).join('');
-  const merged = mergePresets(state.selectedPresets, getLocale());
+  const shown = value => value === '' || value == null ? '—' : fmt(value);
+  $('#preset-list').innerHTML = getPresets(state.userPresets).map(preset => {
+    const targetPreview = Object.entries(preset.targets ?? {}).map(([id, [target, min, max]]) => `${IONS[id]?.label ?? id} ${shown(target)}${min !== '' && min != null || max !== '' && max != null ? ` [${shown(min)}–${shown(max)}]` : ''}`);
+    const ratioPreview = (preset.ratios ?? []).map(({ pair, target, min, max }) => `${pair.split(':').map(id => IONS[id]?.label ?? id).join(':')} ${shown(target)}:1${min !== '' && min != null || max !== '' && max != null ? ` [${shown(min)}–${shown(max)}]` : ''}`);
+    const preview = [...targetPreview, ...ratioPreview].join(' · ');
+    const name = preset.userNamed ? preset.name : translate(preset.name);
+    return `<div class="preset-option"><label class="check-line"><input type="checkbox" data-preset="${esc(preset.id)}" ${state.selectedPresets.includes(preset.id) ? 'checked' : ''}><span>${esc(name)}${preset.edited || preset.custom ? ` <i>${translate('мой')}</i>` : ''}<small>${esc(preview)}</small></span></label><button type="button" class="text-button preset-edit" data-preset-edit="${esc(preset.id)}" aria-label="${translate('Изменить пресет')}: ${esc(name)}">${translate('Изменить')}</button></div>`;
+  }).join('');
+  const merged = mergePresets(state.selectedPresets, getLocale(), state.userPresets);
   $('#preset-warning').innerHTML = [...merged.conflicts.map(value => `${translate('Несовместимо:')} ${esc(value)}`), ...merged.notices.map(esc)].join('<br>');
   $('#preset-warning').classList.toggle('conflict', merged.conflicts.length > 0);
+}
+
+function readPresetForm() {
+  if (!presetDraft) return null;
+  const targets = {};
+  for (const checkbox of $('#preset-target-editor').querySelectorAll('[data-preset-target-enabled]:checked')) {
+    const id = checkbox.dataset.presetTargetEnabled;
+    targets[id] = ['target', 'min', 'max'].map(key => $('#preset-target-editor').querySelector(`[data-preset-target-id="${id}"][data-preset-value="${key}"]`).value);
+  }
+  const ratios = [...$('#preset-ratio-editor').querySelectorAll('[data-preset-ratio-row]')].map(row => {
+    const value = key => row.querySelector(`[data-preset-ratio-key="${key}"]`).value;
+    return { pair: `${value('numerator')}:${value('denominator')}`, target: value('target'), min: value('min'), max: value('max') };
+  });
+  return { ...presetDraft, name: $('#preset-name').value, targets, ratios };
+}
+
+function renderPresetEditor() {
+  const editor = $('#preset-editor');
+  editor.hidden = !presetDraft;
+  if (!presetDraft) return;
+  const builtIn = PRESETS.some(item => item.id === presetDraft.id);
+  $('#preset-editor-title').textContent = translate(builtIn ? 'Изменить пресет' : state.userPresets.some(item => item.id === presetDraft.id) ? 'Изменить пресет' : 'Новый пресет');
+  $('#preset-name').value = presetDraft.name;
+  $('#preset-target-editor').innerHTML = TARGETS.map(item => {
+    const values = presetDraft.targets[item.id] ?? ['', '', ''];
+    return `<div class="preset-target-row" data-preset-target-row="${item.id}"><label><input type="checkbox" data-preset-target-enabled="${item.id}" ${Object.hasOwn(presetDraft.targets, item.id) ? 'checked' : ''}>${item.label}</label>${['target', 'min', 'max'].map((key, index) => `<input type="number" min="0" step="any" placeholder="—" data-preset-target-id="${item.id}" data-preset-value="${key}" aria-label="${esc(`${item.label}: ${translate(key === 'target' ? 'Цель' : key === 'min' ? 'Нижняя граница' : 'Верхняя граница')}`)}" value="${esc(values[index] ?? '')}" ${Object.hasOwn(presetDraft.targets, item.id) ? '' : 'disabled'}>`).join('')}</div>`;
+  }).join('');
+  const options = selected => RATIO_IONS.map(ion => `<option value="${ion}" ${ion === selected ? 'selected' : ''}>${IONS[ion].label}</option>`).join('');
+  $('#preset-ratio-editor').innerHTML = presetDraft.ratios.map((item, index) => {
+    const [numerator, denominator] = item.pair.split(':');
+    return `<div class="preset-ratio-row" data-preset-ratio-row="${index}"><div class="preset-ratio-pair"><select data-preset-ratio-key="numerator" aria-label="${translate('Первый ион')}">${options(numerator)}</select><span>:</span><select data-preset-ratio-key="denominator" aria-label="${translate('Второй ион')}">${options(denominator)}</select><button type="button" class="icon-button" data-preset-ratio-remove="${index}" aria-label="${translate('Удалить соотношение')}">×</button></div><div class="preset-ratio-values">${['target', 'min', 'max'].map(key => `<label><span>${translate(key === 'target' ? 'Цель' : key)}</span><input type="number" min="0" step="any" placeholder="—" data-preset-ratio-key="${key}" value="${esc(item[key] ?? '')}"></label>`).join('')}</div></div>`;
+  }).join('');
+  $('#preset-reset').hidden = !builtIn || !state.userPresets.some(item => item.id === presetDraft.id);
+  $('#preset-delete').hidden = builtIn || !state.userPresets.some(item => item.id === presetDraft.id);
+  $('#preset-editor-error').textContent = '';
+}
+
+function startPresetEditor(id = null) {
+  if (id) {
+    const preset = getPresets(state.userPresets).find(item => item.id === id);
+    if (!preset) return;
+    const name = preset.userNamed ? preset.name : translate(preset.name);
+    presetDraft = { id, name, userNamed: Boolean(preset.userNamed), targets: structuredClone(preset.targets), ratios: structuredClone(preset.ratios) };
+    presetOriginalName = name;
+  } else {
+    presetDraft = { id: `user-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`, name: '', userNamed: true, targets: {}, ratios: [] };
+    presetOriginalName = '';
+  }
+  renderPresetEditor();
+  $('#preset-name').focus();
+}
+
+const presetErrors = {
+  'preset-id': 'Недопустимый идентификатор пресета.', 'preset-name': 'Введите название пресета (до 80 символов).',
+  'preset-target': 'Неизвестный параметр воды.', 'preset-ratio': 'Проверьте список пропорций.',
+  'preset-number': 'Введите неотрицательное число.', 'preset-empty-row': 'Введите цель или границу диапазона.',
+  'preset-bounds': 'Цель должна находиться в диапазоне min–max.', 'preset-pair': 'Выберите разные ионы без повторения пары.',
+  'preset-empty': 'Добавьте хотя бы один параметр или соотношение.',
+};
+
+function savePresetEditor() {
+  if (!presetDraft) return;
+  const input = readPresetForm();
+  const builtIn = PRESETS.find(item => item.id === input.id);
+  const prior = state.userPresets.find(item => item.id === input.id);
+  input.userNamed = !builtIn || input.name.trim() !== presetOriginalName || Boolean(prior?.userNamed);
+  if (builtIn && !input.userNamed) input.name = builtIn.name;
+  let preset;
+  try { preset = normalizeUserPreset(input); }
+  catch (reason) {
+    const label = presetErrors[reason.message] ?? 'Проверьте данные пресета.';
+    $('#preset-editor-error').textContent = `${reason.field ? `${reason.field}: ` : ''}${translate(label)}`;
+    return;
+  }
+  state.userPresets = state.userPresets.filter(item => item.id !== preset.id);
+  state.userPresets.push(preset);
+  if (!state.selectedPresets.includes(preset.id)) state.selectedPresets.push(preset.id);
+  presetDraft = null;
+  renderPresetEditor();
+  applySelectedPresets();
 }
 
 function renderMode() {
@@ -385,7 +477,7 @@ function renderResults() {
   if (state.mode === 'change' && number(state.volume) > number(state.tankVolume)) messages.push('Объём подмены превышает объём воды в аквариуме.');
   if (state.phCO2 === '' || number(state.phCO2) <= 0) messages.push('Для оценки pH задайте CO₂ больше нуля.');
   if (result.kh < 0) messages.push('Расчётная кислотность превысила исходную щёлочность: KH ниже нуля. Уменьшите дозу и проверьте воду капельным тестом.');
-  const presetConflicts = mergePresets(state.selectedPresets, getLocale()).conflicts;
+  const presetConflicts = mergePresets(state.selectedPresets, getLocale(), state.userPresets).conflicts;
   if (presetConflicts.length) messages.push(`${translate('Несовместимые пресеты:')} ${presetConflicts.join(' ')}`);
   if (solverWarning) messages.push(solverWarning);
   if (state.rows.some(row => PRODUCT_BY_ID[row.id]?.type === 'dry' && row.doseMode === 'stock' && stockGramsPerL(row) <= 0)) messages.push('У маточного раствора должны быть положительные навеска и объём.');
@@ -451,7 +543,7 @@ function showView(view) {
 }
 
 function applySelectedPresets() {
-  const merged = mergePresets(state.selectedPresets, getLocale());
+  const merged = mergePresets(state.selectedPresets, getLocale(), state.userPresets);
   const beforeTargets = Object.fromEntries(TARGETS.map(item => [item.id, { target: state.targets[item.id] ?? '', min: state.targetRanges?.[item.id]?.min ?? '', max: state.targetRanges?.[item.id]?.max ?? '' }]));
   const targetBackups = state.presetTargetBackups ?? {};
   const activeTargets = new Set(merged.targets.map(item => item.id));
@@ -956,6 +1048,50 @@ $('#preset-list').addEventListener('change', () => {
   state.selectedPresets = [...$('#preset-list').querySelectorAll('[data-preset]:checked')].map(input => input.dataset.preset);
   applySelectedPresets();
 });
+$('#preset-list').addEventListener('click', event => {
+  const button = event.target.closest('[data-preset-edit]');
+  if (button) startPresetEditor(button.dataset.presetEdit);
+});
+$('#preset-create').addEventListener('click', () => startPresetEditor());
+$('#preset-target-editor').addEventListener('change', event => {
+  const id = event.target.dataset.presetTargetEnabled;
+  if (!id) return;
+  document.querySelectorAll(`[data-preset-target-id="${id}"]`).forEach(input => { input.disabled = !event.target.checked; });
+});
+$('#preset-add-ratio').addEventListener('click', () => {
+  presetDraft = readPresetForm();
+  const used = new Set(presetDraft.ratios.map(item => item.pair));
+  const pair = RATIO_IONS.flatMap(numerator => RATIO_IONS.filter(denominator => denominator !== numerator).map(denominator => `${numerator}:${denominator}`))
+    .find(candidate => !used.has(candidate));
+  if (!pair) return;
+  presetDraft.ratios.push({ pair, target: '', min: '', max: '' });
+  renderPresetEditor();
+  $('#preset-ratio-editor').lastElementChild?.querySelector('[data-preset-ratio-key="target"]')?.focus();
+});
+$('#preset-ratio-editor').addEventListener('click', event => {
+  const button = event.target.closest('[data-preset-ratio-remove]');
+  if (!button) return;
+  presetDraft = readPresetForm();
+  presetDraft.ratios.splice(Number(button.dataset.presetRatioRemove), 1);
+  renderPresetEditor();
+});
+$('#preset-save').addEventListener('click', savePresetEditor);
+$('#preset-cancel').addEventListener('click', () => { presetDraft = null; renderPresetEditor(); });
+$('#preset-reset').addEventListener('click', () => {
+  if (!presetDraft || !PRESETS.some(item => item.id === presetDraft.id)) return;
+  state.userPresets = state.userPresets.filter(item => item.id !== presetDraft.id);
+  presetDraft = null;
+  renderPresetEditor();
+  applySelectedPresets();
+});
+$('#preset-delete').addEventListener('click', () => {
+  if (!presetDraft || PRESETS.some(item => item.id === presetDraft.id) || !window.confirm(translate('Удалить этот пресет?'))) return;
+  state.userPresets = state.userPresets.filter(item => item.id !== presetDraft.id);
+  state.selectedPresets = state.selectedPresets.filter(id => id !== presetDraft.id);
+  presetDraft = null;
+  renderPresetEditor();
+  applySelectedPresets();
+});
 $('#source-fields').addEventListener('input', event => {
   if (!event.target.dataset.source) return;
   state.source[event.target.dataset.source] = number(event.target.value);
@@ -1034,10 +1170,12 @@ $('#copy-summary').addEventListener('click', async () => {
   catch { toast('Не удалось скопировать. Откройте страницу через localhost.'); }
 });
 $('#reset').addEventListener('click', () => {
-  const preserved = { customProducts: state.customProducts, journal: state.journal, customTests: state.customTests,
+  const preserved = { customProducts: state.customProducts, userPresets: state.userPresets, journal: state.journal, customTests: state.customTests,
     aquariums: state.aquariums, activeAquariumId: state.activeAquariumId, tankVolume: state.tankVolume,
     tankGH: state.tankGH, tankKH: state.tankKH, tankPH: state.tankPH, tank: state.tank };
   state = { ...initialState(), ...preserved };
+  presetDraft = null;
+  renderPresetEditor();
   solverWarning = '';
   selectedResultId = null;
   syncStaticFields();
@@ -1299,6 +1437,15 @@ document.addEventListener('aqua-locale-change', () => {
     input.setAttribute('aria-label', `${translate(input.dataset.bound === 'min' ? 'Нижняя граница' : 'Верхняя граница')}: ${label}`);
   });
   renderPresets();
+  if (presetDraft) {
+    const current = readPresetForm();
+    if (PRESETS.some(item => item.id === current.id) && current.name === presetOriginalName && !current.userNamed) {
+      presetOriginalName = translate(PRESETS.find(item => item.id === current.id).name);
+      current.name = presetOriginalName;
+    }
+    presetDraft = current;
+    renderPresetEditor();
+  }
   renderCatalog();
   renderRows();
   recalculate();

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { calculate, calibratePHCO2, setCustomProducts, PRODUCT_BY_ID, PRODUCTS, productComposition, solveTargets } from './chemistry.mjs';
 import { parseSaltFormula, customProductFromForm, effectParts, productEffects } from './catalog.mjs';
-import { mergePresets } from './presets.mjs';
+import { getPresets, mergePresets, normalizeUserPreset } from './presets.mjs';
 import { journalDifference } from './journal.mjs';
 
 const near = (actual, expected, tolerance = 1e-3) => assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} ≠ ${expected}`);
@@ -122,6 +122,42 @@ test('несколько пресетов пересекаются или пре
   assert.ok(ratioConflict.includes('нижняя граница 4:1'));
   assert.ok(ratioConflict.includes('верхней 3:1'));
   assert.ok(incompatible.conflicts.some(item => item.includes('GH:') && item.includes('Диапазоны не пересекаются')));
+});
+
+test('пользовательский пресет объединяет цели и пропорции с выбранным встроенным', () => {
+  const custom = normalizeUserPreset({ id: 'user-my-plant', name: 'My planted tank', targets: { GH: [7, 5, 9], NO3: [12, 10, 20] },
+    ratios: [{ pair: 'NO3:PO4', target: 12, min: 10, max: 16 }] });
+  const merged = mergePresets(['community', custom.id], 'en', [custom]);
+  assert.equal(merged.conflicts.length, 0);
+  assert.deepEqual(merged.targets.find(item => item.id === 'GH'), { id: 'GH', target: 7, min: 5, max: 9 });
+  assert.deepEqual(merged.targets.find(item => item.id === 'NO3'), { id: 'NO3', target: 11, min: 10, max: 20 });
+  assert.equal(merged.ratios.find(item => item.numerator === 'NO3').target, 12);
+  assert.equal(getPresets([custom]).at(-1).name, 'My planted tank');
+});
+
+test('встроенный пресет редактируется через локальное переопределение и восстанавливается', () => {
+  const edited = normalizeUserPreset({ id: 'community', name: 'Общий пресноводный', targets: { GH: [8, 7, 9] }, ratios: [] });
+  assert.equal(getPresets([edited]).find(item => item.id === 'community').edited, true);
+  assert.equal(mergePresets(['community'], 'ru', [edited]).targets.find(item => item.id === 'GH').target, 8);
+  assert.equal(mergePresets(['community']).targets.find(item => item.id === 'GH').target, 7);
+});
+
+test('редактор отвергает пустые, ошибочные и противоречивые границы', () => {
+  const preset = { id: 'user-check', name: 'Check', targets: {}, ratios: [] };
+  assert.throws(() => normalizeUserPreset(preset), /preset-empty/);
+  assert.throws(() => normalizeUserPreset({ ...preset, targets: { GH: [10, 2, 8] } }), /preset-bounds/);
+  assert.throws(() => normalizeUserPreset({ ...preset, targets: { GH: ['abc', '', ''] } }), /preset-number/);
+  assert.throws(() => normalizeUserPreset({ ...preset, ratios: [{ pair: 'Ca:Ca', target: 3, min: '', max: '' }] }), /preset-pair/);
+});
+
+test('несовместимые точные цели дают предупреждение с именами пресетов', () => {
+  const first = normalizeUserPreset({ id: 'user-first', name: 'First', targets: { GH: [5, '', ''] }, ratios: [{ pair: 'Ca:Mg', target: 3, min: '', max: '' }] });
+  const second = normalizeUserPreset({ id: 'user-second', name: 'Second', targets: { GH: [7, '', ''] }, ratios: [{ pair: 'Ca:Mg', target: 5, min: '', max: '' }] });
+  const merged = mergePresets([first.id, second.id], 'en', [first, second]);
+  assert.equal(merged.conflicts.length, 2);
+  assert.ok(merged.conflicts.every(item => item.includes('First') && item.includes('Second')));
+  assert.equal(merged.targets.length, 0);
+  assert.equal(merged.ratios.length, 0);
 });
 
 test('журнал считает разницу и скорость в сутки только для той же воды и теста', () => {
