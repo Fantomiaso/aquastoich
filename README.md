@@ -51,6 +51,12 @@ pH is an estimate from KH, phosphate, and assumed dissolved CO₂ at 25 °C. The
 
 The built-in catalogue includes salts, WaterSci, AQUAERUS, AQUAYER, Seachem, Dennerle, Aqua Rebell, acid buffers and selected non-resin filter media. Commercial-product calculations use only disclosed quantitative analyses; reference-only filter media do not receive a calculated dose. Solubility for homemade solutions depends on temperature and the actual material.
 
+### Custom substances and measurement log
+
+In **Substance database**, add a dry substance, dry mixture, or ready-made liquid. Enter a chemical name and each component's formula and solubility at 20 °C in g/L. For a salt with several dry forms, add each formula and solubility separately, for example MgSO₄ and MgSO₄·7H₂O; the selected form changes the ion fractions and stock-solution check. For a dry mixture, enter the components' mass fractions; for a liquid, enter the component mass per litre. The app recognises common ionic salts, including parentheses and hydrates. For complex or commercial products with a known quantitative analysis, enter ion contents manually in mg/g of dry product or mg/mL of liquid. A trade name alone does not establish composition. Put synonyms in **Alternative names** so they are searchable. The solubility reminder is an estimate, especially for mixtures.
+
+In **Measurement log**, choose the aquarium and water source, enter drop-test values, and add a general note or a note for an individual test. Time is inserted when the entry is saved unless you choose manual entry. If a test is missing, add a custom test and unit. Differences compare the same test, water source, and aquarium; the daily rate is the net concentration change, not a measurement of biological uptake because dosing, water changes, dilution, and test error are not subtracted. Lighting settings and up to eight channels are saved with each entry and exported to Excel.
+
 ## Build from source
 
 Install Node.js 24 and run:
@@ -64,9 +70,24 @@ npm run dist
 
 `npm run dist` packages the current operating system. The tagged [GitHub Actions workflow](.github/workflows/release.yml) builds Windows, macOS, and Linux packages and creates a prerelease marked **Testing**. The web development version also runs with `node server.mjs` at `http://127.0.0.1:4173`.
 
-## Data and comparisons
+## Composition data and methodology
 
-Formula masses and ion fractions are calculated from the recorded formulas. Commercial data are referenced in [the detailed Russian methodology](README.ru.md#исходные-данные-и-ограничения); among the primary sources are [Seachem](https://www.seachem.com/calculators.php), [AQUAYER](https://aquayer.com/ru/product/aquayer-smart-makro), [Dennerle](https://dennerle.com/en/products/plant-care-npk), and [Aqua Rebell](https://www.aqua-rebell.de/Aqua-Rebell-Makro-Basic-Nitrat-1000-ml).
+Ca, Mg, K, Na, Fe, and trace-element concentrations are reported as elements; NO₃, PO₄, HCO₃, CO₃, and SO₄ are reported as ions, all in mg/L. GH is derived from Ca and Mg, while KH is derived from bicarbonate and carbonate alkalinity. Entered source-water GH/KH do not reveal the individual source-water ions. Molar masses and ion fractions are calculated from the recorded formulas. For KH₂PO₄, total phosphate is displayed as PO₄ equivalents while H₂PO₄⁻ is used for charge balance.
+
+| Product | Quantitative composition used | Source |
+| --- | --- | --- |
+| WaterSci Remineral GH+ | Ca 27.54; Mg 6.48 g/L | [Product listing](https://plantaqua.ru/products/62116684) |
+| WaterSci Remineral KH+ | Na 26.21; K 7.65; HCO₃ 69.57; SO₄ 9.40 g/L | [Product listing](https://xn--80aafzh6aw.xn--p1ai/catalog/vse_dlya_akvariuma/sredstva_dlya_vody/sredstva_dlya_vody_v_akvariume/30536/) |
+| AQUAERUS IRON | Fe 7.00; Mn 1.30 g/L | [Product listing](https://zaisy.ru/catalog/ryby/sredstva_po_ukhodu_za_akvariumom/udobreniya_dlya_rasteniy/150745/) |
+| AQUAERUS MICRO+ | K 7.920; Fe 1.372; Mg 0.915; Mn 0.475; B 0.082; Mo 0.035; Cu 0.052; Zn 0.017; Co 0.008 g/L | [Product listing](https://plantaqua.ru/products/35828202) |
+
+The built-in database has 54 entries, including common hydrates and fertilizers from [AQUAYER](https://aquayer.com/ru/product/aquayer-smart-makro), [Seachem](https://www.seachem.com/calculators.php), [Dennerle](https://dennerle.com/en/products/plant-care-npk), and [Aqua Rebell](https://www.aqua-rebell.de/Aqua-Rebell-Makro-Basic-Nitrat-1000-ml). Manufacturer dose claims are converted to mg/mL where needed. Magnesium sulfate defaults to MgSO₄·7H₂O and calcium nitrate to Ca(NO₃)₂·4H₂O; anhydrous forms can be selected. Set purity from your actual package. A reference solubility for CaSO₄·2H₂O is [2 g/L at 20 °C](https://www.merckmillipore.com/INTL/en/product/Calcium-sulfate-dihydrate%2CMDA_CHEM-102160). Stock-solution warnings are approximate; solubility changes with temperature, chemical form, and other dissolved substances. Prepare concentrates separately and check for precipitate.
+
+**WaterSci label discrepancy:** the listed Ca and Mg for GH+ imply about **5.35 °dGH**, and the HCO₃ for KH+ about **3.20 °dKH**, per 1 mL in 1 L. The product listings claim 8 °dGH and 4 °dKH. AquaStoich uses the published ion concentrations; verify the result with water tests. Counterions of GH+ and complex fertilizers are not fully disclosed, so their missing charge is reported as unknown rather than assigned to Cl or SO₄. Chelated Fe and Mn are shown as total element mass, outside the simple-ion charge balance. Source water cannot be charge-balanced without a full ion analysis.
+
+The pH estimate uses carbonate and phosphate equilibria and an assumed effective dissolved CO₂ level. Method references: [USGS PHREEQC carbonate species](https://water.usgs.gov/water-resources/software/PHREEQC/documentation/phreeqc3-html/phreeqc3-77.htm), [NIST phosphate equilibrium data](https://www.nist.gov/system/files/documents/srd/jpcrd615.pdf), [USGS alkalinity methods](https://or.water.usgs.gov/alk/methods.html), and [USGS gas-exchange model](https://water.usgs.gov/water-resources/software/PHREEQC/documentation/phreeqc3-html/phreeqc3-69.htm). The initial 5 mg/L effective CO₂ is a calibration assumption based on reported standing-water pH around 7.4–7.8, not a universal atmospheric concentration. Initial pH alone cannot determine pH after gas exchange. Unknown buffers, precipitation, and proprietary acidity can change the measured result; pH is not used in automatic dose fitting.
+
+## Related tools
 
 Related tools serve different needs. [Seachem's calculators](https://www.seachem.com/calculators.php) are simpler for individual Seachem products. [AquariumToolbox](https://aquariumtoolbox.com/) covers a wider set of aquarium tasks and equipment. [AquaJocund's stock-solution calculator](https://aquajocund.com/dry-fertilizer-stock-solution-calculator/) offers weekly fertilizer schedules. AquaStoich focuses on jointly fitting several substances to ion targets, explaining their contributions, and linking calculations with aquarium profiles and measurement logs. It does not provide weekly fertilizer scheduling.
 
