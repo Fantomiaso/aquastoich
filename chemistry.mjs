@@ -77,6 +77,7 @@ export function setCustomProducts(definitions) {
 export const TARGETS = [
   { id: 'GH', label: 'GH', unit: '°dGH', scale: 5 },
   { id: 'KH', label: 'KH', unit: '°dKH', scale: 3 },
+  { id: 'TDS', label: 'TDS', unit: 'ppm', scale: 100 },
   { id: 'Ca', label: 'Ca', unit: 'мг/л', scale: 30 },
   { id: 'Mg', label: 'Mg', unit: 'мг/л', scale: 8 },
   { id: 'K', label: 'K', unit: 'мг/л', scale: 10 },
@@ -210,7 +211,8 @@ export function addedIons(rows, volume) {
     }
     const variant = product.variants?.find(item => item.id === row.variant) ?? product.variants?.[0];
     const acidMeq = amount * number(variant?.acidMeqPerUnit ?? product.acidMeqPerUnit) / volume;
-    byProduct.push({ id: row.id, amount, contribution, product, variantId: row.variant, acidMeq });
+    const tdsContribution = Object.values(contribution).reduce((sum, value) => sum + value, 0);
+    byProduct.push({ id: row.id, amount, contribution, tdsContribution, product, variantId: row.variant, acidMeq });
   }
   return { ions, byProduct };
 }
@@ -301,7 +303,9 @@ function calculatePrepared(state) {
   const gh = Math.max(0, number(state.sourceGH)) + ghFromIons(additions);
   const acidMeq = acidMeqFromProducts(byProduct);
   const kh = Math.max(0, number(state.sourceKH)) + khFromIons(additions) - acidMeq / KH_MEG_PER_DEGREE;
-  return { ions, additions, gh, kh, ph: estimatePH(state, additions, acidMeq), byProduct, balance: chargeBalance(byProduct, volume), baseline: { GH: Math.max(0, number(state.sourceGH)), KH: Math.max(0, number(state.sourceKH)), ions: state.source ?? {} } };
+  const baselineTDS = Math.max(0, number(state.sourceTDS));
+  const tds = baselineTDS + byProduct.reduce((sum, item) => sum + item.tdsContribution, 0);
+  return { ions, additions, gh, kh, tds, ph: estimatePH(state, additions, acidMeq), byProduct, balance: chargeBalance(byProduct, volume), baseline: { GH: Math.max(0, number(state.sourceGH)), KH: Math.max(0, number(state.sourceKH)), TDS: baselineTDS, ions: state.source ?? {} } };
 }
 
 export function calculate(state) {
@@ -321,13 +325,15 @@ export function calculate(state) {
   }
   const baselineGH = retained * Math.max(0, number(state.tankGH)) + share * Math.max(0, number(state.sourceGH));
   const baselineKH = retained * Math.max(0, number(state.tankKH)) + share * Math.max(0, number(state.sourceKH));
-  const byProduct = prepared.byProduct.map(item => ({ ...item, acidMeq: item.acidMeq * share,
+  const baselineTDS = retained * Math.max(0, number(state.tankTDS)) + share * Math.max(0, number(state.sourceTDS));
+  const byProduct = prepared.byProduct.map(item => ({ ...item, acidMeq: item.acidMeq * share, tdsContribution: item.tdsContribution * share,
     contribution: Object.fromEntries(Object.entries(item.contribution).map(([ion, value]) => [ion, value * share])) }));
   const gh = baselineGH + ghFromIons(additions);
   const acidMeq = acidMeqFromProducts(byProduct);
   const kh = baselineKH + khFromIons(additions) - acidMeq / KH_MEG_PER_DEGREE;
+  const tds = baselineTDS + byProduct.reduce((sum, item) => sum + item.tdsContribution, 0);
   const ph = estimatePH({ sourceKH: baselineKH, source: baselineIons, phCO2: state.phCO2 }, additions, acidMeq);
-  return { ions, additions, gh, kh, ph, byProduct, balance: chargeBalance(byProduct, tankVolume), baseline: { GH: baselineGH, KH: baselineKH, ions: baselineIons }, prepared, share };
+  return { ions, additions, gh, kh, tds, ph, byProduct, balance: chargeBalance(byProduct, tankVolume), baseline: { GH: baselineGH, KH: baselineKH, TDS: baselineTDS, ions: baselineIons }, prepared, share };
 }
 
 export function calibratePHCO2(result, measuredPH) {
@@ -346,6 +352,7 @@ export function calibratePHCO2(result, measuredPH) {
 export function metric(result, id) {
   if (id === 'GH') return result.gh;
   if (id === 'KH') return result.kh;
+  if (id === 'TDS') return result.tds;
   return result.ions[id] ?? 0;
 }
 

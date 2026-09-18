@@ -28,6 +28,6 @@ export function makeAquarium(name = 'Aquarium 1', previous = {}) {
     id: `aquarium-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     name, note: '', geometry: { shape: 'rect', lengthCm: '', widthCm: '', heightCm: '', diameterCm: '', glassMm: '', substrateCm: '', topGapCm: '' },
     volumeMode: 'manual', tankVolume: previous.tankVolume ?? 100,
-    tankGH: previous.tankGH ?? '', tankKH: previous.tankKH ?? '', tankPH: previous.tankPH ?? '', tank: { ...(previous.tank ?? {}) }
+    tankGH: previous.tankGH ?? '', tankKH: previous.tankKH ?? '', tankPH: previous.tankPH ?? '', tankTDS: previous.tankTDS ?? '', tank: { ...(previous.tank ?? {}) }
   };
 }

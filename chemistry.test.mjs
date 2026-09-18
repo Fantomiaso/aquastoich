@@ -55,6 +55,27 @@ test('маточник переводит граммы в миллилитры �
   close(result.byProduct[0].amount, 1);
 });
 
+test('TDS складывает измеренный исходный уровень и известные ионы добавок', () => {
+  const input = { ...state([row('kno3', 1)]), sourceTDS: 30 };
+  const result = calculate(input);
+  close(result.tds, 40, 0.02);
+  close(result.byProduct[0].tdsContribution, 10, 0.02);
+  const changed = calculate({ ...input, mode: 'change', tankVolume: 100, volume: 20,
+    tankTDS: 100, tankGH: 0, tankKH: 0 });
+  close(changed.prepared.tds, 80, 0.02);
+  close(changed.tds, 96, 0.02);
+  close(changed.byProduct[0].tdsContribution, 10, 0.02);
+});
+
+test('подбор TDS использует исходный замер и подбирает дозу', () => {
+  const input = { ...state([row('kno3', 0, { mode: 'auto' })]), sourceTDS: 30,
+    targets: { TDS: 40 } };
+  const solved = solveTargets(input);
+  assert.equal(solved.warning, '');
+  close(calculate(solved.state).tds, 40, 0.02);
+  close(solved.state.rows[0].dose, 1, 0.02);
+});
+
 test('AQUAERUS ЖЕЛЕЗО: 1 мл на 70 л даёт 0,1 мг/л Fe', () => {
   const result = calculate({ ...state([row('aquaerus-fe', 1)]), volume: 70 });
   close(result.ions.Fe, 0.1);

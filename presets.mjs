@@ -10,7 +10,7 @@ export const PRESETS = [
 ];
 
 const builtInIds = new Set(PRESETS.map(preset => preset.id));
-const targetIds = new Set(['GH', 'KH', 'Ca', 'Mg', 'K', 'NO3', 'PO4', 'Fe']);
+const targetIds = new Set(['GH', 'KH', 'TDS', 'Ca', 'Mg', 'K', 'NO3', 'PO4', 'Fe']);
 const ratioIds = new Set(['Ca', 'Mg', 'K', 'Na', 'Cl', 'SO4', 'NO3', 'PO4', 'HCO3', 'CO3']);
 const filled = value => value !== '' && value != null && (typeof value !== 'string' || value.trim() !== '');
 const error = (code, field = '') => Object.assign(new Error(code), { field });

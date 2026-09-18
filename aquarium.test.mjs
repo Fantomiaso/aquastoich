@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { estimateAquariumVolume } from './aquarium.mjs';
-import { journalDifference } from './journal.mjs';
+import { JOURNAL_TESTS, journalDifference } from './journal.mjs';
 import { journalTable, journalXlsx } from './journal-export.mjs';
 import { MAX_LIGHT_CHANNELS, validLightChannels } from './light-channels.mjs';
 
@@ -22,6 +22,16 @@ test('journal differences never cross aquarium profiles', () => {
     { id: 'c', aquariumId: 'tank-a', at: '2026-09-16T12:00', location: 'aquarium', values: { NO3: 6 } }
   ];
   assert.equal(journalDifference(entries, entries[2], 'NO3').previous.id, 'a');
+});
+
+test('TDS readings are available in the journal and exported to Excel', () => {
+  const testDefinition = JOURNAL_TESTS.find(item => item.id === 'TDS');
+  assert.equal(testDefinition.unit, 'ppm');
+  const entries = [{ at: '2026-09-16T12:00', location: 'aquarium', values: { TDS: 142 }, notes: { TDS: 'meter scale 0.5' } }];
+  const table = journalTable(entries, JOURNAL_TESTS, 'Tank 1');
+  assert.ok(table.headers.includes('TDS (ppm)'));
+  assert.ok(table.rows[0].includes(142));
+  assert.ok(new TextDecoder().decode(journalXlsx(entries, JOURNAL_TESTS, 'Tank 1')).includes('meter scale 0.5'));
 });
 
 test('Excel export includes measurement notes and lighting as separate columns', () => {

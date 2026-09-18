@@ -31,6 +31,7 @@
             <label class="field"><span>Исходный GH</span><div class="input-unit"><input id="source-gh" inputmode="decimal" type="number" min="0" step="any"><span>°dGH</span></div></label>
             <label class="field"><span>Исходный KH</span><div class="input-unit"><input id="source-kh" inputmode="decimal" type="number" min="0" step="any"><span>°dKH</span></div></label>
           </div>
+          <label class="field"><span>Исходный TDS</span><div class="input-unit"><input id="source-tds" inputmode="decimal" type="number" min="0" step="any" placeholder="—"><span>ppm</span></div></label>
           <div class="field-grid two">
             <label class="field"><span>Исходный pH</span><input id="source-ph" inputmode="decimal" type="number" min="0" max="14" step="any" placeholder="—"></label>
             <label class="field"><span>CO₂ после отстаивания</span><div class="input-unit"><input id="ph-co2" inputmode="decimal" type="number" min="0.01" step="any"><span>мг/л</span></div></label>
@@ -42,10 +43,11 @@
           <div class="section-heading"><h2>Вода в аквариуме до подмены</h2></div>
           <label class="field"><span>Объём аквариума с водой</span><div class="input-unit"><input id="tank-volume" type="number" min="0.001" step="any"><span>л</span></div></label>
           <button id="open-aquarium-profile" class="text-button" type="button">Размеры и рабочий объём ↗</button>
-          <div class="field-grid three spaced-grid">
+          <div class="field-grid two spaced-grid">
             <label class="field"><span>GH</span><input id="tank-gh" type="number" min="0" step="any"></label>
             <label class="field"><span>KH</span><input id="tank-kh" type="number" min="0" step="any"></label>
             <label class="field"><span>pH</span><input id="tank-ph" type="number" min="0" max="14" step="any" placeholder="—"></label>
+            <label class="field"><span>TDS</span><div class="input-unit"><input id="tank-tds" type="number" min="0" step="any" placeholder="—"><span>ppm</span></div></label>
           </div>
           <details class="details"><summary>Ионы в аквариуме <span>мг/л</span></summary><div id="tank-fields" class="field-grid two"></div></details>
         </section>
@@ -84,6 +86,7 @@
           <div id="prepared-summary" class="prepared-summary" hidden></div>
           <div id="result-cards" class="result-cards"></div>
           <div id="result-breakdown" class="result-breakdown" hidden></div>
+          <p class="fine-print tds-note">TDS — приблизительная оценка: исходное показание плюс масса известных ионов добавок. Шкала TDS-метра и нераскрытый состав готовых средств могут отличаться; проверьте результат измерением.</p>
           <div id="ratios" class="ratios"></div>
           <div class="table-heading"><h3>Сводная таблица ионов</h3><span>мг/л · нажмите на строку</span></div>
           <div class="table-wrap"><table><thead><tr><th>Ион</th><th>Было</th><th>Добавлено</th><th>Итого</th></tr></thead><tbody id="ion-table"></tbody></table></div>

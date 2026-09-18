@@ -22,7 +22,13 @@ const rows = `Расчёт воды для подмены|Aquarium water calcula
 Вода в аквариуме до подмены|Aquarium water before the change|Aquarienwasser vor dem Wechsel|Agua del acuario antes del cambio
 Исходный GH|Source GH|Ausgangs-GH|GH de origen
 Исходный KH|Source KH|Ausgangs-KH|KH de origen
+Исходный TDS|Source TDS|Ausgangs-TDS|TDS de origen
 Исходный pH|Source pH|Ausgangs-pH|pH de origen
+Нужен замер TDS|TDS reading required|TDS-Messwert erforderlich|Se necesita una medición de TDS
+Для подбора TDS укажите TDS исходной воды.|Enter source-water TDS to fit a TDS target.|Für das TDS-Ziel den TDS-Wert des Ausgangswassers eingeben.|Introduzca el TDS del agua de origen para ajustar el objetivo de TDS.
+Для подбора после подмены укажите в аквариуме:|To fit targets after a water change, enter the aquarium's starting values:|Für Ziele nach dem Wasserwechsel diese Anfangswerte des Aquariums eingeben:|Para ajustar los objetivos tras un cambio de agua, introduzca los valores iniciales del acuario:
+Карточки ниже — результат во всём аквариуме после подмены.|The cards below show the whole aquarium after the water change.|Die Karten unten zeigen das gesamte Aquarium nach dem Wasserwechsel.|Las tarjetas siguientes muestran todo el acuario tras el cambio de agua.
+TDS — приблизительная оценка: исходное показание плюс масса известных ионов добавок. Шкала TDS-метра и нераскрытый состав готовых средств могут отличаться; проверьте результат измерением.|TDS is an estimate: the starting reading plus the mass of known added ions. Meter scales and undisclosed product ingredients can differ; check the result with a measurement.|TDS ist eine Schätzung: Anfangsmesswert plus Masse bekannter zugesetzter Ionen. Messgeräteskala und unbekannte Inhaltsstoffe können abweichen; Ergebnis nachmessen.|El TDS es una estimación: lectura inicial más la masa de iones añadidos conocidos. La escala del medidor y los ingredientes no declarados pueden diferir; compruebe el resultado con una medición.
 CO₂ после отстаивания|CO₂ after standing|CO₂ nach dem Abstehen|CO₂ tras reposar
 Известные ионы исходной воды|Known source-water ions|Bekannte Ionen des Ausgangswassers|Iones conocidos del agua de origen
 Ионы в аквариуме|Aquarium ions|Ionen im Aquarium|Iones del acuario

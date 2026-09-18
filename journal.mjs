@@ -4,6 +4,7 @@ export const JOURNAL_TESTS = [
   { id: 'pH', label: 'pH', unit: '', kind: 'physical' },
   { id: 'GH', label: 'GH', unit: '°dGH', kind: 'physical' },
   { id: 'KH', label: 'KH', unit: '°dKH', kind: 'physical' },
+  { id: 'TDS', label: 'TDS', unit: 'ppm', kind: 'physical' },
   { id: 'NH4', label: 'NH₄⁺', unit: 'мг/л', kind: 'nutrient' },
   { id: 'NH3', label: 'NH₃', unit: 'мг/л', kind: 'nutrient' },
   { id: 'NH4NH3', label: 'NH₄/NH₃ (общий)', unit: 'мг/л', kind: 'nutrient' },
@@ -28,7 +29,6 @@ export const JOURNAL_TESTS = [
   { id: 'Na', label: 'Na', unit: 'мг/л', kind: 'nutrient' },
   { id: 'T', label: 'Температура', unit: '°C', kind: 'physical' },
   { id: 'EC', label: 'Электропроводность', unit: 'мкСм/см', kind: 'physical' },
-  { id: 'TDS', label: 'TDS', unit: 'мг/л', kind: 'physical' },
   { id: 'salinity', label: 'Солёность', unit: '‰', kind: 'physical' },
 ];
 

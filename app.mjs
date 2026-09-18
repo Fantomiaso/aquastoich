@@ -23,7 +23,7 @@ const defaultRatios = () => [
 ];
 const initialState = () => {
   const aquarium = makeAquarium(`${translate('Аквариум')} 1`);
-  return { mode: 'prepare', volume: 100, tankVolume: 100, tankGH: '', tankKH: '', tankPH: '', tank: {}, aquariums: [aquarium], activeAquariumId: aquarium.id, sourceGH: 0, sourceKH: 0, sourcePH: '', phCO2: DEFAULT_PH_CO2_MG_L, measuredPH: '', calibration: null, phModelV2: true, source: {}, targets: { GH: 6, KH: 3 }, targetRanges: {}, ratios: defaultRatios(), selectedPresets: [], userPresets: [], presetBackups: {}, presetTargetBackups: {}, presetWaterTargetsV1: true, customProducts: [], journal: [], customTests: [], customLightChannels: [], ratioPresetsV4: true, rows: [makeRow('watersci-gh'), makeRow('watersci-kh')] };
+  return { mode: 'prepare', volume: 100, tankVolume: 100, tankGH: '', tankKH: '', tankPH: '', tankTDS: '', tank: {}, aquariums: [aquarium], activeAquariumId: aquarium.id, sourceGH: 0, sourceKH: 0, sourcePH: '', sourceTDS: '', phCO2: DEFAULT_PH_CO2_MG_L, measuredPH: '', calibration: null, phModelV2: true, source: {}, targets: { GH: 6, KH: 3 }, targetRanges: {}, ratios: defaultRatios(), selectedPresets: [], userPresets: [], presetBackups: {}, presetTargetBackups: {}, presetWaterTargetsV1: true, customProducts: [], journal: [], customTests: [], customLightChannels: [], ratioPresetsV4: true, rows: [makeRow('watersci-gh'), makeRow('watersci-kh')] };
 };
 
 function loadState() {
@@ -78,7 +78,7 @@ function loadState() {
     }
     return { ...base, ...stored, mode: stored.mode === 'change' ? 'change' : 'prepare',
       aquariums, activeAquariumId, tankVolume: active.tankVolume, tankGH: active.tankGH,
-      tankKH: active.tankKH, tankPH: active.tankPH, tank: { ...(active.tank ?? {}) },
+      tankKH: active.tankKH, tankPH: active.tankPH, tankTDS: active.tankTDS ?? '', tank: { ...(active.tank ?? {}) },
       customProducts: stored.customProducts ?? [],
       journal: (stored.journal ?? []).map(entry => ({ ...entry, aquariumId: entry.aquariumId ?? activeAquariumId })),
       customTests: stored.customTests ?? [], customLightChannels: Array.isArray(stored.customLightChannels) ? stored.customLightChannels : [], selectedPresets: stored.selectedPresets ?? [], userPresets,
@@ -114,13 +114,13 @@ const activeAquarium = () => state.aquariums.find(item => item.id === state.acti
 function syncAquariumProfile() {
   const profile = activeAquarium();
   if (!profile) return;
-  for (const key of ['tankVolume', 'tankGH', 'tankKH', 'tankPH']) profile[key] = state[key];
+  for (const key of ['tankVolume', 'tankGH', 'tankKH', 'tankPH', 'tankTDS']) profile[key] = state[key];
   profile.tank = { ...state.tank };
 }
 function applyAquariumProfile(profile) {
   if (!profile) return;
   state.activeAquariumId = profile.id;
-  for (const key of ['tankVolume', 'tankGH', 'tankKH', 'tankPH']) state[key] = profile[key];
+  for (const key of ['tankVolume', 'tankGH', 'tankKH', 'tankPH', 'tankTDS']) state[key] = profile[key] ?? '';
   state.tank = { ...(profile.tank ?? {}) };
 }
 function save() { try { syncAquariumProfile(); localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* private browsing */ } }
@@ -131,7 +131,8 @@ function missingTankInputs() {
   const ids = new Set(TARGETS.filter(target => !!targetLimits(state.targets?.[target.id], state.targetRanges?.[target.id])).map(target => target.id));
   activeRatios(state).forEach(ratio => { ids.add(ratio.numerator); ids.add(ratio.denominator); });
   return [...ids].filter(id => id === 'GH' ? state.tankGH === '' || state.tankGH == null
-    : id === 'KH' ? state.tankKH === '' || state.tankKH == null : state.tank?.[id] === '' || state.tank?.[id] == null);
+    : id === 'KH' ? state.tankKH === '' || state.tankKH == null
+      : id === 'TDS' ? state.tankTDS === '' || state.tankTDS == null : state.tank?.[id] === '' || state.tank?.[id] == null);
 }
 
 function renderRatios() {
@@ -285,9 +286,11 @@ function syncStaticFields() {
   $('#tank-gh').value = state.tankGH ?? '';
   $('#tank-kh').value = state.tankKH ?? '';
   $('#tank-ph').value = state.tankPH ?? '';
+  $('#tank-tds').value = state.tankTDS ?? '';
   $('#source-gh').value = raw(number(state.sourceGH));
   $('#source-kh').value = raw(number(state.sourceKH));
   $('#source-ph').value = state.sourcePH ?? '';
+  $('#source-tds').value = state.sourceTDS ?? '';
   $('#ph-co2').value = state.phCO2 ?? DEFAULT_PH_CO2_MG_L;
   $('#measured-ph').value = state.measuredPH ?? '';
   document.querySelectorAll('[data-target]').forEach(input => { input.value = state.targets[input.dataset.target] ?? ''; });
@@ -324,6 +327,7 @@ function recalculate({ solve = true, render = false } = {}) {
     const missing = missingTankInputs();
     const invalidTargets = TARGETS.filter(target => targetLimits(state.targets?.[target.id], state.targetRanges?.[target.id]) === null);
     if (invalidTargets.length) solverWarning = solveTargets(state, getLocale()).warning;
+    else if (targetLimits(state.targets?.TDS, state.targetRanges?.TDS) && (state.sourceTDS === '' || state.sourceTDS == null)) solverWarning = 'Для подбора TDS укажите TDS исходной воды.';
     else if (missing.length) solverWarning = `Для подбора после подмены укажите в аквариуме: ${missing.map(id => IONS[id]?.label ?? id).join(', ')}.`;
     else if (state.mode === 'change' && (number(state.tankVolume) <= 0 || number(state.volume) > number(state.tankVolume))) solverWarning = 'Объём подмены должен быть больше нуля и не превышать объём воды в аквариуме.';
     else if (hasConstraints() && hasAuto) {
@@ -393,8 +397,8 @@ function renderResultBreakdown(result, cards) {
   }
   const card = cards.find(item => item.id === selectedResultId);
   if (!card) { selectedResultId = null; panel.hidden = true; panel.innerHTML = ''; return; }
-  const contribution = item => card.id === 'GH' ? ghFromIons(item.contribution) : card.id === 'KH' ? khFromProduct(item) : item.contribution[card.id] ?? 0;
-  const source = card.id === 'GH' ? result.baseline.GH : card.id === 'KH' ? result.baseline.KH : number(result.baseline.ions[card.id]);
+  const contribution = item => card.id === 'GH' ? ghFromIons(item.contribution) : card.id === 'KH' ? khFromProduct(item) : card.id === 'TDS' ? item.tdsContribution : item.contribution[card.id] ?? 0;
+  const source = card.id === 'GH' ? result.baseline.GH : card.id === 'KH' ? result.baseline.KH : card.id === 'TDS' ? result.baseline.TDS : number(result.baseline.ions[card.id]);
   const precision = card.id === 'Fe' || card.id === 'PO4' ? 4 : 3;
   const lines = result.byProduct.map(item => {
     const row = getRow(item.id);
@@ -403,24 +407,28 @@ function renderResultBreakdown(result, cards) {
     return `<div class="ion-source-line ${Math.abs(value) < 1e-9 ? 'zero' : ''}"><span>${esc(item.product.name)} <small>${fmt(number(row.dose), 5)} ${unit}</small></span><strong>${value > 1e-9 ? '+' : ''}${fmt(value, precision)} ${card.unit}</strong></div>`;
   }).join('');
   const sourceLines = state.mode === 'change' ? (() => {
-    const tankValue = card.id === 'GH' ? number(state.tankGH) : card.id === 'KH' ? number(state.tankKH) : number(state.tank?.[card.id]);
-    const sourceValue = card.id === 'GH' ? number(state.sourceGH) : card.id === 'KH' ? number(state.sourceKH) : number(state.source?.[card.id]);
-    return `<div class="ion-source-line source"><span>Аквариум, оставшаяся вода</span><strong>${fmt((1 - result.share) * tankValue, precision)} ${card.unit}</strong></div><div class="ion-source-line source"><span>Исходная вода для подмены</span><strong>${fmt(result.share * sourceValue, precision)} ${card.unit}</strong></div>`;
-  })() : `<div class="ion-source-line source"><span>Исходная вода</span><strong>${fmt(source, precision)} ${card.unit}</strong></div>`;
-  panel.innerHTML = `<div class="result-breakdown-heading"><strong>${card.label}</strong><span>вклад в итог</span></div>${sourceLines}${lines || '<div class="ion-source-line zero"><span>Вещества не добавлены</span><strong>0</strong></div>'}<div class="ion-source-line total"><span>Итого</span><strong>${fmt(card.value, precision)} ${card.unit}</strong></div>`;
+    const tankValue = card.id === 'GH' ? number(state.tankGH) : card.id === 'KH' ? number(state.tankKH) : card.id === 'TDS' ? number(state.tankTDS) : number(state.tank?.[card.id]);
+    const sourceValue = card.id === 'GH' ? number(state.sourceGH) : card.id === 'KH' ? number(state.sourceKH) : card.id === 'TDS' ? number(state.sourceTDS) : number(state.source?.[card.id]);
+    const hasTankValue = card.id !== 'TDS' || state.tankTDS !== '' && state.tankTDS != null;
+    const hasSourceValue = card.id !== 'TDS' || state.sourceTDS !== '' && state.sourceTDS != null;
+    return `<div class="ion-source-line source"><span>Аквариум, оставшаяся вода</span><strong>${hasTankValue ? fmt((1 - result.share) * tankValue, precision) : '—'} ${card.unit}</strong></div><div class="ion-source-line source"><span>Исходная вода для подмены</span><strong>${hasSourceValue ? fmt(result.share * sourceValue, precision) : '—'} ${card.unit}</strong></div>`;
+  })() : `<div class="ion-source-line source"><span>Исходная вода</span><strong>${card.id === 'TDS' && (state.sourceTDS === '' || state.sourceTDS == null) ? '—' : fmt(source, precision)} ${card.unit}</strong></div>`;
+  panel.innerHTML = `<div class="result-breakdown-heading"><strong>${card.label}</strong><span>вклад в итог</span></div>${sourceLines}${lines || '<div class="ion-source-line zero"><span>Вещества не добавлены</span><strong>0</strong></div>'}<div class="ion-source-line total"><span>Итого</span><strong>${card.value == null ? '—' : `${card.id === 'TDS' ? '≈ ' : ''}${fmt(card.value, precision)}`} ${card.unit}</strong></div>`;
 }
 
 function renderResults() {
   const result = calculate(state);
+  const hasTDS = state.sourceTDS !== '' && state.sourceTDS != null && (state.mode !== 'change' || state.tankTDS !== '' && state.tankTDS != null);
   const startingPH = state.mode === 'change' ? state.tankPH : state.sourcePH;
   const hasSourcePH = startingPH !== '' && startingPH != null && Number.isFinite(number(startingPH, NaN));
   $('#ph-result').innerHTML = `<span>pH ${state.mode === 'change' ? 'аквариума' : 'исходной'} <strong>${hasSourcePH ? fmt(number(startingPH), 2) : '—'}</strong></span><span class="ph-arrow" aria-hidden="true">→</span><span>${state.mode === 'change' ? 'После подмены' : 'После смешивания'} <strong>${result.ph === null ? '—' : `≈ ${fmt(result.ph, 2)}`}</strong></span><span class="result-chevron" aria-hidden="true">▸</span>`;
   $('#prepared-summary').hidden = state.mode !== 'change';
-  if (state.mode === 'change') $('#prepared-summary').innerHTML = `<strong>Приготовленная подменная вода</strong><span>GH ${fmt(result.prepared.gh, 2)} °dGH · KH ${fmt(result.prepared.kh, 2)} °dKH · pH ${result.prepared.ph == null ? '—' : `≈ ${fmt(result.prepared.ph, 2)}`}</span><small>Карточки ниже — результат во всём аквариуме после подмены.</small>`;
+  if (state.mode === 'change') $('#prepared-summary').innerHTML = `<strong>Приготовленная подменная вода</strong><span>GH ${fmt(result.prepared.gh, 2)} °dGH · KH ${fmt(result.prepared.kh, 2)} °dKH · TDS ${state.sourceTDS === '' || state.sourceTDS == null ? '—' : `≈ ${fmt(result.prepared.tds, 1)} ppm`} · pH ${result.prepared.ph == null ? '—' : `≈ ${fmt(result.prepared.ph, 2)}`}</span><small>Карточки ниже — результат во всём аквариуме после подмены.</small>`;
   $('#calibration-status').textContent = state.calibration ? `Последний замер: pH ${fmt(state.calibration.measuredPH, 2)}; калиброванный CO₂ ${fmt(state.calibration.co2, 2)} мг/л.` : '';
   const cards = [
     { label: 'Общая жёсткость', value: result.gh, unit: '°dGH', id: 'GH', accent: true },
     { label: 'Карбонатная жёсткость', value: result.kh, unit: '°dKH', id: 'KH', accent: true },
+    { label: 'TDS', value: hasTDS ? result.tds : null, unit: 'ppm', id: 'TDS', accent: true },
     { label: 'Кальций', value: result.ions.Ca, unit: 'мг/л', id: 'Ca' },
     { label: 'Магний', value: result.ions.Mg, unit: 'мг/л', id: 'Mg' },
     { label: 'Калий', value: result.ions.K, unit: 'мг/л', id: 'K' },
@@ -429,6 +437,7 @@ function renderResults() {
     { label: 'Железо', value: result.ions.Fe, unit: 'мг/л', id: 'Fe' },
   ];
   $('#result-cards').innerHTML = cards.map(card => {
+    if (card.id === 'TDS' && card.value == null) return `<button type="button" class="result-card ${selectedResultId === 'TDS' ? 'selected' : ''}" data-result-id="TDS" aria-expanded="${selectedResultId === 'TDS'}" aria-controls="result-breakdown"><span>TDS</span><strong>— <small>ppm</small></strong><em>${translate('Нужен замер TDS')}</em></button>`;
     const limits = targetLimits(state.targets[card.id], state.targetRanges?.[card.id]);
     const hasTarget = limits?.target != null;
     const delta = hasTarget ? card.value - limits.target : 0;
@@ -438,7 +447,7 @@ function renderResults() {
     const inRange = limits && (limits.min == null || card.value >= limits.min - tolerance) && (limits.max == null || card.value <= limits.max + tolerance);
     const range = limits?.ranged ? ` · ${translate('допуск')} ${limits.min == null ? '—' : fmt(limits.min, precision)}–${limits.max == null ? '—' : fmt(limits.max, precision)}` : '';
     const description = limits ? `${hasTarget ? `${translate('цель')} ${fmt(limits.target, precision)}` : ''}${range}${hasTarget && Math.abs(delta) > tolerance ? ` · Δ ${delta > 0 ? '+' : ''}${fmt(delta, precision)}` : ''}`.replace(/^ · /, '') : translate('без цели');
-    return `<button type="button" class="result-card ${card.accent ? 'accent' : ''} ${open ? 'selected' : ''}" data-result-id="${card.id}" aria-expanded="${open}" aria-controls="result-breakdown"><span>${card.label}</span><strong>${fmt(card.value, precision)} <small>${card.unit}</small></strong><em class="${limits ? !inRange ? 'off-target' : hasTarget && Math.abs(delta) > tolerance ? 'within-range' : 'on-target' : ''}" title="${esc(description)}">${esc(description)}</em></button>`;
+    return `<button type="button" class="result-card ${card.accent ? 'accent' : ''} ${open ? 'selected' : ''}" data-result-id="${card.id}" aria-expanded="${open}" aria-controls="result-breakdown"><span>${card.label}</span><strong>${card.id === 'TDS' ? '≈ ' : ''}${fmt(card.value, precision)} <small>${card.unit}</small></strong><em class="${limits ? !inRange ? 'off-target' : hasTarget && Math.abs(delta) > tolerance ? 'within-range' : 'on-target' : ''}" title="${esc(description)}">${esc(description)}</em></button>`;
   }).join('');
   renderResultBreakdown(result, cards);
   renderIonTable(result);
@@ -507,14 +516,15 @@ function toast(message) {
 
 function summary() {
   const result = calculate(state);
+  const hasTDS = state.sourceTDS !== '' && state.sourceTDS != null && (state.mode !== 'change' || state.tankTDS !== '' && state.tankTDS != null);
   const startingPH = state.mode === 'change' ? state.tankPH : state.sourcePH;
   const ph = `pH до ${startingPH === '' || startingPH == null ? 'не указан' : fmt(number(startingPH), 2)}; после ${result.ph === null ? 'не определён' : `≈ ${fmt(result.ph, 2)} (оценка при CO₂ ${fmt(number(state.phCO2), 2)} мг/л)`}`;
   const lines = [state.mode === 'change'
     ? `REM · подмена ${fmt(number(state.volume), 1)} л в аквариуме ${fmt(number(state.tankVolume), 1)} л; итог после подмены`
     : `REM · приготовление ${fmt(number(state.volume), 1)} л воды`,
-  `GH ${fmt(result.gh, 2)} °dGH; KH ${fmt(result.kh, 2)} °dKH; ${ph}`,
+  `GH ${fmt(result.gh, 2)} °dGH; KH ${fmt(result.kh, 2)} °dKH; TDS ${hasTDS ? `≈ ${fmt(result.tds, 1)} ppm` : '—'}; ${ph}`,
   `Ca ${fmt(result.ions.Ca)}; Mg ${fmt(result.ions.Mg)}; K ${fmt(result.ions.K)}; NO₃ ${fmt(result.ions.NO3)}; PO₄ ${fmt(result.ions.PO4)}; Fe ${fmt(result.ions.Fe)} мг/л`, 'Дозировки:'];
-  if (state.mode === 'change') lines.splice(3, 0, `Подменная вода после приготовления: GH ${fmt(result.prepared.gh, 2)} °dGH; KH ${fmt(result.prepared.kh, 2)} °dKH; pH ${result.prepared.ph == null ? 'не определён' : `≈ ${fmt(result.prepared.ph, 2)}`}`);
+  if (state.mode === 'change') lines.splice(3, 0, `Подменная вода после приготовления: GH ${fmt(result.prepared.gh, 2)} °dGH; KH ${fmt(result.prepared.kh, 2)} °dKH; TDS ${state.sourceTDS === '' || state.sourceTDS == null ? '—' : `≈ ${fmt(result.prepared.tds, 1)} ppm`}; pH ${result.prepared.ph == null ? 'не определён' : `≈ ${fmt(result.prepared.ph, 2)}`}`);
   if (state.ratios.length) lines.splice(state.mode === 'change' ? 4 : 3, 0, `Соотношения по массе: ${state.ratios.map(ratio => {
     const actual = actualRatio(result, ratio);
     const limits = ratioLimits(ratio);
@@ -734,7 +744,7 @@ function renderJournalTestFields() {
 
 function resetJournalForm() {
   editingMeasurementId = null;
-  journalDraft = { values: { pH: '', GH: '', KH: '', NO3: '', PO4: '' }, notes: {} };
+  journalDraft = { values: { pH: '', GH: '', KH: '', TDS: '', NO3: '', PO4: '' }, notes: {} };
   $('#journal-form-title').textContent = 'Новое измерение';
   $('#journal-location').value = 'aquarium';
   $('#journal-auto-time').checked = true;
@@ -972,6 +982,7 @@ $('#tank-volume').addEventListener('input', event => { state.tankVolume = event.
 $('#tank-gh').addEventListener('input', event => { state.tankGH = event.target.value; recalculate(); });
 $('#tank-kh').addEventListener('input', event => { state.tankKH = event.target.value; recalculate(); });
 $('#tank-ph').addEventListener('input', event => { state.tankPH = event.target.value; recalculate(); });
+$('#tank-tds').addEventListener('input', event => { state.tankTDS = event.target.value; recalculate(); });
 $('#tank-fields').addEventListener('input', event => {
   if (!event.target.dataset.tank) return;
   state.tank[event.target.dataset.tank] = event.target.value;
@@ -980,6 +991,7 @@ $('#tank-fields').addEventListener('input', event => {
 $('#source-gh').addEventListener('input', event => { state.sourceGH = number(event.target.value); recalculate(); });
 $('#source-kh').addEventListener('input', event => { state.sourceKH = number(event.target.value); recalculate(); });
 $('#source-ph').addEventListener('input', event => { state.sourcePH = event.target.value; recalculate(); });
+$('#source-tds').addEventListener('input', event => { state.sourceTDS = event.target.value; recalculate(); });
 $('#ph-co2').addEventListener('input', event => { state.phCO2 = event.target.value; recalculate(); });
 $('#measured-ph').addEventListener('input', event => { state.measuredPH = event.target.value; save(); });
 $('#calibrate-ph').addEventListener('click', () => {
@@ -1172,7 +1184,7 @@ $('#copy-summary').addEventListener('click', async () => {
 $('#reset').addEventListener('click', () => {
   const preserved = { customProducts: state.customProducts, userPresets: state.userPresets, journal: state.journal, customTests: state.customTests,
     aquariums: state.aquariums, activeAquariumId: state.activeAquariumId, tankVolume: state.tankVolume,
-    tankGH: state.tankGH, tankKH: state.tankKH, tankPH: state.tankPH, tank: state.tank };
+    tankGH: state.tankGH, tankKH: state.tankKH, tankPH: state.tankPH, tankTDS: state.tankTDS, tank: state.tank };
   state = { ...initialState(), ...preserved };
   presetDraft = null;
   renderPresetEditor();
