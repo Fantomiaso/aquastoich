@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { estimateAquariumVolume } from './aquarium.mjs';
-import { JOURNAL_TESTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalEntriesInSelectedDays, journalInterpolatedReading, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets } from './journal.mjs';
+import { JOURNAL_TESTS, journalChartHeight, journalChartScale, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalEntriesInSelectedDays, journalInterpolatedReading, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets } from './journal.mjs';
 import { journalTable, journalXlsx } from './journal-export.mjs';
 import { MAX_LIGHT_CHANNELS, validLightChannels } from './light-channels.mjs';
 
@@ -53,6 +53,18 @@ test('journal trend keeps empty days and interpolates between measured buckets',
     [false, true, 115], [false, true, 125],
   ]);
   assert.equal(buckets[3].value, 135);
+});
+
+test('journal chart scale keeps small and nearly constant concentrations visible', () => {
+  const flat = journalChartScale([0.045, 0.045, 0.045]);
+  assert.ok(flat.minimum > 0);
+  assert.ok(journalChartHeight(0.045, flat) >= 45);
+  const narrow = journalChartScale([0.044, 0.045, 0.046]);
+  assert.ok(journalChartHeight(0.044, narrow) >= 9);
+  assert.ok(journalChartHeight(0.046, narrow) > 80);
+  const zeroBased = journalChartScale([0, 0.001]);
+  assert.equal(journalChartHeight(0, zeroBased), 0);
+  assert.ok(journalChartHeight(0.001, zeroBased) > 80);
 });
 
 test('journal period statistics use every adjacent reading', () => {

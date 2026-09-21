@@ -348,6 +348,8 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .journal-component-head { padding-bottom: 2px; border-bottom: 1px solid rgba(87, 122, 99, .11); color: #8a998e; font-size: 7px; text-transform: uppercase; letter-spacing: .025em; }
 .journal-component-head span:last-child, .journal-component span:last-child { text-align: right; }
 .journal-component span:last-child { color: #3e6e52; }
+.journal-component.selected-parameter { margin: 0 -3px; padding: 2px 3px; border: 1px solid #69a985; border-radius: 4px; background: #e6f3ea; box-shadow: inset 3px 0 #287b55; }
+.journal-component.selected-parameter > span { color: #1f6847; font-weight: 750; }
 .journal-chart-value-button { min-width: 0; padding: 2px 5px; border: 1px solid #7cae91; border-radius: 4px; background: #eef7f1; color: #236848; font: inherit; font-weight: 700; text-align: right; white-space: nowrap; cursor: pointer; }
 .journal-chart-value-button:hover, .journal-chart-value-button:focus-visible { border-color: #2d8058; background: #dff0e5; box-shadow: 0 0 0 2px rgba(45, 128, 88, .13); outline: none; }
 .journal-primary-statistics { margin-top: 7px; padding-top: 5px; border-top: 1px solid rgba(87, 122, 99, .14); }
@@ -618,6 +620,8 @@ html[data-theme="dark"] { color: #d9e7df; background: #101713; }
 [data-theme="dark"] .journal-chart-value-button { border-color: #579577; background: #21382c; color: #a8e1c4; }
 [data-theme="dark"] .journal-chart-value-button:hover,
 [data-theme="dark"] .journal-chart-value-button:focus-visible { border-color: #7bc49e; background: #2a4738; }
+[data-theme="dark"] .journal-component.selected-parameter { border-color: #579b78; background: #223b2f; box-shadow: inset 3px 0 #73c69b; }
+[data-theme="dark"] .journal-component.selected-parameter > span { color: #b2e6ca; }
 [data-theme="dark"] .effect-tag { background: #24382d; color: #9ed5ba; }
 [data-theme="dark"] .effect-action { background: #315b47; color: #c0f0d8; }
 [data-theme="dark"] .effect-action.decrease { background: #594126; color: #ffd39a; }
@@ -672,6 +676,8 @@ html[data-theme="colorblind"] { color: #1d3442; background: #eef5fa; }
 [data-theme="colorblind"] .journal-chart-value-button { border-color: #458eb5; background: #e3f3fa; color: #005f91; }
 [data-theme="colorblind"] .journal-chart-value-button:hover,
 [data-theme="colorblind"] .journal-chart-value-button:focus-visible { border-color: #005f91; background: #cceaf7; }
+[data-theme="colorblind"] .journal-component.selected-parameter { border-color: #0072b2; background: #dff2fa; box-shadow: inset 3px 0 #0072b2; }
+[data-theme="colorblind"] .journal-component.selected-parameter > span { color: #005985; }
 [data-theme="colorblind"] .journal-result-test.insight { background: #f9e8f2; box-shadow: inset 3px 0 #cc79a7; }
 [data-theme="colorblind"] .effect-tag { background: #e3f2f9; color: #005f91; }
 [data-theme="colorblind"] .effect-action { background: #bde1f1; color: #005985; }

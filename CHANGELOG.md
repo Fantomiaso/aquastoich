@@ -8,7 +8,7 @@ This version is reserved for the measurement analysis and calendar work. It rema
 
 - Added a measurement bar chart for the last week, month, three months, six months, year, or a manual date range. Ranges up to three months retain every calendar day; missing days are shown as interpolated bars under a trend envelope.
 - Added period minimum, maximum, mean absolute adjacent-reading change, and maximum adjacent-reading change. Once both comparison readings are selected, statistics use every whole day between them; otherwise they use the current chart period.
-- Improved the chart with an adaptive value scale, an envelope aligned to the bucket centres, and columns that use the available width without leaving an unused tail.
+- Improved the chart with an adaptive value scale, an envelope aligned to the bucket centres, and columns that use the available width without leaving an unused tail. Small and nearly constant concentrations now use a local range, adaptive decimal precision, and a visible minimum height for non-zero bars.
 - Added two-reading comparison: left-click selects the first reading and right-click selects the second. These controls are explained inside the corresponding cards. The first reading cannot be later than the second, and the second cannot be earlier than the first.
 - Related subparameters and other recorded parameters are available in collapsed groups. Opening either group now opens the matching group in the first reading, second reading, and difference cards together.
 - Added labelled change, average, minimum, maximum, and maximum-change columns to every row in the Difference card. Minimum, maximum, and maximum-change cells highlight their source readings through every calendar level; average cells remain informational.
@@ -20,7 +20,7 @@ This version is reserved for the measurement analysis and calendar work. It rema
 - Added a contextual reading panel to the right of the calendar. A group with several readings shows a nested list; a single reading opens its parameters immediately. Individual time markers, calendar cells, and chart bars share the first and second reading highlights in both directions.
 - Reworked reading details into aligned, labelled columns for parameter, value, change, change type, daily rate, and time unit. The former parameter-type filter was removed.
 - Added a persistent theme selector to the top bar with light, dark, and colour-vision-safe modes. Clickable values and text actions in lists now remain visibly distinct without requiring a hover.
-- Added a Clear selection control for chart comparisons and highlights. Clicking a parameter value or a minimum, maximum, or maximum-change statistic now switches the chart to that parameter while keeping the comparison controls interactive.
+- Added a Clear selection control for chart comparisons and highlights. Parameter switching is available only from the Difference card; values in the first and second reading cards are informational. A parameter selected on the right remains in both complete reading lists, where it is highlighted, while its main value remains above the list.
 - Fixed packaged resource loading and window display so the standalone portable build opens reliably from its ASAR archive.
 
 ## 1.0a — Testing release

@@ -8,7 +8,7 @@ Diese Version ist für Messwertanalyse und Kalenderprotokoll reserviert. Sie ble
 
 - Balkendiagramm für Woche, Monat, drei Monate, sechs Monate, Jahr oder einen eigenen Datumsbereich hinzugefügt. Bis zu drei Monate bleibt jeder Kalendertag erhalten; fehlende Tage erscheinen als interpolierte Balken unter einer Trendhüllkurve.
 - Minimum, Maximum, mittlere absolute Änderung zwischen aufeinanderfolgenden Messungen und größte Änderung hinzugefügt. Sobald beide Vergleichsmessungen gewählt sind, umfasst die Statistik alle vollständigen Tage dazwischen; andernfalls gilt der aktuelle Diagrammzeitraum.
-- Das Diagramm verwendet nun eine adaptive Werteskala, eine an den Balkenmitten ausgerichtete Hüllkurve und die verfügbare Breite ohne ungenutzten Leerraum.
+- Das Diagramm verwendet nun eine adaptive Werteskala, eine an den Balkenmitten ausgerichtete Hüllkurve und die verfügbare Breite ohne ungenutzten Leerraum. Kleine und nahezu konstante Konzentrationen erhalten einen lokalen Bereich, adaptive Dezimalstellen und eine sichtbare Mindesthöhe für Balken ungleich null.
 - Zwei Messwerte lassen sich vergleichen: Linksklick wählt den ersten, Rechtsklick den zweiten. Die zugehörigen Karten erklären diese Bedienung direkt. Der erste Messwert darf nicht nach dem zweiten liegen und der zweite nicht vor dem ersten.
 - Zugehörige Unterparameter und weitere erfasste Parameter stehen in anfangs geschlossenen Gruppen. Das Öffnen einer Gruppe öffnet nun gleichzeitig die entsprechende Gruppe für den ersten Messwert, den zweiten Messwert und die Differenz.
 - Jede Zeile der Differenzkarte enthält beschriftete Spalten für Änderung, Mittelwert, Minimum, Maximum und größte Änderung. Minimum, Maximum und größte Änderung markieren die zugrunde liegenden Messungen durch alle Kalenderebenen; der Mittelwert bleibt rein informativ.
@@ -20,7 +20,7 @@ Diese Version ist für Messwertanalyse und Kalenderprotokoll reserviert. Sie ble
 - Rechts neben dem Kalender steht ein kontextbezogenes Messwertfeld. Gruppen mit mehreren Messungen zeigen eine verschachtelte Liste, einzelne Messungen sofort ihre Parameter. Zeitmarken, Kalenderzellen und Diagrammbalken synchronisieren die Hervorhebung des ersten und zweiten Messwerts in beide Richtungen.
 - Messparameter sind in beschrifteten Spalten für Parameter, Wert, Änderung, Änderungsart, Tagesrate und Zeiteinheit ausgerichtet. Der frühere Parametertypfilter wurde entfernt.
 - Die obere Leiste enthält nun eine gespeicherte Auswahl für ein helles, dunkles oder farbsehschwächengerechtes Design. Anklickbare Werte und Textaktionen in Listen bleiben auch ohne Mauszeiger deutlich erkennbar.
-- Eine Schaltfläche setzt Vergleich und Hervorhebung zurück. Ein Klick auf einen Parameterwert, ein Minimum, ein Maximum oder eine größte Änderung wechselt das Diagramm zu diesem Parameter, während die Vergleichssteuerung bedienbar bleibt.
+- Eine Schaltfläche setzt Vergleich und Hervorhebung zurück. Der Parameterwechsel ist nur in der rechten Differenzkarte möglich; Werte der ersten und zweiten Messung sind rein informativ. Der rechts gewählte Parameter bleibt in beiden vollständigen Messwertlisten hervorgehoben und sein Hauptwert steht weiterhin über der Liste.
 - Ressourcenladen und Fensteranzeige der gepackten Version wurden korrigiert, damit der eigenständige portable Build zuverlässig aus dem ASAR-Archiv startet.
 
 ## 1.0a — Testversion

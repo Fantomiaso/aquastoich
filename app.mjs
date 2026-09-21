@@ -1,7 +1,7 @@
 import { IONS, PRODUCTS, PRODUCT_BY_ID, TARGETS, RATIO_IONS, DEFAULT_PH_CO2_MG_L, activeRatios, actualRatio, ratioLimits, ratioSatisfied, ratioTargetSatisfied, targetLimits, invertRatio, number, stockGramsPerL, displayDoseToAmount, calculate, calibratePHCO2, ghFromIons, khFromIons, khFromProduct, productComposition, setCustomProducts, solveTargets } from './chemistry.mjs';
 import { EFFECTS, CATALOG_SORTS, customProductFromForm, effectParts, normalizeFormula, primaryEffect, productEffects, productKind, sortedProducts, suggestChemicalName } from './catalog.mjs';
 import { PRESETS, getPresets, mergePresets, normalizeUserPreset } from './presets.mjs';
-import { JOURNAL_TESTS, JOURNAL_COMPONENTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalEntriesInSelectedDays, journalInterpolatedReading, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets } from './journal.mjs';
+import { JOURNAL_TESTS, JOURNAL_COMPONENTS, journalChartHeight, journalChartScale, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalEntriesInSelectedDays, journalInterpolatedReading, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets } from './journal.mjs';
 import { getLocale, intlLocale, startLocalization, translate } from './localization.mjs';
 import { estimateAquariumVolume, makeAquarium } from './aquarium.mjs';
 import { journalXlsx } from './journal-export.mjs';
@@ -97,7 +97,7 @@ let selectedResultId = null;
 let editingMeasurementId = null;
 let journalDraft = { values: {}, notes: {} };
 let journalChartState = { period: 'month', testId: 'GH', location: 'aquarium', from: '', to: '', firstId: null, secondId: null };
-let journalHistoryState = { scale: '', scopeStart: null, scopeEnd: null, selectedStart: null, selectedEnd: null, selectedLabel: '', selectedEntryId: null, selectedKind: 'first', insightKey: '', insightTestId: '' };
+let journalHistoryState = { scale: '', scopeStart: null, scopeEnd: null, selectedStart: null, selectedEnd: null, selectedLabel: '', selectedEntryId: null, selectedKind: 'first', insightKey: '', insightTestId: '', focusedTestId: '' };
 let journalDetailGroups = { related: Boolean(state.journalDetailGroups?.related), other: Boolean(state.journalDetailGroups?.other) };
 let lightChannelDraft = [];
 let editingProductId = null;
@@ -787,21 +787,25 @@ function chartComponentHtml(entry, testId) {
   if (!components.length) return `<details class="journal-components" data-chart-detail-group="related"${detailOpenAttribute('related')}><summary>${translate('Связанные подпараметры')}</summary><span>${translate('Подпараметры в этом замере не указаны.')}</span></details>`;
   return `<details class="journal-components" data-chart-detail-group="related"${detailOpenAttribute('related')}><summary>${translate('Связанные подпараметры')}</summary><div class="journal-component-head"><span>${translate('Параметр')}</span><span>${translate('Значение')}</span></div>${components.map(component => {
     const test = journalTest(component.id);
-    const rendered = `${fmt(component.value, 3)} ${esc(translate(test.unit))}`;
-    return `<div class="journal-component"><span>${esc(translate(test.label))}</span>${chartValueButton(test, rendered)}</div>`;
+    return `<div class="journal-component"><span>${esc(translate(test.label))}</span><span>${fmt(component.value, 3)} ${esc(translate(test.unit))}</span></div>`;
   }).join('')}</details>`;
 }
 
 const hasJournalValue = value => value !== '' && value != null && Number.isFinite(Number(value));
 function chartOtherParameterIds(entry, testId) {
-  const excluded = new Set([testId, ...(JOURNAL_COMPONENTS[testId] ?? [])]);
-  return Object.keys(entry?.values ?? {}).filter(id => !excluded.has(id) && hasJournalValue(entry.values[id]));
+  const related = new Set(JOURNAL_COMPONENTS[testId] ?? []);
+  return Object.keys(entry?.values ?? {}).filter(id => {
+    if (!hasJournalValue(entry.values[id])) return false;
+    if (id === testId) return journalHistoryState.focusedTestId === testId;
+    return !related.has(id);
+  });
 }
 function chartParameterRows(entry, ids) {
   return ids.map(id => {
     const test = journalTest(id);
     const rendered = `${fmt(number(entry.values[id]), 3)} ${esc(translate(test.unit))}`;
-    return `<div class="journal-component"><span>${esc(translate(test.label))}</span>${chartValueButton(test, rendered)}</div>`;
+    const focused = id === journalHistoryState.focusedTestId && id === journalChartState.testId;
+    return `<div class="journal-component ${focused ? 'selected-parameter' : ''}"><span>${esc(translate(test.label))}</span><span>${rendered}</span></div>`;
   }).join('');
 }
 function chartOtherParametersHtml(entry, testId) {
@@ -858,7 +862,7 @@ function chartReadingCard(entry, kind, test) {
   const value = number(entry.values[test.id]);
   const note = entry.notes?.[test.id] || entry.note;
   const rendered = `${fmt(value, 3)} ${esc(translate(test.unit))}`;
-  return `<div class="journal-compare-card ${kind}"><strong>${title}</strong><small class="journal-click-hint">${translate(hint)}</small>${chartValueButton(test, rendered)}<small>${new Date(entry.at).toLocaleString(intlLocale())}</small>${chartComponentHtml(entry, test.id)}${chartOtherParametersHtml(entry, test.id)}${note ? `<small>${esc(note)}</small>` : ''}</div>`;
+  return `<div class="journal-compare-card ${kind}"><strong>${title}</strong><small class="journal-click-hint">${translate(hint)}</small><b>${rendered}</b><small>${new Date(entry.at).toLocaleString(intlLocale())}</small>${chartComponentHtml(entry, test.id)}${chartOtherParametersHtml(entry, test.id)}${note ? `<small>${esc(note)}</small>` : ''}</div>`;
 }
 
 function journalTrendScale(bounds) {
@@ -954,30 +958,28 @@ function renderJournalChart(context = {}) {
   } else {
     chart.className = `journal-chart ${trendScale}`;
     const values = buckets.map(bucket => number(bucket.value));
-    const observedMinimum = Math.min(...values);
-    const observedMaximum = Math.max(...values);
-    const observedSpan = observedMaximum - observedMinimum;
-    const padding = observedSpan > 1e-9 ? observedSpan * 0.12 : Math.max(Math.abs(observedMaximum) * 0.03, 0.1);
-    const scaleMinimum = observedMinimum >= 0 ? Math.max(0, observedMinimum - padding) : observedMinimum - padding;
-    const scaleMaximum = observedMaximum + padding;
-    const scaleSpan = Math.max(1e-9, scaleMaximum - scaleMinimum);
+    const scale = journalChartScale(values);
+    const scaleMinimum = scale.minimum;
+    const scaleMaximum = scale.maximum;
+    const scaleSpan = scale.span;
+    const scaleDigits = scaleSpan >= 1 ? 2 : Math.min(6, Math.max(2, Math.ceil(-Math.log10(scaleSpan)) + 1));
     const dayFormat = new Intl.DateTimeFormat(intlLocale(), { day: '2-digit', month: '2-digit' });
     const monthFormat = new Intl.DateTimeFormat(intlLocale(), { month: 'short' });
-    const heights = buckets.map(bucket => Math.max(0, Math.min(100, (number(bucket.value) - scaleMinimum) / scaleSpan * 100)));
+    const heights = buckets.map(bucket => journalChartHeight(bucket.value, scale));
     const points = heights.map((height, index) => `${index + 0.5},${100 - height}`).join(' ');
     const bucketWidth = trendScale === 'day' ? 30 : trendScale === 'week' ? 42 : 56;
-    chart.innerHTML = `<div class="journal-chart-scale" aria-hidden="true"><span>${fmt(scaleMaximum, 2)}</span><span>${fmt(scaleMinimum + scaleSpan / 2, 2)}</span><span>${fmt(scaleMinimum, 2)}</span></div><div class="journal-chart-scroll"><div class="journal-chart-bars" style="--bucket-count:${buckets.length};--bucket-width:${bucketWidth}px"><svg class="journal-chart-envelope" viewBox="0 0 ${buckets.length} 100" preserveAspectRatio="none" aria-hidden="true"><polyline points="${points}"></polyline></svg>${buckets.map((bucket, index) => {
+    chart.innerHTML = `<div class="journal-chart-scale" aria-hidden="true"><span>${fmt(scaleMaximum, scaleDigits)}</span><span>${fmt(scaleMinimum + scaleSpan / 2, scaleDigits)}</span><span>${fmt(scaleMinimum, scaleDigits)}</span></div><div class="journal-chart-scroll"><div class="journal-chart-bars" style="--bucket-count:${buckets.length};--bucket-width:${bucketWidth}px"><svg class="journal-chart-envelope" viewBox="0 0 ${buckets.length} 100" preserveAspectRatio="none" aria-hidden="true"><polyline points="${points}"></polyline></svg>${buckets.map((bucket, index) => {
       const value = number(bucket.value);
       const first = bucket.entries.some(entry => entry.id === journalChartState.firstId);
       const second = bucket.entries.some(entry => entry.id === journalChartState.secondId);
       const selected = journalHistoryState.selectedStart != null && journalHistoryState.selectedStart <= bucket.end && journalHistoryState.selectedEnd >= bucket.start;
       const insight = bucket.entries.some(entry => insightIds.has(entry.id));
-      const height = Math.max(0, Math.min(100, (value - scaleMinimum) / scaleSpan * 100));
+      const height = journalChartHeight(value, scale);
       const start = new Date(bucket.start);
       const label = trendBucketLabel(bucket, trendScale);
       const dateLabel = trendScale === 'month' ? monthFormat.format(start) : dayFormat.format(start);
       const source = bucket.interpolated ? translate('Интерполированное значение') : bucket.entries.length > 1 ? countLabel(bucket.entries.length, 'measurement') : bucket.entries[0]?.at ? new Date(bucket.entries[0].at).toLocaleString(intlLocale()) : '';
-      return `<button type="button" class="journal-chart-column ${bucket.measured ? 'measured' : 'interpolated'} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''} ${insight ? 'insight' : ''}" data-chart-start="${bucket.start}" data-chart-end="${bucket.end}" data-chart-label="${esc(label)}" aria-label="${esc(`${label}: ${fmt(value, 3)} ${test.unit}. ${source}`)}" title="${esc(`${label} · ${fmt(value, 3)} ${test.unit} · ${source}`)}"><span class="journal-chart-value">${fmt(value, 2)}</span><span class="journal-chart-track"><i class="journal-chart-bar" style="height:${height}%"></i></span><span class="journal-chart-date">${esc(dateLabel)}</span></button>`;
+      return `<button type="button" class="journal-chart-column ${bucket.measured ? 'measured' : 'interpolated'} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''} ${insight ? 'insight' : ''}" data-chart-start="${bucket.start}" data-chart-end="${bucket.end}" data-chart-label="${esc(label)}" aria-label="${esc(`${label}: ${fmt(value, Math.max(3, scaleDigits))} ${test.unit}. ${source}`)}" title="${esc(`${label} · ${fmt(value, Math.max(3, scaleDigits))} ${test.unit} · ${source}`)}"><span class="journal-chart-value">${fmt(value, scaleDigits)}</span><span class="journal-chart-track"><i class="journal-chart-bar" style="height:${height}%"></i></span><span class="journal-chart-date">${esc(dateLabel)}</span></button>`;
     }).join('')}</div></div>`;
   }
   const first = series.find(entry => entry.id === journalChartState.firstId);
@@ -1634,6 +1636,7 @@ $('#journal-chart-period').addEventListener('change', event => {
 });
 $('#journal-chart-test').addEventListener('change', event => {
   journalChartState.testId = event.target.value;
+  journalHistoryState.focusedTestId = '';
   journalChartState.firstId = null;
   journalChartState.secondId = null;
   journalHistoryState.insightKey = '';
@@ -1772,6 +1775,7 @@ $('#journal-chart-comparison').addEventListener('click', event => {
   if (!allJournalTests().some(test => test.id === testId)) return;
   const same = cell && journalHistoryState.insightKey === cell.dataset.journalInsight && journalHistoryState.insightTestId === testId;
   journalChartState.testId = testId;
+  journalHistoryState.focusedTestId = testId;
   journalHistoryState.insightKey = cell && !same ? cell.dataset.journalInsight : '';
   journalHistoryState.insightTestId = cell && !same ? testId : '';
   renderJournalList();
@@ -1785,6 +1789,7 @@ $('#journal-selection-clear').addEventListener('click', () => {
   journalHistoryState.selectedEntryId = null;
   journalHistoryState.insightKey = '';
   journalHistoryState.insightTestId = '';
+  journalHistoryState.focusedTestId = '';
   renderJournalList();
 });
 $('#journal-chart-comparison').addEventListener('toggle', event => {

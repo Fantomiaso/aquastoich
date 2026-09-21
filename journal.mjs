@@ -122,6 +122,31 @@ export function journalTrendBuckets(entries, testId, scale = 'day') {
   return buckets;
 }
 
+export function journalChartScale(values) {
+  const finite = (values ?? []).map(Number).filter(Number.isFinite);
+  if (!finite.length) return { minimum: 0, maximum: 1, span: 1 };
+  const observedMinimum = Math.min(...finite);
+  const observedMaximum = Math.max(...finite);
+  const observedSpan = observedMaximum - observedMinimum;
+  let padding;
+  if (observedSpan > 1e-12) padding = observedSpan * 0.12;
+  else if (Math.abs(observedMaximum) > 0) {
+    const order = 10 ** Math.floor(Math.log10(Math.abs(observedMaximum)));
+    padding = Math.max(Math.abs(observedMaximum) * 0.08, order * 0.02);
+  } else padding = 1;
+  const minimum = observedMinimum >= 0 ? Math.max(0, observedMinimum - padding) : observedMinimum - padding;
+  const maximum = observedMaximum + padding;
+  return { minimum, maximum, span: Math.max(Number.EPSILON, maximum - minimum) };
+}
+
+export function journalChartHeight(value, scale) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric) || !scale) return 0;
+  const raw = Math.max(0, Math.min(100, (numeric - scale.minimum) / scale.span * 100));
+  if (numeric === 0 && scale.minimum === 0) return 0;
+  return Math.max(10, raw);
+}
+
 export function journalPeriodStatistics(entries, testId) {
   const readings = (entries ?? []).filter(entry => validReading(entry.values?.[testId]))
     .sort((left, right) => new Date(left.at).getTime() - new Date(right.at).getTime());
