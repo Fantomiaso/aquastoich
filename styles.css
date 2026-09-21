@@ -299,6 +299,34 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .light-channel-add input { flex: 1; min-width: 135px; }
 .light-channel-add .button { white-space: nowrap; }
 .journal-history-actions { display: flex; align-items: center; gap: 8px; }
+.journal-analysis { margin-bottom: 14px; padding-bottom: 13px; border-bottom: 1px solid #dfe8e1; }
+.journal-chart-controls { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)); gap: 6px; }
+.journal-chart-manual { display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); gap: 6px; margin-top: 6px; }
+.journal-chart-help { margin: 7px 0 4px; }
+.journal-chart { display: grid; grid-template-columns: 36px minmax(0, 1fr); min-height: 225px; border: 1px solid #e0e9e2; border-radius: 6px; background: linear-gradient(to bottom, transparent 24.7%, #edf2ee 25%, transparent 25.3%, transparent 49.7%, #edf2ee 50%, transparent 50.3%, transparent 74.7%, #edf2ee 75%, transparent 75.3%), #fbfdfb; overflow: hidden; }
+.journal-chart.empty { display: flex; align-items: center; justify-content: center; min-height: 150px; padding: 18px; color: #93a297; font-size: 10px; text-align: center; }
+.journal-chart-scale { display: flex; flex-direction: column; justify-content: space-between; padding: 22px 4px 28px 6px; border-right: 1px solid #e7eee8; color: #8b9d90; font-size: 8px; text-align: right; }
+.journal-chart-scroll { min-width: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
+.journal-chart-bars { display: flex; align-items: stretch; gap: 3px; min-width: 100%; width: max-content; height: 223px; padding: 8px 7px 4px; }
+.journal-chart-column { display: grid; grid-template-rows: 17px minmax(0, 1fr) 24px; width: clamp(38px, 5vw, 58px); min-width: 38px; padding: 0 2px; border: 0; border-radius: 4px; background: transparent; color: #567160; font: inherit; cursor: pointer; }
+.journal-chart-column:hover, .journal-chart-column:focus-visible { background: #edf6f0; outline: none; }
+.journal-chart-value { align-self: center; color: #447058; font-size: 8px; white-space: nowrap; }
+.journal-chart-track { display: flex; align-items: flex-end; justify-content: center; min-height: 0; border-bottom: 1px solid #b8cabd; }
+.journal-chart-bar { display: block; width: min(72%, 34px); min-height: 2px; border-radius: 4px 4px 0 0; background: linear-gradient(#63b586, #31815a); transition: height .18s ease, filter .12s ease; }
+.journal-chart-column.first .journal-chart-bar { background: linear-gradient(#47a9b2, #247680); box-shadow: 0 0 0 2px #c9e9ec; }
+.journal-chart-column.second .journal-chart-bar { background: linear-gradient(#d4a04f, #a46b26); box-shadow: 0 0 0 2px #f5dfbd; }
+.journal-chart-column.first.second .journal-chart-bar { background: linear-gradient(90deg, #318a96 0 50%, #b7792e 50%); }
+.journal-chart-date { align-self: start; padding-top: 4px; color: #7f9184; font-size: 8px; line-height: 1.15; }
+.journal-chart-comparison { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 7px; }
+.journal-compare-card { min-width: 0; padding: 7px 8px; border: 1px solid #e1e9e3; border-radius: 5px; background: #fbfdfb; color: #718579; font-size: 9px; }
+.journal-compare-card.first { border-color: #b9dde1; background: #f0f8f8; }
+.journal-compare-card.second { border-color: #ecd6b6; background: #fff9f0; }
+.journal-compare-card strong { display: block; margin-bottom: 3px; color: #37694e; font-size: 10px; }
+.journal-compare-card b { color: #21704f; font-size: 11px; }
+.journal-compare-card small { display: block; margin-top: 3px; color: #87978c; }
+.journal-components { display: grid; gap: 2px; margin-top: 6px; padding-top: 5px; border-top: 1px solid rgba(87, 122, 99, .14); }
+.journal-component { display: flex; justify-content: space-between; gap: 6px; }
+.journal-component span:last-child { color: #3e6e52; }
 .aquarium-columns { grid-template-columns: minmax(260px, 340px) minmax(400px, 1fr); }
 .aquarium-list { display: grid; align-content: start; gap: 6px; }
 .aquarium-list-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; padding: 10px; border: 1px solid #e1e9e2; border-radius: 6px; background: #fcfdfc; color: #557261; text-align: left; font-size: 10px; }
@@ -389,4 +417,6 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
   .app-tabs { width: 100%; }
   .app-tabs button { flex: 1; padding: 4px 3px; font-size: 10px; }
   .journal-result-test summary { flex-wrap: wrap; }
+  .journal-chart-controls { grid-template-columns: 1fr; }
+  .journal-chart-comparison { grid-template-columns: 1fr; }
 }

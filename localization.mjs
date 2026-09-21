@@ -189,6 +189,33 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Например, фторид|For example, fluoride|Zum Beispiel Fluorid|Por ejemplo, fluoruro
 Добавить тест|Add test|Test hinzufügen|Añadir prueba
 История измерений|Measurement history|Messverlauf|Historial de mediciones
+Динамика измерений|Measurement trends|Messwertverlauf|Evolución de las mediciones
+Период|Period|Zeitraum|Periodo
+Параметр|Parameter|Parameter|Parámetro
+Место замера|Measurement location|Messort|Lugar de medición
+Последняя неделя|Last week|Letzte Woche|Última semana
+Последний месяц|Last month|Letzter Monat|Último mes
+Последние три месяца|Last three months|Letzte drei Monate|Últimos tres meses
+Последние полгода|Last six months|Letzte sechs Monate|Últimos seis meses
+Последний год|Last year|Letztes Jahr|Último año
+Начало периода|Period start|Zeitraumbeginn|Inicio del periodo
+Конец периода|Period end|Zeitraumende|Fin del periodo
+Левый клик — первый отсчёт · правый клик — второй отсчёт|Left-click sets the first reading · right-click sets the second reading|Linksklick setzt den ersten Messwert · Rechtsklick den zweiten|Clic izquierdo: primera lectura · clic derecho: segunda lectura
+Столбчатая диаграмма измерений|Measurement bar chart|Balkendiagramm der Messwerte|Gráfico de barras de mediciones
+Первый отсчёт|First reading|Erster Messwert|Primera lectura
+Второй отсчёт|Second reading|Zweiter Messwert|Segunda lectura
+Разница|Difference|Differenz|Diferencia
+Выберите столбец левым кликом.|Select a bar with a left-click.|Balken mit Linksklick auswählen.|Seleccione una barra con el clic izquierdo.
+Выберите столбец правым кликом.|Select a bar with a right-click.|Balken mit Rechtsklick auswählen.|Seleccione una barra con el clic derecho.
+Выберите оба отсчёта.|Select both readings.|Beide Messwerte auswählen.|Seleccione ambas lecturas.
+Между отсчётами|Between readings|Zwischen den Messwerten|Entre lecturas
+В сутки|Per day|Pro Tag|Por día
+сут.|days|Tage|días
+Связанные подпараметры|Related subparameters|Zugehörige Unterparameter|Subparámetros relacionados
+Подпараметры в этом замере не указаны.|No subparameters were recorded in this measurement.|Für diese Messung wurden keine Unterparameter erfasst.|No se registraron subparámetros en esta medición.
+нажмите для детализации|click for details|für Details anklicken|pulse para ver detalles
+Укажите начало и конец периода.|Set the period start and end.|Beginn und Ende des Zeitraums angeben.|Indique el inicio y el final del periodo.
+В выбранном периоде нет измерений этого параметра.|There are no readings for this parameter in the selected period.|Im gewählten Zeitraum gibt es keine Messwerte für diesen Parameter.|No hay mediciones de este parámetro en el periodo seleccionado.
 Пока нет измерений. Добавьте первый замер слева.|No measurements yet. Add the first reading on the left.|Noch keine Messungen. Links die erste Messung hinzufügen.|Aún no hay mediciones. Añada la primera a la izquierda.
 первый замер|first reading|erste Messung|primera medición
 прирост|increase|Anstieg|aumento

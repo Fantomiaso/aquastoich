@@ -140,6 +140,18 @@
           <details class="details"><summary>Добавить свой вид теста</summary><div class="field-grid two spaced-grid"><label class="field"><span>Название</span><input id="custom-test-name" type="text" placeholder="Например, фторид"></label><label class="field"><span>Единица</span><input id="custom-test-unit" type="text" placeholder="мг/л"></label></div><button id="custom-test-add" class="button secondary small-button" type="button">Добавить тест</button></details>
         </div>
         <div class="panel aux-panel">
+          <section class="journal-analysis" aria-labelledby="journal-chart-heading">
+            <div class="section-heading split"><h2 id="journal-chart-heading">Динамика измерений</h2><span id="journal-chart-count" class="count-pill"></span></div>
+            <div class="journal-chart-controls">
+              <label class="mini-field"><span>Период</span><select id="journal-chart-period"><option value="week">Последняя неделя</option><option value="month" selected>Последний месяц</option><option value="quarter">Последние три месяца</option><option value="halfyear">Последние полгода</option><option value="year">Последний год</option><option value="manual">Вручную</option></select></label>
+              <label class="mini-field"><span>Параметр</span><select id="journal-chart-test"></select></label>
+              <label class="mini-field"><span>Место замера</span><select id="journal-chart-location"><option value="aquarium">Аквариум</option><option value="source">Исходная вода</option><option value="prepared">Приготовленная вода</option></select></label>
+            </div>
+            <div id="journal-chart-manual" class="journal-chart-manual" hidden><label class="mini-field"><span>Начало периода</span><input id="journal-chart-from" type="date"></label><label class="mini-field"><span>Конец периода</span><input id="journal-chart-to" type="date"></label></div>
+            <p class="help journal-chart-help">Левый клик — первый отсчёт · правый клик — второй отсчёт</p>
+            <div id="journal-chart" class="journal-chart" role="group" aria-label="Столбчатая диаграмма измерений"></div>
+            <div id="journal-chart-comparison" class="journal-chart-comparison" aria-live="polite"></div>
+          </section>
           <div class="section-heading split"><h2>История измерений</h2><div class="journal-history-actions"><span id="journal-count" class="count-pill"></span><button id="journal-export" class="button secondary" type="button">Экспорт в Excel</button></div></div>
           <p class="help">Δ от предыдущего замера того же теста и воды; скорость пересчитана на 24 часа. Это чистое изменение: внесения и подмены не вычитаются.</p>
           <div id="journal-list" class="journal-list"></div>

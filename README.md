@@ -59,6 +59,8 @@ In **Substance database**, add a dry substance, dry mixture, or ready-made liqui
 
 In **Measurement log**, choose the aquarium and water source, enter drop-test values and the TDS reading, and add a general note or a note for an individual test. Time is inserted when the entry is saved unless you choose manual entry. If a test is missing, add a custom test and unit. Differences compare the same test, water source, and aquarium; the daily rate is the net concentration change, not a measurement of biological uptake because dosing, water changes, dilution, and test error are not subtracted. Lighting settings and up to eight channels are saved with each entry and exported to Excel.
 
+The bar chart can show the last week, month, three months, six months, year, or a manually selected date range. Choose a parameter and measurement location. Left-click a bar to set the first reading and right-click another bar to set the second; the values, elapsed time, signed difference, and daily change appear below. Composite readings show related values from the same log entry when available: GH shows Ca/Mg, KH shows HCO₃/CO₃, total ammonia shows NH₄/NH₃, and TDS shows conductivity and recorded major ions. These related values are explanatory and are not added together because their units and meanings differ.
+
 ## Build from source
 
 Install Node.js 24 and run:

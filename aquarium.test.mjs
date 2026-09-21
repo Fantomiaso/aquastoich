@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { estimateAquariumVolume } from './aquarium.mjs';
-import { JOURNAL_TESTS, journalDifference } from './journal.mjs';
+import { JOURNAL_TESTS, journalComparison, journalComponents, journalDifference, journalPeriodBounds, journalSeries } from './journal.mjs';
 import { journalTable, journalXlsx } from './journal-export.mjs';
 import { MAX_LIGHT_CHANNELS, validLightChannels } from './light-channels.mjs';
 
@@ -22,6 +22,28 @@ test('journal differences never cross aquarium profiles', () => {
     { id: 'c', aquariumId: 'tank-a', at: '2026-09-16T12:00', location: 'aquarium', values: { NO3: 6 } }
   ];
   assert.equal(journalDifference(entries, entries[2], 'NO3').previous.id, 'a');
+});
+
+test('journal chart filters standard and manual periods chronologically', () => {
+  const entries = [
+    { id: 'old', at: '2026-08-01T12:00', location: 'aquarium', values: { GH: 4 } },
+    { id: 'source', at: '2026-09-19T12:00', location: 'source', values: { GH: 2 } },
+    { id: 'new', at: '2026-09-20T12:00', location: 'aquarium', values: { GH: 6 } },
+    { id: 'middle', at: '2026-09-18T12:00', location: 'aquarium', values: { GH: 5 } },
+  ];
+  const week = journalSeries(entries, { testId: 'GH', period: 'week', location: 'aquarium', now: new Date('2026-09-21T12:00') });
+  assert.deepEqual(week.map(entry => entry.id), ['middle', 'new']);
+  const manual = journalSeries(entries, { testId: 'GH', period: 'manual', location: 'aquarium', from: '2026-08-01', to: '2026-09-18' });
+  assert.deepEqual(manual.map(entry => entry.id), ['old', 'middle']);
+  assert.equal(journalPeriodBounds('manual', new Date(), '2026-09-20', '2026-09-19'), null);
+});
+
+test('chart comparison and complex-parameter components use the selected readings', () => {
+  const first = { at: '2026-09-18T12:00', values: { GH: 5, Ca: 30, Mg: 6 } };
+  const second = { at: '2026-09-20T12:00', values: { GH: 6, Ca: 35, Mg: 7 } };
+  assert.deepEqual(journalComponents(first, 'GH'), [{ id: 'Ca', value: 30 }, { id: 'Mg', value: 6 }]);
+  assert.deepEqual(journalComparison(first, second, 'GH'), { firstValue: 5, secondValue: 6, delta: 1, days: 2, perDay: 0.5 });
+  assert.equal(journalComparison(first, null, 'GH'), null);
 });
 
 test('TDS readings are available in the journal and exported to Excel', () => {

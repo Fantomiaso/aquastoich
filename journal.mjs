@@ -5,6 +5,8 @@ export const JOURNAL_TESTS = [
   { id: 'GH', label: 'GH', unit: '°dGH', kind: 'physical' },
   { id: 'KH', label: 'KH', unit: '°dKH', kind: 'physical' },
   { id: 'TDS', label: 'TDS', unit: 'ppm', kind: 'physical' },
+  { id: 'HCO3', label: 'HCO₃⁻', unit: 'мг/л', kind: 'physical' },
+  { id: 'CO3', label: 'CO₃²⁻', unit: 'мг/л', kind: 'physical' },
   { id: 'NH4', label: 'NH₄⁺', unit: 'мг/л', kind: 'nutrient' },
   { id: 'NH3', label: 'NH₃', unit: 'мг/л', kind: 'nutrient' },
   { id: 'NH4NH3', label: 'NH₄/NH₃ (общий)', unit: 'мг/л', kind: 'nutrient' },
@@ -31,6 +33,69 @@ export const JOURNAL_TESTS = [
   { id: 'EC', label: 'Электропроводность', unit: 'мкСм/см', kind: 'physical' },
   { id: 'salinity', label: 'Солёность', unit: '‰', kind: 'physical' },
 ];
+
+export const JOURNAL_PERIOD_DAYS = Object.freeze({ week: 7, month: 30, quarter: 90, halfyear: 183, year: 365 });
+
+// These are related readings from the same measurement. They explain a
+// composite value but are not arithmetically added because their units differ.
+export const JOURNAL_COMPONENTS = Object.freeze({
+  GH: ['Ca', 'Mg'],
+  KH: ['HCO3', 'CO3'],
+  TDS: ['EC', 'Ca', 'Mg', 'K', 'Na', 'NO3', 'PO4', 'SO4', 'Cl'],
+  NH4NH3: ['NH4', 'NH3'],
+  Cl2total: ['Cl2free'],
+});
+
+const validReading = value => value !== '' && value != null && Number.isFinite(Number(value));
+const dateStart = value => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ''))) return null;
+  const date = new Date(`${value}T00:00:00`);
+  return Number.isFinite(date.getTime()) ? date.getTime() : null;
+};
+const dateEnd = value => {
+  const start = dateStart(value);
+  return start == null ? null : start + 86400000 - 1;
+};
+
+export function journalPeriodBounds(period, now = new Date(), from = '', to = '') {
+  const end = new Date(now).getTime();
+  if (!Number.isFinite(end)) return null;
+  if (period === 'manual') {
+    const start = dateStart(from);
+    const manualEnd = dateEnd(to);
+    return start == null || manualEnd == null || start > manualEnd ? null : { start, end: manualEnd };
+  }
+  const days = JOURNAL_PERIOD_DAYS[period];
+  return days ? { start: end - days * 86400000, end } : null;
+}
+
+export function journalSeries(entries, { testId, location = 'aquarium', period = 'month', from = '', to = '', now = new Date() } = {}) {
+  const bounds = journalPeriodBounds(period, now, from, to);
+  if (!bounds || !testId) return [];
+  return (entries ?? []).filter(entry => entry.location === location && validReading(entry.values?.[testId]))
+    .filter(entry => {
+      const timestamp = new Date(entry.at).getTime();
+      return Number.isFinite(timestamp) && timestamp >= bounds.start && timestamp <= bounds.end;
+    })
+    .sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime());
+}
+
+export function journalComponents(entry, testId) {
+  return (JOURNAL_COMPONENTS[testId] ?? []).filter(id => validReading(entry?.values?.[id]))
+    .map(id => ({ id, value: Number(entry.values[id]) }));
+}
+
+export function journalComparison(first, second, testId) {
+  if (!first || !second || !validReading(first.values?.[testId]) || !validReading(second.values?.[testId])) return null;
+  const firstAt = new Date(first.at).getTime();
+  const secondAt = new Date(second.at).getTime();
+  if (!Number.isFinite(firstAt) || !Number.isFinite(secondAt)) return null;
+  const firstValue = Number(first.values[testId]);
+  const secondValue = Number(second.values[testId]);
+  const days = (secondAt - firstAt) / 86400000;
+  const delta = secondValue - firstValue;
+  return { firstValue, secondValue, delta, days, perDay: days === 0 ? null : delta / days };
+}
 
 export function journalDifference(entries, current, testId) {
   const timestamp = new Date(current.at).getTime();
