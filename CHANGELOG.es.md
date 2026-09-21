@@ -7,11 +7,13 @@
 Esta versión queda reservada para el análisis de mediciones y el registro con calendario. Sigue siendo una compilación local de prueba y aún no se ha subido ni publicado.
 
 - Se añadió un gráfico de barras para la última semana, mes, tres meses, seis meses, año o un intervalo manual. En periodos de hasta tres meses se conserva cada día; los días sin mediciones aparecen como barras interpoladas bajo una envolvente de tendencia.
-- Se añadieron el mínimo, el máximo, el cambio absoluto medio entre lecturas consecutivas y el cambio máximo del periodo. Al seleccionar una estadística se resaltan sus mediciones en las barras, los meses, los días, las listas anidadas y los detalles del parámetro.
+- Se añadieron el mínimo, el máximo, el cambio absoluto medio entre lecturas consecutivas y el cambio máximo. Al seleccionar ambas lecturas de comparación, las estadísticas abarcan todos los días completos entre ellas; en caso contrario usan el periodo actual del gráfico.
 - El gráfico ahora usa una escala de valores adaptativa, una envolvente alineada con el centro de las barras y toda la anchura disponible sin dejar una cola vacía.
 - Se pueden comparar dos lecturas: el clic izquierdo elige la primera y el derecho la segunda. Las tarjetas correspondientes explican estos controles. La primera no puede ser posterior a la segunda, ni la segunda anterior a la primera.
 - Los subparámetros relacionados y los demás parámetros registrados aparecen en grupos cerrados inicialmente. Al abrir un grupo se abre a la vez el grupo correspondiente de la primera lectura, la segunda y la diferencia.
-- Los grupos de comparación desplegados incluyen encabezados para las columnas de parámetro y valor o cambio.
+- Cada fila de la tarjeta Diferencia incluye columnas rotuladas para cambio, promedio, mínimo, máximo y cambio máximo. Las celdas de mínimo, máximo y cambio máximo resaltan sus mediciones en todos los niveles del calendario; el promedio es únicamente informativo.
+- Al seleccionar un día vacío se muestran todos los parámetros que pueden interpolarse linealmente entre las mediciones reales más cercanas, junto con una nota y las horas de origen.
+- El estado abierto o cerrado de los grupos de parámetros relacionados y adicionales se conserva al cambiar de periodo y después de reiniciar la aplicación.
 - El periodo y el lugar seleccionados se aplican al historial de mediciones y a su exportación a Excel.
 - La lista plana se sustituyó por un calendario clásico con cuadrícula de días. Los periodos largos comienzan con celdas mensuales; al elegir un mes se abre su cuadrícula diaria y el botón Atrás, ahora claramente enmarcado, vuelve al periodo completo.
 - Las celdas de la vista mensual son compactas y ya no se estiran hasta ocupar todo el ancho del panel.

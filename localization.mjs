@@ -218,13 +218,22 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Первый отсчёт выбирается левым кликом.|The first reading is selected with a left-click.|Der erste Messwert wird mit Linksklick ausgewählt.|La primera lectura se selecciona con un clic izquierdo.
 Второй отсчёт выбирается правым кликом.|The second reading is selected with a right-click.|Der zweite Messwert wird mit Rechtsklick ausgewählt.|La segunda lectura se selecciona con un clic derecho.
 Статистика за период|Period statistics|Zeitraumstatistik|Estadísticas del periodo
+Статистика за выбранный период|Statistics for the selected period|Statistik für den gewählten Zeitraum|Estadísticas del periodo seleccionado
+Статистика за выбранные дни|Statistics for the selected days|Statistik für die gewählten Tage|Estadísticas de los días seleccionados
 Минимум за период|Period minimum|Minimum im Zeitraum|Mínimo del periodo
 Максимум за период|Period maximum|Maximum im Zeitraum|Máximo del periodo
 Среднее изменение за период|Average change in period|Mittlere Änderung im Zeitraum|Cambio medio del periodo
 Максимальное изменение|Maximum change|Größte Änderung|Cambio máximo
+Среднее|Average|Mittelwert|Promedio
+Минимум|Minimum|Minimum|Mínimo
+Максимум|Maximum|Maximum|Máximo
+Макс. изменение|Max. change|Größte Änderung|Cambio máx.
 Недостаточно измерений|Not enough readings|Nicht genügend Messwerte|No hay suficientes mediciones
 Средний модуль изменения|Mean absolute change|Mittlere absolute Änderung|Cambio absoluto medio
 интервалов между соседними замерами|intervals between adjacent readings|Intervalle zwischen aufeinanderfolgenden Messungen|intervalos entre lecturas consecutivas
+Интерполяция|Interpolation|Interpolation|Interpolación
+Интерполированные данные|Interpolated data|Interpolierte Daten|Datos interpolados
+Значения рассчитаны линейно между ближайшими фактическими измерениями.|Values are calculated linearly between the nearest actual readings.|Die Werte werden linear zwischen den nächstgelegenen tatsächlichen Messungen berechnet.|Los valores se calculan linealmente entre las mediciones reales más cercanas.
 Выберите оба отсчёта.|Select both readings.|Beide Messwerte auswählen.|Seleccione ambas lecturas.
 Между отсчётами|Between readings|Zwischen den Messwerten|Entre lecturas
 В сутки|Per day|Pro Tag|Por día

@@ -325,9 +325,8 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .journal-chart-envelope { position: absolute; top: 25px; right: 7px; bottom: 28px; left: 7px; z-index: 2; width: calc(100% - 14px); height: calc(100% - 53px); overflow: visible; pointer-events: none; }
 .journal-chart-envelope polyline { fill: none; stroke: #176f52; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; filter: drop-shadow(0 1px 0 #fff); }
 .journal-period-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 7px; }
-.journal-period-stat { display: grid; grid-template-rows: auto auto 1fr; gap: 2px; min-width: 0; padding: 7px 8px; border: 1px solid #dfe8e1; border-radius: 5px; background: #fbfdfb; color: #688073; text-align: left; font: inherit; cursor: pointer; }
-.journal-period-stat:hover, .journal-period-stat:focus-visible { border-color: #8aaf96; background: #f2f8f4; outline: none; }
-.journal-period-stat.active { border-color: #8f68ad; background: #f5eff9; box-shadow: inset 0 0 0 1px #d8c4e6; }
+.journal-period-stats-scope { grid-column: 1 / -1; margin: 0; color: #718779; font-size: 8px; }
+.journal-period-stat { display: grid; grid-template-rows: auto auto 1fr; gap: 2px; min-width: 0; padding: 7px 8px; border: 1px solid #dfe8e1; border-radius: 5px; background: #fbfdfb; color: #688073; text-align: left; }
 .journal-period-stat span { overflow: hidden; color: #37694e; font-size: 9px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
 .journal-period-stat b { color: #216d4e; font-size: 11px; font-variant-numeric: tabular-nums; }
 .journal-period-stat small { color: #87978c; font-size: 8px; line-height: 1.25; }
@@ -346,6 +345,15 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .journal-component-head { padding-bottom: 2px; border-bottom: 1px solid rgba(87, 122, 99, .11); color: #8a998e; font-size: 7px; text-transform: uppercase; letter-spacing: .025em; }
 .journal-component-head span:last-child, .journal-component span:last-child { text-align: right; }
 .journal-component span:last-child { color: #3e6e52; }
+.journal-primary-statistics { margin-top: 7px; padding-top: 5px; border-top: 1px solid rgba(87, 122, 99, .14); }
+.journal-analytics-table { width: 100%; overflow-x: auto; scrollbar-width: thin; }
+.journal-component.analytics, .journal-component-head.analytics { grid-template-columns: minmax(105px, 1.15fr) repeat(5, minmax(82px, .85fr)); min-width: 580px; }
+.journal-component.analytics { min-height: 25px; padding: 2px 0; border-bottom: 1px solid rgba(87, 122, 99, .08); }
+.journal-component.analytics > span:not(:first-child), .journal-component-head.analytics > span:not(:first-child) { text-align: right; }
+.journal-statistic-cell { align-self: stretch; display: flex; align-items: center; justify-content: flex-end; min-width: 0; color: #3e6e52; font-size: inherit; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.journal-statistic-button { padding: 2px 3px; border: 1px solid transparent; border-radius: 3px; background: transparent; font: inherit; cursor: pointer; }
+.journal-statistic-button:hover, .journal-statistic-button:focus-visible { border-color: #a486bd; background: #f7f1fa; outline: none; }
+.journal-statistic-button.active { border-color: #8f68ad; background: #efe3f6; color: #68447f; font-weight: 750; }
 .journal-history-toolbar { display: flex; justify-content: flex-end; align-items: center; margin: 8px 0; }
 .journal-history-period { color: #718779; font-size: 9px; }
 .journal-calendar-layout { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 9px; }
@@ -398,6 +406,15 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .journal-reading-choice.first { border-color: #56a8b0; background: #eaf7f8; }
 .journal-reading-choice.second { border-color: #c58b3d; background: #fff5e6; }
 .journal-reading-choice.first.second { background: linear-gradient(90deg, #eaf7f8 0 50%, #fff5e6 50%); }
+.journal-interpolation { padding: 8px; border: 1px solid #c9d8cc; border-radius: 5px; background: #f7faf8; }
+.journal-interpolation > strong { display: block; color: #32694b; }
+.journal-interpolation > p { margin: 4px 0; color: #688073; font-size: 9px; line-height: 1.35; }
+.journal-interpolation > small { display: block; margin-bottom: 8px; color: #8a998e; font-size: 8px; }
+.journal-interpolation-head, .journal-interpolation-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(110px, .65fr); gap: 8px; align-items: baseline; }
+.journal-interpolation-head { padding: 3px 4px; border-bottom: 1px solid #dfe8e1; color: #8a998e; font-size: 7px; text-transform: uppercase; }
+.journal-interpolation-row { padding: 4px; border-bottom: 1px solid #edf1ed; color: #60796a; font-size: 9px; }
+.journal-interpolation-row b { color: #2d6f4e; text-align: right; font-variant-numeric: tabular-nums; }
+.journal-interpolation-row.primary { background: #ebf5ee; color: #2d6949; font-weight: 700; }
 .aquarium-columns { grid-template-columns: minmax(260px, 340px) minmax(400px, 1fr); }
 .aquarium-list { display: grid; align-content: start; gap: 6px; }
 .aquarium-list-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; padding: 10px; border: 1px solid #e1e9e2; border-radius: 6px; background: #fcfdfc; color: #557261; text-align: left; font-size: 10px; }

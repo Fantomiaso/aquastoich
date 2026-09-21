@@ -147,6 +147,38 @@ export function journalPeriodStatistics(entries, testId) {
   };
 }
 
+export function journalEntriesInSelectedDays(entries, first, second) {
+  if (!first || !second) return [...(entries ?? [])];
+  const start = new Date(first.at);
+  const end = new Date(second.at);
+  if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) return [...(entries ?? [])];
+  start.setHours(0, 0, 0, 0);
+  end.setHours(23, 59, 59, 999);
+  if (start > end) return [...(entries ?? [])];
+  return (entries ?? []).filter(entry => {
+    const at = new Date(entry.at).getTime();
+    return Number.isFinite(at) && at >= start.getTime() && at <= end.getTime();
+  });
+}
+
+export function journalInterpolatedReading(entries, at) {
+  const target = new Date(at).getTime();
+  if (!Number.isFinite(target)) return null;
+  const ordered = (entries ?? []).filter(entry => Number.isFinite(new Date(entry.at).getTime()))
+    .sort((left, right) => new Date(left.at).getTime() - new Date(right.at).getTime());
+  const previous = [...ordered].reverse().find(entry => new Date(entry.at).getTime() < target);
+  const next = ordered.find(entry => new Date(entry.at).getTime() > target);
+  if (!previous || !next) return null;
+  const previousAt = new Date(previous.at).getTime();
+  const nextAt = new Date(next.at).getTime();
+  if (nextAt <= previousAt) return null;
+  const ratio = (target - previousAt) / (nextAt - previousAt);
+  const ids = [...new Set([...Object.keys(previous.values ?? {}), ...Object.keys(next.values ?? {})])];
+  const values = Object.fromEntries(ids.flatMap(id => validReading(previous.values?.[id]) && validReading(next.values?.[id])
+    ? [[id, Number(previous.values[id]) + (Number(next.values[id]) - Number(previous.values[id])) * ratio]] : []));
+  return Object.keys(values).length ? { at: target, previous, next, ratio, values } : null;
+}
+
 export function journalEntriesInPeriod(entries, { location = 'aquarium', period = 'month', from = '', to = '', now = new Date() } = {}) {
   const bounds = journalPeriodBounds(period, now, from, to);
   if (!bounds) return [];

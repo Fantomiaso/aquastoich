@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { estimateAquariumVolume } from './aquarium.mjs';
-import { JOURNAL_TESTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets } from './journal.mjs';
+import { JOURNAL_TESTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalEntriesInSelectedDays, journalInterpolatedReading, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets } from './journal.mjs';
 import { journalTable, journalXlsx } from './journal-export.mjs';
 import { MAX_LIGHT_CHANNELS, validLightChannels } from './light-channels.mjs';
 
@@ -70,6 +70,32 @@ test('journal period statistics use every adjacent reading', () => {
   assert.equal(statistics.averageAbsoluteChange, 7 / 3);
   assert.equal(statistics.maximumChange.absolute, 3);
   assert.deepEqual([statistics.maximumChange.previous.id, statistics.maximumChange.entry.id], ['b', 'c']);
+});
+
+test('selected first and second readings constrain statistics by whole calendar days', () => {
+  const entries = [
+    { id: 'outside-before', at: '2026-09-01T23:59', values: { GH: 2 } },
+    { id: 'first', at: '2026-09-02T16:00', values: { GH: 6 } },
+    { id: 'same-first-day', at: '2026-09-02T08:00', values: { GH: 5 } },
+    { id: 'second', at: '2026-09-04T07:00', values: { GH: 7 } },
+    { id: 'same-second-day', at: '2026-09-04T22:00', values: { GH: 8 } },
+    { id: 'outside-after', at: '2026-09-05T00:00', values: { GH: 9 } },
+  ];
+  assert.deepEqual(journalEntriesInSelectedDays(entries, entries[1], entries[3]).map(entry => entry.id),
+    ['first', 'same-first-day', 'second', 'same-second-day']);
+  assert.equal(journalEntriesInSelectedDays(entries, null, null).length, entries.length);
+});
+
+test('empty calendar day interpolates every parameter shared by surrounding readings', () => {
+  const entries = [
+    { id: 'a', at: '2026-09-01T12:00:00', values: { GH: 6, KH: 2, noteOnlyBefore: 7 } },
+    { id: 'b', at: '2026-09-03T12:00:00', values: { GH: 8, KH: 4, noteOnlyAfter: 9 } },
+  ];
+  const reading = journalInterpolatedReading(entries, '2026-09-02T12:00:00');
+  assert.deepEqual(reading.values, { GH: 7, KH: 3 });
+  assert.equal(reading.previous.id, 'a');
+  assert.equal(reading.next.id, 'b');
+  assert.equal(journalInterpolatedReading(entries, '2026-08-31T12:00:00'), null);
 });
 
 test('chart comparison and complex-parameter components use the selected readings', () => {
