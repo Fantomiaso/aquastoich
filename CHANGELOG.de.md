@@ -21,6 +21,7 @@ Diese Version ist für Messwertanalyse und Kalenderprotokoll reserviert. Sie ble
 - Messparameter sind in beschrifteten Spalten für Parameter, Wert, Änderung, Änderungsart, Tagesrate und Zeiteinheit ausgerichtet. Der frühere Parametertypfilter wurde entfernt.
 - Die obere Leiste enthält nun eine gespeicherte Auswahl für ein helles, dunkles oder farbsehschwächengerechtes Design. Anklickbare Werte und Textaktionen in Listen bleiben auch ohne Mauszeiger deutlich erkennbar.
 - Eine Schaltfläche setzt Vergleich und Hervorhebung zurück. Der Parameterwechsel ist nur in der rechten Differenzkarte möglich; Werte der ersten und zweiten Messung sind rein informativ. Der rechts gewählte Parameter bleibt in beiden vollständigen Messwertlisten hervorgehoben und sein Hauptwert steht weiterhin über der Liste.
+- Die angeklickte Zeile bleibt beim Parameterwechsel in ihrem ursprünglichen Abschnitt der Differenztabelle. Ein anderer Diagrammparameter löscht die erste und zweite Messung nicht mehr, und die Auswahl einer Messung verschiebt oder zentriert das Diagramm nicht.
 - Ressourcenladen und Fensteranzeige der gepackten Version wurden korrigiert, damit der eigenständige portable Build zuverlässig aus dem ASAR-Archiv startet.
 
 ## 1.0a — Testversion

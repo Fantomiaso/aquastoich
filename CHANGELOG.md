@@ -21,6 +21,7 @@ This version is reserved for the measurement analysis and calendar work. It rema
 - Reworked reading details into aligned, labelled columns for parameter, value, change, change type, daily rate, and time unit. The former parameter-type filter was removed.
 - Added a persistent theme selector to the top bar with light, dark, and colour-vision-safe modes. Clickable values and text actions in lists now remain visibly distinct without requiring a hover.
 - Added a Clear selection control for chart comparisons and highlights. Parameter switching is available only from the Difference card; values in the first and second reading cards are informational. A parameter selected on the right remains in both complete reading lists, where it is highlighted, while its main value remains above the list.
+- Kept the clicked row in its original Difference-table section while the chart changes parameter. Changing the chart parameter no longer clears the first and second readings, and selecting a reading no longer recentres or shifts the chart.
 - Fixed packaged resource loading and window display so the standalone portable build opens reliably from its ASAR archive.
 
 ## 1.0a — Testing release

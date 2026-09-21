@@ -243,6 +243,7 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Интерполированные данные|Interpolated data|Interpolierte Daten|Datos interpolados
 Значения рассчитаны линейно между ближайшими фактическими измерениями.|Values are calculated linearly between the nearest actual readings.|Die Werte werden linear zwischen den nächstgelegenen tatsächlichen Messungen berechnet.|Los valores se calculan linealmente entre las mediciones reales más cercanas.
 Выберите оба отсчёта.|Select both readings.|Beide Messwerte auswählen.|Seleccione ambas lecturas.
+В выбранных отсчётах нет этого параметра.|The selected readings do not contain this parameter.|Die ausgewählten Messungen enthalten diesen Parameter nicht.|Las lecturas seleccionadas no contienen este parámetro.
 Между отсчётами|Between readings|Zwischen den Messwerten|Entre lecturas
 В сутки|Per day|Pro Tag|Por día
 сут.|days|Tage|días

@@ -21,6 +21,7 @@ Esta versión queda reservada para el análisis de mediciones y el registro con 
 - Los detalles se alinean en columnas rotuladas para parámetro, valor, cambio, tipo de cambio, tasa diaria y unidad de tiempo. Se eliminó el filtro anterior por tipo de parámetro.
 - La barra superior incluye ahora un selector persistente de tema claro, oscuro o adaptado para daltonismo. Los valores y las acciones de texto que se pueden pulsar en las listas siguen siendo visibles sin pasar el cursor.
 - Se añadió un botón para borrar la comparación y el resaltado. El cambio de parámetro solo está disponible en la tarjeta Diferencia de la derecha; los valores de la primera y segunda lectura son informativos. El parámetro elegido a la derecha permanece resaltado en ambas listas completas y su valor principal sigue encima de la lista.
+- La fila pulsada permanece en su sección original de la tabla Diferencia al cambiar el parámetro del gráfico. Cambiar de parámetro ya no borra la primera ni la segunda lectura, y seleccionar una medición no centra ni desplaza el gráfico.
 - Se corrigieron la carga de recursos y la presentación de la ventana en la versión empaquetada para que la compilación portable autónoma se abra de forma fiable desde el archivo ASAR.
 
 ## 1.0a — versión de prueba

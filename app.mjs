@@ -97,7 +97,7 @@ let selectedResultId = null;
 let editingMeasurementId = null;
 let journalDraft = { values: {}, notes: {} };
 let journalChartState = { period: 'month', testId: 'GH', location: 'aquarium', from: '', to: '', firstId: null, secondId: null };
-let journalHistoryState = { scale: '', scopeStart: null, scopeEnd: null, selectedStart: null, selectedEnd: null, selectedLabel: '', selectedEntryId: null, selectedKind: 'first', insightKey: '', insightTestId: '', focusedTestId: '' };
+let journalHistoryState = { scale: '', scopeStart: null, scopeEnd: null, selectedStart: null, selectedEnd: null, selectedLabel: '', selectedEntryId: null, selectedKind: 'first', insightKey: '', insightTestId: '', focusedTestId: '', focusedGroup: '', comparisonTableTestId: '' };
 let journalDetailGroups = { related: Boolean(state.journalDetailGroups?.related), other: Boolean(state.journalDetailGroups?.other) };
 let lightChannelDraft = [];
 let editingProductId = null;
@@ -776,9 +776,9 @@ function resetJournalForm() {
 const DAY_MS = 86400000;
 const chartDateValue = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 const detailOpenAttribute = group => journalDetailGroups[group] ? ' open' : '';
-function chartValueButton(test, rendered) {
+function chartValueButton(test, rendered, group = 'primary') {
   const action = translate('Показать этот параметр на графике');
-  return `<button type="button" class="journal-chart-value-button" data-journal-chart-test="${esc(test.id)}" title="${esc(action)}" aria-label="${esc(`${translate(test.label)}: ${rendered}. ${action}`)}">${rendered}</button>`;
+  return `<button type="button" class="journal-chart-value-button" data-journal-chart-test="${esc(test.id)}" data-journal-chart-group="${esc(group)}" title="${esc(action)}" aria-label="${esc(`${translate(test.label)}: ${rendered}. ${action}`)}">${rendered}</button>`;
 }
 function chartComponentHtml(entry, testId) {
   const configured = JOURNAL_COMPONENTS[testId] ?? [];
@@ -812,7 +812,7 @@ function chartOtherParametersHtml(entry, testId) {
   const ids = chartOtherParameterIds(entry, testId);
   return ids.length ? `<details class="journal-components journal-other-parameters" data-chart-detail-group="other"${detailOpenAttribute('other')}><summary>${translate('Остальные параметры')}</summary><div class="journal-component-head"><span>${translate('Параметр')}</span><span>${translate('Значение')}</span></div>${chartParameterRows(entry, ids)}</details>` : '';
 }
-function chartStatisticCell(statistics, key, test) {
+function chartStatisticCell(statistics, key, test, group = 'primary') {
   const unit = esc(translate(test.unit));
   let value = null;
   if (key === 'average-change') value = statistics?.averageAbsoluteChange;
@@ -825,9 +825,9 @@ function chartStatisticCell(statistics, key, test) {
   if (key === 'average-change') return `<span class="journal-statistic-cell" title="${translate('Средний модуль изменения')}">${rendered}</span>`;
   const active = journalHistoryState.insightKey === key && journalHistoryState.insightTestId === test.id;
   const actionLabel = translate('Нажмите, чтобы подсветить исходные измерения');
-  return `<button type="button" class="journal-statistic-cell journal-statistic-button ${active ? 'active' : ''}" data-journal-insight="${key}" data-journal-insight-test="${esc(test.id)}" aria-pressed="${active}" title="${esc(actionLabel)}" aria-label="${esc(`${translate(test.label)}: ${rendered}. ${actionLabel}`)}">${rendered}</button>`;
+  return `<button type="button" class="journal-statistic-cell journal-statistic-button ${active ? 'active' : ''}" data-journal-insight="${key}" data-journal-insight-test="${esc(test.id)}" data-journal-chart-group="${esc(group)}" aria-pressed="${active}" title="${esc(actionLabel)}" aria-label="${esc(`${translate(test.label)}: ${rendered}. ${actionLabel}`)}">${rendered}</button>`;
 }
-function chartDifferenceRow(first, second, id, periodEntries) {
+function chartDifferenceRow(first, second, id, periodEntries, group = 'primary') {
   const test = journalTest(id);
   const firstValue = first?.values?.[id];
   const secondValue = second?.values?.[id];
@@ -835,20 +835,22 @@ function chartDifferenceRow(first, second, id, periodEntries) {
   const delta = comparable ? Number(secondValue) - Number(firstValue) : null;
   const statistics = journalPeriodStatistics(periodEntries, id);
   const renderedDelta = delta == null ? '—' : `${delta > 0 ? '+' : ''}${fmt(delta, 3)} ${esc(translate(test.unit))}`;
-  return `<div class="journal-component analytics"><span>${esc(translate(test.label))}</span>${chartValueButton(test, renderedDelta)}${chartStatisticCell(statistics, 'average-change', test)}${chartStatisticCell(statistics, 'minimum', test)}${chartStatisticCell(statistics, 'maximum', test)}${chartStatisticCell(statistics, 'maximum-change', test)}</div>`;
+  const focused = id === journalHistoryState.focusedTestId && group === journalHistoryState.focusedGroup;
+  return `<div class="journal-component analytics ${focused ? 'selected-parameter' : ''}"><span>${esc(translate(test.label))}</span>${chartValueButton(test, renderedDelta, group)}${chartStatisticCell(statistics, 'average-change', test, group)}${chartStatisticCell(statistics, 'minimum', test, group)}${chartStatisticCell(statistics, 'maximum', test, group)}${chartStatisticCell(statistics, 'maximum-change', test, group)}</div>`;
 }
 function chartAnalyticsHead() {
   return `<div class="journal-component-head analytics"><span>${translate('Параметр')}</span><span>${translate('Изменение')}</span><span>${translate('Среднее')}</span><span>${translate('Минимум')}</span><span>${translate('Максимум')}</span><span>${translate('Макс. изменение')}</span></div>`;
 }
 function chartDifferenceSection(first, second, ids, title, group, periodEntries) {
   if (!ids.length) return '';
-  const rows = ids.map(id => chartDifferenceRow(first, second, id, periodEntries)).join('');
+  const rows = ids.map(id => chartDifferenceRow(first, second, id, periodEntries, group)).join('');
   return `<details class="journal-components" data-chart-detail-group="${group}"${detailOpenAttribute(group)}><summary>${translate(title)}</summary><div class="journal-analytics-table">${chartAnalyticsHead()}${rows}</div></details>`;
 }
 function chartParameterDifferences(first, second, testId, periodEntries) {
   if (!first || !second) return '';
-  const related = (JOURNAL_COMPONENTS[testId] ?? []).filter(id => hasJournalValue(first.values?.[id]) || hasJournalValue(second.values?.[id]));
-  const relatedSet = new Set([testId, ...(JOURNAL_COMPONENTS[testId] ?? [])]);
+  const tableTestId = journalHistoryState.comparisonTableTestId || testId;
+  const related = (JOURNAL_COMPONENTS[tableTestId] ?? []).filter(id => hasJournalValue(first.values?.[id]) || hasJournalValue(second.values?.[id]));
+  const relatedSet = new Set([tableTestId, ...(JOURNAL_COMPONENTS[tableTestId] ?? [])]);
   const other = [...new Set([...Object.keys(first.values ?? {}), ...Object.keys(second.values ?? {})])]
     .filter(id => !relatedSet.has(id) && (hasJournalValue(first.values?.[id]) || hasJournalValue(second.values?.[id])));
   const primary = `<div class="journal-primary-statistics"><div class="journal-analytics-table">${chartAnalyticsHead()}${chartDifferenceRow(first, second, testId, periodEntries)}</div></div>`;
@@ -859,9 +861,9 @@ function chartReadingCard(entry, kind, test) {
   const title = kind === 'first' ? 'Первый отсчёт' : 'Второй отсчёт';
   const hint = kind === 'first' ? 'Первый отсчёт выбирается левым кликом.' : 'Второй отсчёт выбирается правым кликом.';
   if (!entry) return `<div class="journal-compare-card ${kind}"><strong>${title}</strong><small class="journal-click-hint">${translate(hint)}</small></div>`;
-  const value = number(entry.values[test.id]);
+  const value = entry.values?.[test.id];
   const note = entry.notes?.[test.id] || entry.note;
-  const rendered = `${fmt(value, 3)} ${esc(translate(test.unit))}`;
+  const rendered = hasJournalValue(value) ? `${fmt(number(value), 3)} ${esc(translate(test.unit))}` : '—';
   return `<div class="journal-compare-card ${kind}"><strong>${title}</strong><small class="journal-click-hint">${translate(hint)}</small><b>${rendered}</b><small>${new Date(entry.at).toLocaleString(intlLocale())}</small>${chartComponentHtml(entry, test.id)}${chartOtherParametersHtml(entry, test.id)}${note ? `<small>${esc(note)}</small>` : ''}</div>`;
 }
 
@@ -924,6 +926,7 @@ function renderJournalPeriodStatistics(statistics, test) {
 }
 
 function renderJournalChart(context = {}) {
+  const previousChartScrollLeft = $('#journal-chart .journal-chart-scroll')?.scrollLeft ?? 0;
   const tests = allJournalTests();
   if (!tests.some(test => test.id === journalChartState.testId)) journalChartState.testId = tests[0]?.id ?? '';
   const now = new Date();
@@ -945,9 +948,6 @@ function renderJournalChart(context = {}) {
   const bounds = journalHistoryBounds();
   const trendScale = journalTrendScale(bounds);
   const buckets = journalTrendBuckets(series, test.id, trendScale);
-  const ids = new Set(series.map(entry => entry.id));
-  if (!ids.has(journalChartState.firstId)) journalChartState.firstId = null;
-  if (!ids.has(journalChartState.secondId)) journalChartState.secondId = null;
   $('#journal-selection-clear').disabled = !(journalChartState.firstId || journalChartState.secondId || journalHistoryState.insightKey || journalHistoryState.selectedStart != null);
   $('#journal-chart-count').textContent = buckets.length ? `${countLabel(series.length, 'measurement')} · ${buckets.length} ${translate(trendScale === 'day' ? 'дн.' : trendScale === 'week' ? 'нед.' : 'мес.')}` : countLabel(series.length, 'measurement');
   const chart = $('#journal-chart');
@@ -982,16 +982,18 @@ function renderJournalChart(context = {}) {
       return `<button type="button" class="journal-chart-column ${bucket.measured ? 'measured' : 'interpolated'} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''} ${insight ? 'insight' : ''}" data-chart-start="${bucket.start}" data-chart-end="${bucket.end}" data-chart-label="${esc(label)}" aria-label="${esc(`${label}: ${fmt(value, Math.max(3, scaleDigits))} ${test.unit}. ${source}`)}" title="${esc(`${label} · ${fmt(value, Math.max(3, scaleDigits))} ${test.unit} · ${source}`)}"><span class="journal-chart-value">${fmt(value, scaleDigits)}</span><span class="journal-chart-track"><i class="journal-chart-bar" style="height:${height}%"></i></span><span class="journal-chart-date">${esc(dateLabel)}</span></button>`;
     }).join('')}</div></div>`;
   }
-  const first = series.find(entry => entry.id === journalChartState.firstId);
-  const second = series.find(entry => entry.id === journalChartState.secondId);
+  const selectableEntries = journalHistoryEntries();
+  const first = selectableEntries.find(entry => entry.id === journalChartState.firstId);
+  const second = selectableEntries.find(entry => entry.id === journalChartState.secondId);
   const comparison = journalComparison(first, second, test.id);
+  const missingSelectedValue = first && second && (!hasJournalValue(first.values?.[test.id]) || !hasJournalValue(second.values?.[test.id]));
   const difference = comparison
     ? `<div class="journal-compare-card"><strong>Разница</strong><b>${comparison.delta > 0 ? '+' : ''}${fmt(comparison.delta, 3)} ${esc(translate(test.unit))}</b><small>${translate('Между отсчётами')}: ${fmt(Math.abs(comparison.days), 2)} ${translate('сут.')}</small>${comparison.perDay == null ? '' : `<small>${translate('В сутки')}: ${comparison.perDay > 0 ? '+' : ''}${fmt(comparison.perDay, 3)} ${esc(translate(test.unit))}</small>`}${chartParameterDifferences(first, second, test.id, periodEntries)}</div>`
-    : `<div class="journal-compare-card"><strong>Разница</strong><span>${translate('Выберите оба отсчёта.')}</span></div>`;
+    : `<div class="journal-compare-card"><strong>Разница</strong><span>${translate(missingSelectedValue ? 'В выбранных отсчётах нет этого параметра.' : 'Выберите оба отсчёта.')}</span></div>`;
   $('#journal-chart-comparison').innerHTML = `${chartReadingCard(first, 'first', test)}${chartReadingCard(second, 'second', test)}${difference}`;
-  if (journalHistoryState.selectedStart != null) requestAnimationFrame(() => {
-    [...$('#journal-chart').querySelectorAll('[data-chart-start]')].find(column => journalHistoryState.selectedStart <= Number(column.dataset.chartEnd) && journalHistoryState.selectedEnd >= Number(column.dataset.chartStart))
-      ?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  requestAnimationFrame(() => {
+    const scroll = $('#journal-chart .journal-chart-scroll');
+    if (scroll) scroll.scrollLeft = previousChartScrollLeft;
   });
 }
 
@@ -1025,6 +1027,9 @@ function resetJournalHistoryZoom() {
   journalHistoryState.selectedKind = 'first';
   journalHistoryState.insightKey = '';
   journalHistoryState.insightTestId = '';
+  journalHistoryState.focusedTestId = '';
+  journalHistoryState.focusedGroup = '';
+  journalHistoryState.comparisonTableTestId = '';
   journalHistoryState.stack = [];
   journalHistoryState.signature = '';
 }
@@ -1637,8 +1642,8 @@ $('#journal-chart-period').addEventListener('change', event => {
 $('#journal-chart-test').addEventListener('change', event => {
   journalChartState.testId = event.target.value;
   journalHistoryState.focusedTestId = '';
-  journalChartState.firstId = null;
-  journalChartState.secondId = null;
+  journalHistoryState.focusedGroup = '';
+  journalHistoryState.comparisonTableTestId = event.target.value;
   journalHistoryState.insightKey = '';
   journalHistoryState.insightTestId = '';
   renderJournalList();
@@ -1671,6 +1676,7 @@ function assignChartReading(kind, id) {
     }
   }
   journalChartState[kind === 'first' ? 'firstId' : 'secondId'] = id;
+  if (!journalHistoryState.comparisonTableTestId) journalHistoryState.comparisonTableTestId = journalChartState.testId;
   return true;
 }
 function selectChartReading(kind, id) {
@@ -1776,6 +1782,7 @@ $('#journal-chart-comparison').addEventListener('click', event => {
   const same = cell && journalHistoryState.insightKey === cell.dataset.journalInsight && journalHistoryState.insightTestId === testId;
   journalChartState.testId = testId;
   journalHistoryState.focusedTestId = testId;
+  journalHistoryState.focusedGroup = cell?.dataset.journalChartGroup ?? parameter?.dataset.journalChartGroup ?? 'primary';
   journalHistoryState.insightKey = cell && !same ? cell.dataset.journalInsight : '';
   journalHistoryState.insightTestId = cell && !same ? testId : '';
   renderJournalList();
@@ -1790,6 +1797,8 @@ $('#journal-selection-clear').addEventListener('click', () => {
   journalHistoryState.insightKey = '';
   journalHistoryState.insightTestId = '';
   journalHistoryState.focusedTestId = '';
+  journalHistoryState.focusedGroup = '';
+  journalHistoryState.comparisonTableTestId = '';
   renderJournalList();
 });
 $('#journal-chart-comparison').addEventListener('toggle', event => {
