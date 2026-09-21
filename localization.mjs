@@ -4,8 +4,16 @@ const rows = `Расчёт воды для подмены|Aquarium water calcula
 Версия 1.0 · тестирование|Version 1.0 · testing|Version 1.0 · Testphase|Versión 1.0 · en pruebas
 Версия 1.0a · тестирование|Version 1.0a · testing|Version 1.0a · Testphase|Versión 1.0a · en pruebas
 Версия 1.1a · тестирование|Version 1.1a · testing|Version 1.1a · Testphase|Versión 1.1a · en pruebas
+Тема приложения|Application theme|App-Design|Tema de la aplicación
+Тема|Theme|Design|Tema
+Светлая|Light|Hell|Claro
+Тёмная|Dark|Dunkel|Oscuro
+Режим цветовой слепоты|Colour vision safe|Farbenblind-Modus|Modo para daltonismo
 Язык приложения|Application language|App-Sprache|Idioma de la aplicación
 Язык|Language|Sprache|Idioma
+Нажмите, чтобы подсветить исходные измерения|Click to highlight the source readings|Klicken, um die zugrunde liegenden Messungen hervorzuheben|Haga clic para resaltar las mediciones de origen
+Показать этот параметр на графике|Show this parameter on the chart|Diesen Parameter im Diagramm anzeigen|Mostrar este parámetro en el gráfico
+Сбросить выделение|Clear selection|Auswahl aufheben|Borrar selección
 Скопировать расчёт|Copy calculation|Berechnung kopieren|Copiar cálculo
 Новый расчёт|New calculation|Neue Berechnung|Nuevo cálculo
 Разделы программы|App sections|App-Bereiche|Secciones

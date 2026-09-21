@@ -11,7 +11,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand"><span class="brand-mark">A</span><div><strong>AquaStoich</strong><span>Расчёт воды для подмены</span></div></div>
-      <div class="top-actions"><label class="aquarium-switch"><span>Аквариум</span><select id="active-aquarium" aria-label="Выбрать аквариум"></select></label><span class="testing-badge">Версия 1.1a · тестирование</span><label class="language-picker"><span>Язык</span><select id="language" aria-label="Язык приложения"><option value="en">English</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="es">Español</option></select></label><button id="copy-summary" class="button quiet" type="button">Скопировать расчёт</button><button id="reset" class="button quiet" type="button">Новый расчёт</button></div>
+      <div class="top-actions"><label class="aquarium-switch"><span>Аквариум</span><select id="active-aquarium" aria-label="Выбрать аквариум"></select></label><span class="testing-badge">Версия 1.1a · тестирование</span><label class="theme-picker"><span>Тема</span><select id="theme" aria-label="Тема приложения"><option value="light">Светлая</option><option value="dark">Тёмная</option><option value="colorblind">Режим цветовой слепоты</option></select></label><label class="language-picker"><span>Язык</span><select id="language" aria-label="Язык приложения"><option value="en">English</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="es">Español</option></select></label><button id="copy-summary" class="button quiet" type="button">Скопировать расчёт</button><button id="reset" class="button quiet" type="button">Новый расчёт</button></div>
     </header>
 
     <nav class="app-tabs" aria-label="Разделы программы">
@@ -141,7 +141,7 @@
         </div>
         <div class="panel aux-panel">
           <section class="journal-analysis" aria-labelledby="journal-chart-heading">
-            <div class="section-heading split"><h2 id="journal-chart-heading">Динамика измерений</h2><span id="journal-chart-count" class="count-pill"></span></div>
+            <div class="section-heading split"><h2 id="journal-chart-heading">Динамика измерений</h2><div class="journal-chart-heading-actions"><span id="journal-chart-count" class="count-pill"></span><button id="journal-selection-clear" class="button secondary journal-selection-clear" type="button" disabled>Сбросить выделение</button></div></div>
             <div class="journal-chart-controls">
               <label class="mini-field"><span>Период</span><select id="journal-chart-period"><option value="week">Последняя неделя</option><option value="month" selected>Последний месяц</option><option value="quarter">Последние три месяца</option><option value="halfyear">Последние полгода</option><option value="year">Последний год</option><option value="manual">Вручную</option></select></label>
               <label class="mini-field"><span>Параметр</span><select id="journal-chart-test"></select></label>

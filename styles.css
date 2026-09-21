@@ -25,8 +25,9 @@ a:hover { text-decoration: underline; }
 .aquarium-switch { display: flex; align-items: center; gap: 5px; color: #547263; font-size: 10px; font-weight: 700; white-space: nowrap; }
 .aquarium-switch select { width: 130px; height: 27px; border: 1px solid #d5e0d7; border-radius: 5px; background: #fff; color: #243c31; font-size: 11px; }
 .testing-badge { color: #916c25; background: #fff4da; border: 1px solid #f0e2bf; border-radius: 5px; padding: 5px 7px; font-size: 10px; font-weight: 700; white-space: nowrap; }
-.language-picker { display: flex; align-items: center; gap: 5px; margin: 0 5px; color: #6a8272; font-size: 10px; font-weight: 650; white-space: nowrap; }
-.language-picker select { height: 27px; border: 1px solid #d5e0d7; border-radius: 5px; color: #243c31; background: #fff; font-size: 11px; }
+.language-picker, .theme-picker { display: flex; align-items: center; gap: 5px; margin: 0 5px; color: #6a8272; font-size: 10px; font-weight: 650; white-space: nowrap; }
+.language-picker select, .theme-picker select { height: 27px; border: 1px solid #d5e0d7; border-radius: 5px; color: #243c31; background: #fff; font-size: 11px; }
+.theme-picker select { width: 128px; }
 .app-tabs { display: flex; gap: 3px; flex: none; height: 34px; margin: -2px 0 7px; padding: 2px 3px; border: 1px solid #dde7df; border-radius: 7px; background: #eaf0eb; width: max-content; max-width: 100%; }
 .app-tabs button { border: 0; border-radius: 5px; padding: 4px 12px; background: transparent; color: #688074; font-size: 11px; font-weight: 700; white-space: nowrap; }
 .app-tabs button.active { background: #fff; color: #176f52; box-shadow: 0 1px 3px #174e3320; }
@@ -184,8 +185,8 @@ textarea { height: auto; min-height: 55px; resize: vertical; font: inherit; }
 .reagent-options summary { cursor: pointer; color: #257051; font-size: 10px; }
 .reagent-options summary span { float: right; color: #879b8d; }
 .option-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
-.text-button { margin-top: 7px; padding: 0; border: 0; background: transparent; color: #176f52; font-size: 10px; font-weight: 700; }
-.text-button:hover { text-decoration: underline; }
+.text-button { margin-top: 7px; padding: 0; border: 0; background: transparent; color: #176f52; font-size: 10px; font-weight: 700; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.text-button:hover, .text-button:focus-visible { color: #0d553d; text-decoration-thickness: 2px; outline: none; }
 .bottom-help { margin: 9px 0 0; }
 .empty { padding: 23px 10px; border: 1px dashed #cad9ce; border-radius: 5px; color: #8d9d91; text-align: center; font-size: 11px; }
 
@@ -301,6 +302,8 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .journal-history-actions { display: flex; align-items: center; gap: 8px; }
 .journal-analysis { margin-bottom: 14px; padding-bottom: 13px; border-bottom: 1px solid #dfe8e1; }
 .journal-chart-controls { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)); gap: 6px; }
+.journal-chart-heading-actions { display: flex; align-items: center; gap: 7px; }
+.journal-selection-clear { padding: 4px 7px; font-size: 9px; }
 .journal-chart-manual { display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); gap: 6px; margin-top: 6px; }
 .journal-chart-help { margin: 7px 0 4px; }
 .journal-chart { display: grid; grid-template-columns: 36px minmax(0, 1fr); min-height: 225px; border: 1px solid #e0e9e2; border-radius: 6px; background: linear-gradient(to bottom, transparent 24.7%, #edf2ee 25%, transparent 25.3%, transparent 49.7%, #edf2ee 50%, transparent 50.3%, transparent 74.7%, #edf2ee 75%, transparent 75.3%), #fbfdfb; overflow: hidden; }
@@ -345,14 +348,16 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .journal-component-head { padding-bottom: 2px; border-bottom: 1px solid rgba(87, 122, 99, .11); color: #8a998e; font-size: 7px; text-transform: uppercase; letter-spacing: .025em; }
 .journal-component-head span:last-child, .journal-component span:last-child { text-align: right; }
 .journal-component span:last-child { color: #3e6e52; }
+.journal-chart-value-button { min-width: 0; padding: 2px 5px; border: 1px solid #7cae91; border-radius: 4px; background: #eef7f1; color: #236848; font: inherit; font-weight: 700; text-align: right; white-space: nowrap; cursor: pointer; }
+.journal-chart-value-button:hover, .journal-chart-value-button:focus-visible { border-color: #2d8058; background: #dff0e5; box-shadow: 0 0 0 2px rgba(45, 128, 88, .13); outline: none; }
 .journal-primary-statistics { margin-top: 7px; padding-top: 5px; border-top: 1px solid rgba(87, 122, 99, .14); }
 .journal-analytics-table { width: 100%; overflow-x: auto; scrollbar-width: thin; }
 .journal-component.analytics, .journal-component-head.analytics { grid-template-columns: minmax(105px, 1.15fr) repeat(5, minmax(82px, .85fr)); min-width: 580px; }
 .journal-component.analytics { min-height: 25px; padding: 2px 0; border-bottom: 1px solid rgba(87, 122, 99, .08); }
 .journal-component.analytics > span:not(:first-child), .journal-component-head.analytics > span:not(:first-child) { text-align: right; }
 .journal-statistic-cell { align-self: stretch; display: flex; align-items: center; justify-content: flex-end; min-width: 0; color: #3e6e52; font-size: inherit; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.journal-statistic-button { padding: 2px 3px; border: 1px solid transparent; border-radius: 3px; background: transparent; font: inherit; cursor: pointer; }
-.journal-statistic-button:hover, .journal-statistic-button:focus-visible { border-color: #a486bd; background: #f7f1fa; outline: none; }
+.journal-statistic-button { padding: 2px 5px; border: 1px solid #b99acb; border-radius: 4px; background: #f6effa; color: #68447f; box-shadow: 0 1px 1px rgba(86, 52, 109, .08); font: inherit; font-weight: 700; cursor: pointer; }
+.journal-statistic-button:hover, .journal-statistic-button:focus-visible { border-color: #82549f; background: #ede0f4; box-shadow: 0 0 0 2px rgba(143, 104, 173, .16); outline: none; }
 .journal-statistic-button.active { border-color: #8f68ad; background: #efe3f6; color: #68447f; font-weight: 750; }
 .journal-history-toolbar { display: flex; justify-content: flex-end; align-items: center; margin: 8px 0; }
 .journal-history-period { color: #718779; font-size: 9px; }
@@ -401,7 +406,7 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .journal-reading-choices { display: grid; gap: 5px; margin-bottom: 8px; }
 .journal-reading-choices p { margin: 0 0 2px; color: #7b8e81; font-size: 9px; line-height: 1.35; }
 .journal-reading-choice { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; padding: 7px 8px; border: 1px solid #dce7df; border-radius: 5px; background: #fff; color: #5e7867; text-align: left; font: inherit; font-size: 9px; cursor: pointer; }
-.journal-reading-choice:hover, .journal-reading-choice:focus-visible { border-color: #58a078; outline: none; }
+.journal-reading-choice:hover, .journal-reading-choice:focus-visible { border-color: #36885f; background: #f2f9f4; box-shadow: 0 0 0 2px rgba(57, 140, 97, .12); outline: none; }
 .journal-reading-choice b { color: #26704f; font-variant-numeric: tabular-nums; }
 .journal-reading-choice.first { border-color: #56a8b0; background: #eaf7f8; }
 .journal-reading-choice.second { border-color: #c58b3d; background: #fff5e6; }
@@ -489,6 +494,190 @@ tbody td:last-child { color: #264a37; font-weight: 750; }
 .effect-action.decrease { background: #f5e6d2; color: #9c6330; }
 .database-actions { display: flex; gap: 2px; margin-top: 7px; }
 .database-actions .text-button:disabled { color: #a4b1a6; cursor: default; text-decoration: none; }
+
+/* Themes are kept in CSS so exported data and all calculation logic remain identical. */
+html[data-theme="dark"] { color: #d9e7df; background: #101713; }
+[data-theme="dark"] body { background: #101713; }
+[data-theme="dark"] a,
+[data-theme="dark"] .text-button,
+[data-theme="dark"] .details summary,
+[data-theme="dark"] .journal-components summary { color: #82d6af; }
+[data-theme="dark"] .brand-mark,
+[data-theme="dark"] .button.primary { background: #2b936b; color: #fff; }
+[data-theme="dark"] .button.primary:hover { background: #35a77b; }
+[data-theme="dark"] .panel,
+[data-theme="dark"] .reagent,
+[data-theme="dark"] .result-card,
+[data-theme="dark"] .preset-editor,
+[data-theme="dark"] .journal-period-stat,
+[data-theme="dark"] .journal-compare-card,
+[data-theme="dark"] .journal-calendar-panel,
+[data-theme="dark"] .journal-calendar-readings,
+[data-theme="dark"] .journal-calendar-month,
+[data-theme="dark"] .journal-calendar-cell,
+[data-theme="dark"] .journal-calendar-reading,
+[data-theme="dark"] .journal-reading-choice,
+[data-theme="dark"] .journal-interpolation,
+[data-theme="dark"] .aquarium-list-item,
+[data-theme="dark"] .journal-entry,
+[data-theme="dark"] .database-item,
+[data-theme="dark"] .custom-preview {
+  border-color: #34483e;
+  background: #19231e;
+  color: #c2d2c9;
+}
+[data-theme="dark"] .field input,
+[data-theme="dark"] .field select,
+[data-theme="dark"] .mini-field input,
+[data-theme="dark"] .mini-field select,
+[data-theme="dark"] .add-bar select,
+[data-theme="dark"] .catalog-filters input,
+[data-theme="dark"] .catalog-filters select,
+[data-theme="dark"] .journal-add-test select,
+[data-theme="dark"] .preset-target-row > input,
+[data-theme="dark"] .preset-ratio-row input,
+[data-theme="dark"] .preset-ratio-row select,
+[data-theme="dark"] .aquarium-switch select,
+[data-theme="dark"] .language-picker select,
+[data-theme="dark"] .theme-picker select,
+[data-theme="dark"] textarea {
+  border-color: #3b5045;
+  background: #101914;
+  color: #dce9e2;
+}
+[data-theme="dark"] .field input[readonly],
+[data-theme="dark"] .preset-target-row > input:disabled { background: #202c26; color: #9bb0a5; }
+[data-theme="dark"] .app-tabs,
+[data-theme="dark"] .mode-switch { border-color: #33473d; background: #1c2822; }
+[data-theme="dark"] .app-tabs button,
+[data-theme="dark"] .mode-switch button { color: #9eb2a7; }
+[data-theme="dark"] .app-tabs button.active,
+[data-theme="dark"] .mode-switch button.active { background: #29382f; color: #8ed9b7; box-shadow: 0 1px 3px #0008; }
+[data-theme="dark"] .button.quiet { color: #a9c3b5; }
+[data-theme="dark"] .button.quiet:hover { background: #25342c; }
+[data-theme="dark"] .button.secondary { border-color: #385749; background: #223b30; color: #9cddbd; }
+[data-theme="dark"] .testing-badge { border-color: #715d2d; background: #332b19; color: #f0ca71; }
+[data-theme="dark"] .brand div span,
+[data-theme="dark"] .language-picker,
+[data-theme="dark"] .theme-picker,
+[data-theme="dark"] .aquarium-switch,
+[data-theme="dark"] .field > span,
+[data-theme="dark"] .mini-field > span,
+[data-theme="dark"] .help,
+[data-theme="dark"] .fine-print,
+[data-theme="dark"] .count-pill,
+[data-theme="dark"] .journal-chart-date,
+[data-theme="dark"] .journal-chart-help,
+[data-theme="dark"] .journal-period-stats-scope,
+[data-theme="dark"] .journal-history-period,
+[data-theme="dark"] .journal-reading-choices p { color: #94a99e; }
+[data-theme="dark"] .section-heading h2,
+[data-theme="dark"] .journal-calendar-heading strong,
+[data-theme="dark"] .journal-calendar-month h3,
+[data-theme="dark"] .journal-entry-head strong,
+[data-theme="dark"] .database-item-title strong,
+[data-theme="dark"] .journal-interpolation > strong { color: #b8e3cf; }
+[data-theme="dark"] .journal-number,
+[data-theme="dark"] .journal-period-stat b,
+[data-theme="dark"] .journal-compare-card b,
+[data-theme="dark"] .journal-reading-choice b,
+[data-theme="dark"] .journal-interpolation-row b { color: #8bd5b2; }
+[data-theme="dark"] .journal-chart { border-color: #34483e; background: linear-gradient(to bottom, transparent 24.7%, #2a3730 25%, transparent 25.3%, transparent 49.7%, #2a3730 50%, transparent 50.3%, transparent 74.7%, #2a3730 75%, transparent 75.3%), #141d18; }
+[data-theme="dark"] .journal-chart-scale { border-color: #34463d; color: #91a69b; }
+[data-theme="dark"] .journal-chart-track { border-color: #53675c; }
+[data-theme="dark"] .journal-chart-column { color: #acc0b4; }
+[data-theme="dark"] .journal-chart-column:hover,
+[data-theme="dark"] .journal-chart-column:focus-visible { background: #22362c; }
+[data-theme="dark"] .journal-chart-column.selected { background: #243a2e; box-shadow: inset 0 0 0 1px #56836a; }
+[data-theme="dark"] .journal-chart-value { color: #afd4c1; }
+[data-theme="dark"] .journal-chart-envelope polyline { stroke: #75cca4; filter: drop-shadow(0 1px 0 #101713); }
+[data-theme="dark"] .journal-calendar-blank { border-color: #29372f; background: #131b17; }
+[data-theme="dark"] .journal-calendar-cell.has-data { border-color: #456c59; background: #20352a; color: #a2d6bc; }
+[data-theme="dark"] .journal-calendar-cell.day-cell .journal-calendar-cell-main > span,
+[data-theme="dark"] .journal-calendar-cell.has-data .journal-calendar-cell-main > b { color: #9ed3b8; }
+[data-theme="dark"] .journal-calendar-reading:hover,
+[data-theme="dark"] .journal-reading-choice:hover,
+[data-theme="dark"] .journal-reading-choice:focus-visible { border-color: #65bb91; background: #22352b; }
+[data-theme="dark"] .journal-compare-card.first,
+[data-theme="dark"] .journal-reading-choice.first,
+[data-theme="dark"] .journal-calendar-reading.first { border-color: #438e99; background: #18353a; color: #9bd8de; }
+[data-theme="dark"] .journal-compare-card.second,
+[data-theme="dark"] .journal-reading-choice.second,
+[data-theme="dark"] .journal-calendar-reading.second { border-color: #a77535; background: #382b1b; color: #f0c27c; }
+[data-theme="dark"] .journal-reading-choice.first.second,
+[data-theme="dark"] .journal-calendar-reading.first.second { background: linear-gradient(90deg, #18353a 0 50%, #382b1b 50%); }
+[data-theme="dark"] .journal-component.analytics,
+[data-theme="dark"] .journal-result-test,
+[data-theme="dark"] .journal-interpolation-row { border-color: #2c3c33; }
+[data-theme="dark"] .journal-result-test.insight,
+[data-theme="dark"] .journal-chart-column.insight { background: #302539; }
+[data-theme="dark"] .journal-statistic-button { border-color: #9e79b7; background: #30253a; color: #dfc1ef; }
+[data-theme="dark"] .journal-statistic-button:hover,
+[data-theme="dark"] .journal-statistic-button:focus-visible,
+[data-theme="dark"] .journal-statistic-button.active { border-color: #c194df; background: #443052; color: #f1d9ff; }
+[data-theme="dark"] .journal-chart-value-button { border-color: #579577; background: #21382c; color: #a8e1c4; }
+[data-theme="dark"] .journal-chart-value-button:hover,
+[data-theme="dark"] .journal-chart-value-button:focus-visible { border-color: #7bc49e; background: #2a4738; }
+[data-theme="dark"] .effect-tag { background: #24382d; color: #9ed5ba; }
+[data-theme="dark"] .effect-action { background: #315b47; color: #c0f0d8; }
+[data-theme="dark"] .effect-action.decrease { background: #594126; color: #ffd39a; }
+
+/* Colour-vision-safe theme: blue and orange are paired with borders and patterns. */
+html[data-theme="colorblind"] { color: #1d3442; background: #eef5fa; }
+[data-theme="colorblind"] body { background: #eef5fa; }
+[data-theme="colorblind"] a,
+[data-theme="colorblind"] .text-button,
+[data-theme="colorblind"] .details summary,
+[data-theme="colorblind"] .journal-components summary { color: #005f91; }
+[data-theme="colorblind"] .brand-mark,
+[data-theme="colorblind"] .button.primary { background: #0072b2; color: #fff; }
+[data-theme="colorblind"] .button.primary:hover { background: #005985; }
+[data-theme="colorblind"] .button.secondary { border-color: #9ac8df; background: #e1f1f8; color: #005f91; }
+[data-theme="colorblind"] .app-tabs,
+[data-theme="colorblind"] .mode-switch { border-color: #bed6e2; background: #e3eef4; }
+[data-theme="colorblind"] .app-tabs button.active,
+[data-theme="colorblind"] .mode-switch button.active { background: #fff; color: #005f91; box-shadow: 0 1px 3px #004d7028; }
+[data-theme="colorblind"] .check-line input,
+[data-theme="colorblind"] .lock-line input,
+[data-theme="colorblind"] .preset-target-row label input { accent-color: #0072b2; }
+[data-theme="colorblind"] .field input:focus,
+[data-theme="colorblind"] .field select:focus,
+[data-theme="colorblind"] .mini-field input:focus,
+[data-theme="colorblind"] .mini-field select:focus,
+[data-theme="colorblind"] textarea:focus { border-color: #0072b2; box-shadow: 0 0 0 2px #0072b229; }
+[data-theme="colorblind"] .journal-chart-bar { border: 1px solid #005985; background: linear-gradient(#42a3cf, #0072b2); }
+[data-theme="colorblind"] .journal-chart-column.interpolated .journal-chart-bar { border-color: #66737a; background: repeating-linear-gradient(135deg, #8c9aa1 0 4px, #e4e8ea 4px 8px); }
+[data-theme="colorblind"] .journal-chart-column.first .journal-chart-bar { border-color: #005985; background: repeating-linear-gradient(90deg, #0072b2 0 6px, #42a3cf 6px 9px); box-shadow: 0 0 0 2px #b9e3f4; }
+[data-theme="colorblind"] .journal-chart-column.second .journal-chart-bar { border-color: #9c6c00; background: repeating-linear-gradient(135deg, #e69f00 0 6px, #ffc34a 6px 9px); box-shadow: 0 0 0 2px #ffe5a7; }
+[data-theme="colorblind"] .journal-chart-column.first.second .journal-chart-bar { background: linear-gradient(90deg, #0072b2 0 50%, #e69f00 50%); }
+[data-theme="colorblind"] .journal-chart-envelope polyline { stroke: #005f91; }
+[data-theme="colorblind"] .journal-calendar-cell.has-data { border-color: #79b4cf; background: #e8f5fb; color: #005f91; }
+[data-theme="colorblind"] .journal-calendar-cell.first,
+[data-theme="colorblind"] .journal-calendar-reading.first,
+[data-theme="colorblind"] .journal-reading-choice.first { border-color: #0072b2; background: #e0f3fb; color: #005985; }
+[data-theme="colorblind"] .journal-calendar-cell.second,
+[data-theme="colorblind"] .journal-calendar-reading.second,
+[data-theme="colorblind"] .journal-reading-choice.second { border-color: #c48700; background: #fff1c9; color: #754f00; }
+[data-theme="colorblind"] .journal-calendar-cell.first.second,
+[data-theme="colorblind"] .journal-calendar-reading.first.second,
+[data-theme="colorblind"] .journal-reading-choice.first.second { background: linear-gradient(90deg, #e0f3fb 0 50%, #fff1c9 50%); }
+[data-theme="colorblind"] .journal-calendar-cell.insight,
+[data-theme="colorblind"] .journal-calendar-reading.insight,
+[data-theme="colorblind"] .journal-reading-choice.insight,
+[data-theme="colorblind"] .journal-chart-column.insight { outline-color: #cc79a7; }
+[data-theme="colorblind"] .journal-statistic-button { border-color: #a44d7d; background: #f9e8f2; color: #7f315d; }
+[data-theme="colorblind"] .journal-statistic-button:hover,
+[data-theme="colorblind"] .journal-statistic-button:focus-visible,
+[data-theme="colorblind"] .journal-statistic-button.active { border-color: #7f315d; background: #f0cce1; color: #612342; }
+[data-theme="colorblind"] .journal-chart-value-button { border-color: #458eb5; background: #e3f3fa; color: #005f91; }
+[data-theme="colorblind"] .journal-chart-value-button:hover,
+[data-theme="colorblind"] .journal-chart-value-button:focus-visible { border-color: #005f91; background: #cceaf7; }
+[data-theme="colorblind"] .journal-result-test.insight { background: #f9e8f2; box-shadow: inset 3px 0 #cc79a7; }
+[data-theme="colorblind"] .effect-tag { background: #e3f2f9; color: #005f91; }
+[data-theme="colorblind"] .effect-action { background: #bde1f1; color: #005985; }
+[data-theme="colorblind"] .effect-action.decrease { background: #ffe0bd; color: #a83d00; }
+[data-theme="colorblind"] .danger-text,
+[data-theme="colorblind"] .preview-error { color: #b14800; }
 
 @media (max-width: 1120px) {
   .layout { grid-template-columns: 225px minmax(300px, 1fr) minmax(340px, 400px); }

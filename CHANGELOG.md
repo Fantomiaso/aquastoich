@@ -19,6 +19,8 @@ This version is reserved for the measurement analysis and calendar work. It rema
 - Made month overview cells compact instead of stretching them across the calendar panel.
 - Added a contextual reading panel to the right of the calendar. A group with several readings shows a nested list; a single reading opens its parameters immediately. Individual time markers, calendar cells, and chart bars share the first and second reading highlights in both directions.
 - Reworked reading details into aligned, labelled columns for parameter, value, change, change type, daily rate, and time unit. The former parameter-type filter was removed.
+- Added a persistent theme selector to the top bar with light, dark, and colour-vision-safe modes. Clickable values and text actions in lists now remain visibly distinct without requiring a hover.
+- Added a Clear selection control for chart comparisons and highlights. Clicking a parameter value or a minimum, maximum, or maximum-change statistic now switches the chart to that parameter while keeping the comparison controls interactive.
 - Fixed packaged resource loading and window display so the standalone portable build opens reliably from its ASAR archive.
 
 ## 1.0a — Testing release

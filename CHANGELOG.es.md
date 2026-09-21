@@ -19,6 +19,8 @@ Esta versión queda reservada para el análisis de mediciones y el registro con 
 - Las celdas de la vista mensual son compactas y ya no se estiran hasta ocupar todo el ancho del panel.
 - A la derecha del calendario se añadió un panel contextual. Un grupo con varias mediciones muestra una lista anidada; una sola medición abre sus parámetros de inmediato. Los marcadores horarios, las celdas del calendario y las barras del gráfico sincronizan en ambos sentidos el resaltado de la primera y la segunda lectura.
 - Los detalles se alinean en columnas rotuladas para parámetro, valor, cambio, tipo de cambio, tasa diaria y unidad de tiempo. Se eliminó el filtro anterior por tipo de parámetro.
+- La barra superior incluye ahora un selector persistente de tema claro, oscuro o adaptado para daltonismo. Los valores y las acciones de texto que se pueden pulsar en las listas siguen siendo visibles sin pasar el cursor.
+- Se añadió un botón para borrar la comparación y el resaltado. Al pulsar un valor de parámetro, mínimo, máximo o cambio máximo, el gráfico cambia a ese parámetro y los controles de comparación siguen disponibles.
 - Se corrigieron la carga de recursos y la presentación de la ventana en la versión empaquetada para que la compilación portable autónoma se abra de forma fiable desde el archivo ASAR.
 
 ## 1.0a — versión de prueba

@@ -19,6 +19,8 @@ Diese Version ist für Messwertanalyse und Kalenderprotokoll reserviert. Sie ble
 - Die Zellen der Monatsübersicht sind kompakt und werden nicht mehr über die gesamte Breite des Kalenderfelds gestreckt.
 - Rechts neben dem Kalender steht ein kontextbezogenes Messwertfeld. Gruppen mit mehreren Messungen zeigen eine verschachtelte Liste, einzelne Messungen sofort ihre Parameter. Zeitmarken, Kalenderzellen und Diagrammbalken synchronisieren die Hervorhebung des ersten und zweiten Messwerts in beide Richtungen.
 - Messparameter sind in beschrifteten Spalten für Parameter, Wert, Änderung, Änderungsart, Tagesrate und Zeiteinheit ausgerichtet. Der frühere Parametertypfilter wurde entfernt.
+- Die obere Leiste enthält nun eine gespeicherte Auswahl für ein helles, dunkles oder farbsehschwächengerechtes Design. Anklickbare Werte und Textaktionen in Listen bleiben auch ohne Mauszeiger deutlich erkennbar.
+- Eine Schaltfläche setzt Vergleich und Hervorhebung zurück. Ein Klick auf einen Parameterwert, ein Minimum, ein Maximum oder eine größte Änderung wechselt das Diagramm zu diesem Parameter, während die Vergleichssteuerung bedienbar bleibt.
 - Ressourcenladen und Fensteranzeige der gepackten Version wurden korrigiert, damit der eigenständige portable Build zuverlässig aus dem ASAR-Archiv startet.
 
 ## 1.0a — Testversion
