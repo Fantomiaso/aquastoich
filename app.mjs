@@ -858,7 +858,7 @@ function chartParameterDifferences(first, second, testId, periodEntries) {
 }
 
 function comparisonCardHeading(title, clearKind, disabled, actions = '') {
-  return `<div class="journal-compare-card-heading"><strong>${translate(title)}</strong><button type="button" class="button quiet journal-card-clear" data-comparison-clear="${esc(clearKind)}"${disabled ? ' disabled' : ''}>${translate('Сбросить выделение')}</button><span class="journal-card-actions">${actions}</span></div>`;
+  return `<div class="journal-compare-card-heading"><strong>${translate(title)}</strong><button type="button" class="button secondary journal-card-clear" data-comparison-clear="${esc(clearKind)}"${disabled ? ' disabled' : ''}>${translate('Сбросить выделение')}</button><span class="journal-card-actions">${actions}</span></div>`;
 }
 
 function journalCardSelectionHtml(kind, entries, insightIds) {
@@ -1012,7 +1012,7 @@ function renderJournalChart(context = {}) {
     const monthFormat = new Intl.DateTimeFormat(intlLocale(), { month: 'short' });
     const heights = buckets.map(bucket => journalChartHeight(bucket.value, scale));
     const points = heights.map((height, index) => `${index + 0.5},${100 - height}`).join(' ');
-    const bucketWidth = trendScale === 'day' ? 30 : trendScale === 'week' ? 42 : 56;
+    const bucketWidth = trendScale === 'day' ? 36 : trendScale === 'week' ? 50 : 66;
     chart.innerHTML = `<div class="journal-chart-scale" aria-hidden="true"><span>${fmt(scaleMaximum, scaleDigits)}</span><span>${fmt(scaleMinimum + scaleSpan / 2, scaleDigits)}</span><span>${fmt(scaleMinimum, scaleDigits)}</span></div><div class="journal-chart-scroll"><div class="journal-chart-bars" style="--bucket-count:${buckets.length};--bucket-width:${bucketWidth}px"><svg class="journal-chart-envelope" viewBox="0 0 ${buckets.length} 100" preserveAspectRatio="none" aria-hidden="true"><polyline points="${points}"></polyline></svg>${buckets.map((bucket, index) => {
       const value = number(bucket.value);
       const first = bucket.entries.some(entry => entry.id === journalChartState.firstId);
