@@ -8,10 +8,12 @@ Diese Version ist für Messwertanalyse und Kalenderprotokoll reserviert. Sie ble
 
 - Balkendiagramm für Woche, Monat, drei Monate, sechs Monate, Jahr oder einen eigenen Datumsbereich hinzugefügt.
 - Zwei Messwerte lassen sich vergleichen: Linksklick wählt den ersten, Rechtsklick den zweiten. Der erste Messwert darf nicht nach dem zweiten liegen und der zweite nicht vor dem ersten.
-- Zugehörige Unterparameter und weitere erfasste Parameter stehen in anfangs geschlossenen Gruppen. Die Differenzkarte berechnet auch Änderungen übereinstimmender Parameter.
+- Zugehörige Unterparameter und weitere erfasste Parameter stehen in anfangs geschlossenen Gruppen. Das Öffnen einer Gruppe öffnet nun gleichzeitig die entsprechende Gruppe für den ersten Messwert, den zweiten Messwert und die Differenz.
 - Gewählter Zeitraum und Messort gelten nun auch für den Messverlauf und dessen Excel-Export.
-- Die flache Verlaufsliste wurde durch einen Kalender mit Messwertbereich ersetzt. Je nach Zeitraum verwendet er Monats-, Wochen- oder Tageszellen, zeigt beim Überfahren die Anzahl der Messungen und wechselt per Klick von Monat zu Woche und Tag.
-- Filter für physikalische Parameter, Ionen und Nährstoffe, eigene Tests sowie Beleuchtungseinstellungen hinzugefügt.
+- Die flache Verlaufsliste wurde durch einen Kalender in voller Breite mit darunterliegender Messwertliste ersetzt. Je nach Zeitraum verwendet er Monats-, Wochen- oder Tageszellen, zeigt beim Überfahren die Anzahl der Messungen und wechselt per Klick von Monat zu Woche und Tag; Dichteskalen wurden entfernt.
+- Für mehrere Messungen an einem Tag stehen einzelne Zeitmarken bereit. Kalendermarken und Diagrammbalken synchronisieren die Hervorhebung des ersten und zweiten Messwerts in beide Richtungen.
+- Messparameter sind in beschrifteten Spalten für Parameter, Wert, Änderung, Änderungsart, Tagesrate und Zeiteinheit ausgerichtet. Der frühere Parametertypfilter wurde entfernt.
+- Ressourcenladen und Fensteranzeige der gepackten Version wurden korrigiert, damit der eigenständige portable Build zuverlässig aus dem ASAR-Archiv startet.
 
 ## 1.0a — Testversion
 

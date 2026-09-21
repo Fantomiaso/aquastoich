@@ -193,6 +193,12 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Динамика измерений|Measurement trends|Messwertverlauf|Evolución de las mediciones
 Период|Period|Zeitraum|Periodo
 Параметр|Parameter|Parameter|Parámetro
+Значение|Value|Wert|Valor
+Изменение|Change|Änderung|Cambio
+Тип изменения|Change type|Änderungsart|Tipo de cambio
+Единица в сутки|Unit per day|Einheit pro Tag|Unidad por día
+Единица времени|Time unit|Zeiteinheit|Unidad de tiempo
+Измерение|Measurement|Messung|Medición
 Место замера|Measurement location|Messort|Lugar de medición
 Последняя неделя|Last week|Letzte Woche|Última semana
 Последний месяц|Last month|Letzter Monat|Último mes
@@ -229,7 +235,7 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Пользовательские тесты|Custom tests|Eigene Tests|Pruebas personalizadas
 Календарь измерений|Measurement calendar|Messkalender|Calendario de mediciones
 Параметры измерения|Measurement parameters|Messparameter|Parámetros de medición
-Наведите на ячейку, чтобы увидеть количество измерений. Нажмите, чтобы перейти от месяца к неделям, затем к дням.|Hover over a cell to see its measurement count. Click to move from months to weeks, then to days.|Über eine Zelle fahren, um die Anzahl der Messungen zu sehen. Klicken, um von Monaten zu Wochen und dann zu Tagen zu wechseln.|Pase el cursor por una celda para ver el número de mediciones. Haga clic para pasar de meses a semanas y después a días.
+Наведите на ячейку, чтобы увидеть количество измерений. Нажмите, чтобы перейти от месяца к неделям, затем к дням. В масштабе дней левый клик по времени выбирает первый отсчёт, правый — второй.|Hover over a cell to see its measurement count. Click to move from months to weeks, then to days. In day view, left-click a time to select the first reading and right-click to select the second.|Über eine Zelle fahren, um die Anzahl der Messungen zu sehen. Klicken, um von Monaten zu Wochen und dann zu Tagen zu wechseln. In der Tagesansicht wählt ein Linksklick auf eine Uhrzeit den ersten Messwert und ein Rechtsklick den zweiten.|Pase el cursor por una celda para ver el número de mediciones. Haga clic para pasar de meses a semanas y después a días. En la vista diaria, un clic izquierdo en una hora selecciona la primera lectura y un clic derecho la segunda.
 ← Назад|← Back|← Zurück|← Atrás
 Месяцы|Months|Monate|Meses
 Недели|Weeks|Wochen|Semanas
@@ -238,6 +244,7 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Для выбранного периода нет календарных ячеек.|There are no calendar cells for the selected period.|Für den gewählten Zeitraum gibt es keine Kalenderzellen.|No hay celdas de calendario para el periodo seleccionado.
 Укажите корректный период.|Enter a valid period.|Gültigen Zeitraum angeben.|Indique un periodo válido.
 В выбранной ячейке нет параметров этого типа.|The selected cell has no parameters of this type.|Die ausgewählte Zelle enthält keine Parameter dieses Typs.|La celda seleccionada no contiene parámetros de este tipo.
+В выбранной ячейке нет измерений.|The selected cell has no measurements.|Die ausgewählte Zelle enthält keine Messungen.|La celda seleccionada no contiene mediciones.
 В выбранном периоде нет измерений.|There are no measurements in the selected period.|Im gewählten Zeitraum gibt es keine Messungen.|No hay mediciones en el periodo seleccionado.
 Сравнение с|Compared with|Verglichen mit|Comparado con
 Пока нет измерений. Добавьте первый замер слева.|No measurements yet. Add the first reading on the left.|Noch keine Messungen. Links die erste Messung hinzufügen.|Aún no hay mediciones. Añada la primera a la izquierda.
@@ -467,7 +474,7 @@ pH после отстаивания — оценка по KH, фосфату и
 Анионы не раскрыты. По опубликованным Ca и Mg: 5,35 °dGH на 1 мл/л; в карточке указано 8 °dGH.|Anions are undisclosed. Published Ca and Mg imply 5.35 °dGH per 1 mL/L; the label claims 8 °dGH.|Anionen sind unbekannt. Veröffentlichte Ca- und Mg-Werte ergeben 5,35 °dGH pro 1 ml/l; das Etikett nennt 8 °dGH.|Los aniones no están publicados. Ca y Mg indican 5,35 °dGH por 1 ml/l; la etiqueta afirma 8 °dGH.
 По опубликованному HCO₃: 3,20 °dKH на 1 мл/л; в карточке указано 4 °dKH.|Published HCO₃ implies 3.20 °dKH per 1 mL/L; the label claims 4 °dKH.|Veröffentlichtes HCO₃ ergibt 3,20 °dKH pro 1 ml/l; das Etikett nennt 4 °dKH.|El HCO₃ publicado indica 3,20 °dKH por 1 ml/l; la etiqueta afirma 4 °dKH.
 O₂ растворённый|Dissolved O₂|Gelöstes O₂|O₂ disuelto
-Δ от предыдущего замера того же теста и воды; скорость пересчитана на 24 часа. Это чистое изменение: внесения и подмены не вычитаются.|Δ from the previous reading of the same test and water source; rate is scaled to 24 hours. This is the net change: additions and water changes are not subtracted.|Δ zur vorherigen Messung desselben Tests und Wassers; die Rate ist auf 24 Stunden umgerechnet. Dies ist die Nettoänderung: Zusätze und Wasserwechsel werden nicht abgezogen.|Δ respecto a la medición anterior de la misma prueba y agua; la tasa se calcula para 24 horas. Es el cambio neto: no se descuentan aportes ni cambios de agua.
+Изменение рассчитано от предыдущего замера того же теста и воды; скорость пересчитана на 24 часа. Это чистое изменение: внесения и подмены не вычитаются.|The change is calculated from the previous reading of the same test and water source; the rate is scaled to 24 hours. This is the net change: additions and water changes are not subtracted.|Die Änderung wird aus der vorherigen Messung desselben Tests und Wassers berechnet; die Rate ist auf 24 Stunden umgerechnet. Dies ist die Nettoänderung: Zusätze und Wasserwechsel werden nicht abgezogen.|El cambio se calcula respecto a la medición anterior de la misma prueba y agua; la tasa se calcula para 24 horas. Es el cambio neto: no se descuentan aportes ni cambios de agua.
 Укажите название, формулу и растворимость — здесь появится расчёт состава и эффектов.|Enter a name, formula and solubility to preview the composition and effects.|Name, Formel und Löslichkeit eingeben, um Zusammensetzung und Wirkungen zu sehen.|Introduzca nombre, fórmula y solubilidad para ver la composición y los efectos.
 Количественный результат зависит от исходного состава; для расчёта дозы GH данных недостаточно.|The quantitative result depends on source water; there are insufficient data to calculate a GH dose.|Das quantitative Ergebnis hängt vom Ausgangswasser ab; für eine GH-Dosis fehlen Daten.|El resultado depende del agua de origen; faltan datos para calcular una dosis de GH.
 Указанная производителем ёмкость не равна гарантированному снижению за время фильтрации.|The stated capacity does not guarantee the reduction achieved during filtration.|Die angegebene Kapazität garantiert keine bestimmte Senkung während der Filterung.|La capacidad indicada no garantiza la reducción durante la filtración.
