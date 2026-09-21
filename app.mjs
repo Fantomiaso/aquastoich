@@ -1,7 +1,7 @@
 import { IONS, PRODUCTS, PRODUCT_BY_ID, TARGETS, RATIO_IONS, DEFAULT_PH_CO2_MG_L, activeRatios, actualRatio, ratioLimits, ratioSatisfied, ratioTargetSatisfied, targetLimits, invertRatio, number, stockGramsPerL, displayDoseToAmount, calculate, calibratePHCO2, ghFromIons, khFromIons, khFromProduct, productComposition, setCustomProducts, solveTargets } from './chemistry.mjs';
 import { EFFECTS, CATALOG_SORTS, customProductFromForm, effectParts, normalizeFormula, primaryEffect, productEffects, productKind, sortedProducts, suggestChemicalName } from './catalog.mjs';
 import { PRESETS, getPresets, mergePresets, normalizeUserPreset } from './presets.mjs';
-import { JOURNAL_TESTS, JOURNAL_COMPONENTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalPeriodBounds, journalSeries } from './journal.mjs';
+import { JOURNAL_TESTS, JOURNAL_COMPONENTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalPeriodBounds, journalSeries, journalTrendBuckets } from './journal.mjs';
 import { getLocale, intlLocale, startLocalization, translate } from './localization.mjs';
 import { estimateAquariumVolume, makeAquarium } from './aquarium.mjs';
 import { journalXlsx } from './journal-export.mjs';
@@ -95,7 +95,7 @@ let selectedResultId = null;
 let editingMeasurementId = null;
 let journalDraft = { values: {}, notes: {} };
 let journalChartState = { period: 'month', testId: 'GH', location: 'aquarium', from: '', to: '', firstId: null, secondId: null };
-let journalHistoryState = { scale: '', scopeStart: null, scopeEnd: null, selectedStart: null, selectedEnd: null, selectedLabel: '', selectedEntryId: null };
+let journalHistoryState = { scale: '', scopeStart: null, scopeEnd: null, selectedStart: null, selectedEnd: null, selectedLabel: '', selectedEntryId: null, selectedKind: 'first' };
 let lightChannelDraft = [];
 let editingProductId = null;
 let componentDraft = [{ formula: '', amount: '' }];
@@ -759,6 +759,7 @@ function resetJournalForm() {
   renderJournalTestFields();
 }
 
+const DAY_MS = 86400000;
 const chartDateValue = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 function chartComponentHtml(entry, testId) {
   const configured = JOURNAL_COMPONENTS[testId] ?? [];
@@ -809,10 +810,26 @@ function chartParameterDifferences(first, second, testId) {
 
 function chartReadingCard(entry, kind, test) {
   const title = kind === 'first' ? 'Первый отсчёт' : 'Второй отсчёт';
-  if (!entry) return `<div class="journal-compare-card ${kind}"><strong>${title}</strong><span>${kind === 'first' ? 'Выберите столбец левым кликом.' : 'Выберите столбец правым кликом.'}</span></div>`;
+  const hint = kind === 'first' ? 'Первый отсчёт выбирается левым кликом.' : 'Второй отсчёт выбирается правым кликом.';
+  if (!entry) return `<div class="journal-compare-card ${kind}"><strong>${title}</strong><small class="journal-click-hint">${translate(hint)}</small></div>`;
   const value = number(entry.values[test.id]);
   const note = entry.notes?.[test.id] || entry.note;
-  return `<div class="journal-compare-card ${kind}"><strong>${title}</strong><b>${fmt(value, 3)} ${esc(translate(test.unit))}</b><small>${new Date(entry.at).toLocaleString(intlLocale())}</small>${chartComponentHtml(entry, test.id)}${chartOtherParametersHtml(entry, test.id)}${note ? `<small>${esc(note)}</small>` : ''}</div>`;
+  return `<div class="journal-compare-card ${kind}"><strong>${title}</strong><small class="journal-click-hint">${translate(hint)}</small><b>${fmt(value, 3)} ${esc(translate(test.unit))}</b><small>${new Date(entry.at).toLocaleString(intlLocale())}</small>${chartComponentHtml(entry, test.id)}${chartOtherParametersHtml(entry, test.id)}${note ? `<small>${esc(note)}</small>` : ''}</div>`;
+}
+
+function journalTrendScale(bounds) {
+  const days = bounds ? (bounds.end - bounds.start) / DAY_MS : 0;
+  return days <= 93 ? 'day' : days <= 200 ? 'week' : 'month';
+}
+function trendBucketLabel(bucket, scale) {
+  const start = new Date(bucket.start);
+  const end = new Date(bucket.end);
+  if (scale === 'month') return new Intl.DateTimeFormat(intlLocale(), { month: 'short', year: 'numeric' }).format(start);
+  if (scale === 'week') {
+    const short = new Intl.DateTimeFormat(intlLocale(), { day: '2-digit', month: '2-digit' });
+    return `${short.format(start)} — ${short.format(end)}`;
+  }
+  return new Intl.DateTimeFormat(intlLocale(), { weekday: 'short', day: '2-digit', month: 'short' }).format(start);
 }
 
 function renderJournalChart() {
@@ -830,27 +847,36 @@ function renderJournalChart() {
   $('#journal-chart-from').value = journalChartState.from;
   $('#journal-chart-to').value = journalChartState.to;
   const series = journalSeries(currentJournal(), journalChartState);
+  const bounds = journalHistoryBounds();
+  const trendScale = journalTrendScale(bounds);
+  const buckets = journalTrendBuckets(series, test.id, trendScale);
   const ids = new Set(series.map(entry => entry.id));
   if (!ids.has(journalChartState.firstId)) journalChartState.firstId = null;
   if (!ids.has(journalChartState.secondId)) journalChartState.secondId = null;
-  $('#journal-chart-count').textContent = countLabel(series.length, 'measurement');
+  $('#journal-chart-count').textContent = buckets.length ? `${countLabel(series.length, 'measurement')} · ${buckets.length} ${translate(trendScale === 'day' ? 'дн.' : trendScale === 'week' ? 'нед.' : 'мес.')}` : countLabel(series.length, 'measurement');
   const chart = $('#journal-chart');
-  if (!series.length) {
+  if (!buckets.length) {
     chart.className = 'journal-chart empty';
     chart.innerHTML = journalChartState.period === 'manual' && (!journalChartState.from || !journalChartState.to)
       ? translate('Укажите начало и конец периода.') : translate('В выбранном периоде нет измерений этого параметра.');
   } else {
-    chart.className = 'journal-chart';
-    const maximum = Math.max(1e-9, ...series.map(entry => Math.max(0, number(entry.values[test.id]))));
-    const dateFormat = new Intl.DateTimeFormat(intlLocale(), { day: '2-digit', month: '2-digit' });
-    chart.innerHTML = `<div class="journal-chart-scale" aria-hidden="true"><span>${fmt(maximum, 2)}</span><span>${fmt(maximum / 2, 2)}</span><span>0</span></div><div class="journal-chart-scroll"><div class="journal-chart-bars">${series.map(entry => {
-      const value = number(entry.values[test.id]);
-      const first = entry.id === journalChartState.firstId;
-      const second = entry.id === journalChartState.secondId;
+    chart.className = `journal-chart ${trendScale}`;
+    const maximum = Math.max(1e-9, ...buckets.map(bucket => Math.max(0, number(bucket.value))));
+    const dayFormat = new Intl.DateTimeFormat(intlLocale(), { day: '2-digit', month: '2-digit' });
+    const monthFormat = new Intl.DateTimeFormat(intlLocale(), { month: 'short' });
+    const heights = buckets.map(bucket => Math.max(0, Math.min(100, number(bucket.value) / maximum * 100)));
+    const points = heights.map((height, index) => `${index + 0.5},${100 - height}`).join(' ');
+    chart.innerHTML = `<div class="journal-chart-scale" aria-hidden="true"><span>${fmt(maximum, 2)}</span><span>${fmt(maximum / 2, 2)}</span><span>0</span></div><div class="journal-chart-scroll"><div class="journal-chart-bars"><svg class="journal-chart-envelope" viewBox="0 0 ${buckets.length} 100" preserveAspectRatio="none" aria-hidden="true"><polyline points="${points}"></polyline></svg>${buckets.map((bucket, index) => {
+      const value = number(bucket.value);
+      const first = bucket.entries.some(entry => entry.id === journalChartState.firstId);
+      const second = bucket.entries.some(entry => entry.id === journalChartState.secondId);
+      const selected = journalHistoryState.selectedStart != null && journalHistoryState.selectedStart <= bucket.end && journalHistoryState.selectedEnd >= bucket.start;
       const height = Math.max(0, Math.min(100, value / maximum * 100));
-      const date = new Date(entry.at);
-      const detail = JOURNAL_COMPONENTS[test.id]?.length ? ` · ${translate('нажмите для детализации')}` : '';
-      return `<button type="button" class="journal-chart-column ${first ? 'first' : ''} ${second ? 'second' : ''}" data-chart-entry="${esc(entry.id)}" aria-label="${esc(`${test.label}: ${fmt(value, 3)} ${test.unit}; ${date.toLocaleString(intlLocale())}${detail}`)}" title="${esc(`${date.toLocaleString(intlLocale())} · ${fmt(value, 3)} ${test.unit}`)}"><span class="journal-chart-value">${fmt(value, 2)}</span><span class="journal-chart-track"><i class="journal-chart-bar" style="height:${height}%"></i></span><span class="journal-chart-date">${dateFormat.format(date)}</span></button>`;
+      const start = new Date(bucket.start);
+      const label = trendBucketLabel(bucket, trendScale);
+      const dateLabel = trendScale === 'month' ? monthFormat.format(start) : dayFormat.format(start);
+      const source = bucket.interpolated ? translate('Интерполированное значение') : bucket.entries.length > 1 ? countLabel(bucket.entries.length, 'measurement') : bucket.entries[0]?.at ? new Date(bucket.entries[0].at).toLocaleString(intlLocale()) : '';
+      return `<button type="button" class="journal-chart-column ${bucket.measured ? 'measured' : 'interpolated'} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''}" data-chart-start="${bucket.start}" data-chart-end="${bucket.end}" data-chart-label="${esc(label)}" aria-label="${esc(`${label}: ${fmt(value, 3)} ${test.unit}. ${source}`)}" title="${esc(`${label} · ${fmt(value, 3)} ${test.unit} · ${source}`)}"><span class="journal-chart-value">${fmt(value, 2)}</span><span class="journal-chart-track"><i class="journal-chart-bar" style="height:${height}%"></i></span><span class="journal-chart-date">${esc(dateLabel)}</span></button>`;
     }).join('')}</div></div>`;
   }
   const first = series.find(entry => entry.id === journalChartState.firstId);
@@ -860,12 +886,12 @@ function renderJournalChart() {
     ? `<div class="journal-compare-card"><strong>Разница</strong><b>${comparison.delta > 0 ? '+' : ''}${fmt(comparison.delta, 3)} ${esc(translate(test.unit))}</b><small>${translate('Между отсчётами')}: ${fmt(Math.abs(comparison.days), 2)} ${translate('сут.')}</small>${comparison.perDay == null ? '' : `<small>${translate('В сутки')}: ${comparison.perDay > 0 ? '+' : ''}${fmt(comparison.perDay, 3)} ${esc(translate(test.unit))}</small>`}${chartParameterDifferences(first, second, test.id)}</div>`
     : `<div class="journal-compare-card"><strong>Разница</strong><span>${translate('Выберите оба отсчёта.')}</span></div>`;
   $('#journal-chart-comparison').innerHTML = `${chartReadingCard(first, 'first', test)}${chartReadingCard(second, 'second', test)}${difference}`;
-  if (journalHistoryState.selectedEntryId) requestAnimationFrame(() => {
-    $('#journal-chart').querySelector(`[data-chart-entry="${CSS.escape(journalHistoryState.selectedEntryId)}"]`)?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  if (journalHistoryState.selectedStart != null) requestAnimationFrame(() => {
+    [...$('#journal-chart').querySelectorAll('[data-chart-start]')].find(column => journalHistoryState.selectedStart <= Number(column.dataset.chartEnd) && journalHistoryState.selectedEnd >= Number(column.dataset.chartStart))
+      ?.scrollIntoView({ block: 'nearest', inline: 'center' });
   });
 }
 
-const DAY_MS = 86400000;
 const startOfDay = value => { const date = new Date(value); date.setHours(0, 0, 0, 0); return date; };
 const startOfWeek = value => { const date = startOfDay(value); date.setDate(date.getDate() - (date.getDay() + 6) % 7); return date; };
 const startOfMonth = value => { const date = startOfDay(value); date.setDate(1); return date; };
@@ -887,25 +913,24 @@ function resetJournalHistoryZoom() {
   journalHistoryState.selectedEnd = null;
   journalHistoryState.selectedLabel = '';
   journalHistoryState.selectedEntryId = null;
+  journalHistoryState.selectedKind = 'first';
   journalHistoryState.stack = [];
   journalHistoryState.signature = '';
 }
 function journalDefaultCalendarScale(bounds) {
   const days = bounds ? (bounds.end - bounds.start) / DAY_MS : 0;
-  return days > 120 ? 'month' : days > 45 ? 'week' : 'day';
+  return days > 120 ? 'month' : 'day';
 }
 function calendarBuckets(scale, scopeStart, scopeEnd) {
   if (!Number.isFinite(scopeStart) || !Number.isFinite(scopeEnd)) return [];
   const buckets = [];
-  let cursor = scale === 'month' ? startOfMonth(scopeStart) : scale === 'week' ? startOfWeek(scopeStart) : startOfDay(scopeStart);
+  let cursor = scale === 'month' ? startOfMonth(scopeStart) : startOfDay(scopeStart);
   const monthFormat = new Intl.DateTimeFormat(intlLocale(), { month: 'short', year: 'numeric' });
-  const shortFormat = new Intl.DateTimeFormat(intlLocale(), { day: '2-digit', month: 'short' });
   const dayFormat = new Intl.DateTimeFormat(intlLocale(), { weekday: 'short', day: '2-digit', month: 'short' });
   while (cursor.getTime() <= scopeEnd) {
-    const next = scale === 'month' ? addMonths(cursor, 1) : addDays(cursor, scale === 'week' ? 7 : 1);
+    const next = scale === 'month' ? addMonths(cursor, 1) : addDays(cursor, 1);
     const end = endBefore(next);
-    const label = scale === 'month' ? monthFormat.format(cursor)
-      : scale === 'week' ? `${shortFormat.format(cursor)} — ${shortFormat.format(end)}` : dayFormat.format(cursor);
+    const label = scale === 'month' ? monthFormat.format(cursor) : dayFormat.format(cursor);
     buckets.push({ start: cursor.getTime(), end: end.getTime(), label });
     cursor = next;
   }
@@ -929,7 +954,7 @@ function journalEntryHtml(entry, comparisonEntries) {
   const selected = entry.id === journalChartState.firstId || entry.id === journalChartState.secondId;
   return `<article class="journal-entry ${selected ? 'chart-selected' : ''}" data-journal-entry="${esc(entry.id)}"><div class="journal-entry-head"><div><strong>${esc(translate(locationLabel[entry.location] ?? entry.location))}</strong><span>${new Date(entry.at).toLocaleString(intlLocale())}</span></div><div><button type="button" class="text-button" data-journal-action="edit" data-id="${esc(entry.id)}">${translate('Изменить')}</button><button type="button" class="text-button danger-text" data-journal-action="delete" data-id="${esc(entry.id)}">${translate('Удалить')}</button></div></div>${entry.note ? `<p class="journal-general-note">${esc(entry.note)}</p>` : ''}<div class="journal-parameter-table">${headings}${tests}</div>${light.length ? `<details class="journal-result-test journal-light-settings"><summary>${translate('Настройки света')}</summary><div class="journal-test-note">${esc(light.join(' · '))}</div></details>` : ''}</article>`;
 }
-function ensureJournalHistoryState(bounds, buckets, entries) {
+function ensureJournalHistoryState(bounds) {
   const signature = `${state.activeAquariumId}|${journalChartState.location}|${journalChartState.period}|${journalChartState.from}|${journalChartState.to}`;
   if (journalHistoryState.signature !== signature || !journalHistoryState.scale) {
     journalHistoryState.signature = signature;
@@ -940,54 +965,91 @@ function ensureJournalHistoryState(bounds, buckets, entries) {
     journalHistoryState.selectedEnd = null;
     journalHistoryState.selectedLabel = '';
     journalHistoryState.selectedEntryId = null;
+    journalHistoryState.selectedKind = 'first';
     journalHistoryState.stack = [];
-    return false;
+    return;
   }
-  if (journalHistoryState.selectedStart == null) {
-    const latest = [...buckets].reverse().find(bucket => entries.some(entry => {
-      const time = new Date(entry.at).getTime();
-      return time >= bucket.start && time <= bucket.end;
-    }));
-    if (latest) {
-      journalHistoryState.selectedStart = latest.start;
-      journalHistoryState.selectedEnd = latest.end;
-      journalHistoryState.selectedLabel = latest.label;
-    }
+}
+function entriesInRange(entries, start, end) {
+  return entries.filter(entry => {
+    const time = new Date(entry.at).getTime();
+    return time >= start && time <= end;
+  });
+}
+function calendarCellHtml(bucket, measurements, compact = false) {
+  const count = measurements.length;
+  const selected = bucket.start === journalHistoryState.selectedStart && bucket.end === journalHistoryState.selectedEnd;
+  const first = measurements.some(entry => entry.id === journalChartState.firstId);
+  const second = measurements.some(entry => entry.id === journalChartState.secondId);
+  const hint = `${countLabel(count, 'measurement')}${compact ? ` · ${translate('Нажмите, чтобы открыть календарь месяца')}` : ''}`;
+  const markers = compact ? '' : measurements.map(entry => {
+    const entryFirst = entry.id === journalChartState.firstId;
+    const entrySecond = entry.id === journalChartState.secondId;
+    const date = new Date(entry.at);
+    const time = date.toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' });
+    return `<button type="button" class="journal-calendar-reading ${entryFirst ? 'first' : ''} ${entrySecond ? 'second' : ''}" data-calendar-entry="${esc(entry.id)}" title="${esc(date.toLocaleString(intlLocale()))}" aria-label="${esc(`${translate('Измерение')} ${date.toLocaleString(intlLocale())}`)}">${esc(time)}</button>`;
+  }).join('');
+  const dayNumber = new Date(bucket.start).getDate();
+  return `<div class="journal-calendar-cell ${compact ? 'month-cell' : 'day-cell'} ${count ? 'has-data' : ''} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''}"><button type="button" class="journal-calendar-cell-main" data-calendar-start="${bucket.start}" data-calendar-end="${bucket.end}" data-calendar-label="${esc(bucket.label)}" title="${esc(hint)}"><span>${compact ? esc(bucket.label) : dayNumber}</span><b>${count || ''}</b></button>${markers ? `<div class="journal-calendar-measurements">${markers}</div>` : ''}<span class="journal-calendar-tooltip" role="tooltip">${esc(hint)}</span></div>`;
+}
+function classicCalendarHtml(buckets, entries) {
+  const groups = new Map();
+  for (const bucket of buckets) {
+    const date = new Date(bucket.start);
+    const key = `${date.getFullYear()}-${date.getMonth()}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(bucket);
   }
-  return true;
+  const weekdayFormat = new Intl.DateTimeFormat(intlLocale(), { weekday: 'short' });
+  const weekdays = Array.from({ length: 7 }, (_, index) => weekdayFormat.format(new Date(2026, 8, 21 + index)));
+  const monthFormat = new Intl.DateTimeFormat(intlLocale(), { month: 'long', year: 'numeric' });
+  return [...groups.values()].map(monthBuckets => {
+    const first = new Date(monthBuckets[0].start);
+    const leading = (first.getDay() + 6) % 7;
+    const blanks = Array.from({ length: leading }, () => '<span class="journal-calendar-blank" aria-hidden="true"></span>').join('');
+    const trailing = (7 - (leading + monthBuckets.length) % 7) % 7;
+    const days = monthBuckets.map(bucket => calendarCellHtml(bucket, entriesInRange(entries, bucket.start, bucket.end))).join('');
+    const tail = Array.from({ length: trailing }, () => '<span class="journal-calendar-blank" aria-hidden="true"></span>').join('');
+    return `<section class="journal-calendar-month"><h3>${esc(monthFormat.format(first))}</h3><div class="journal-calendar-weekdays">${weekdays.map(day => `<span>${esc(day)}</span>`).join('')}</div><div class="journal-calendar-days">${blanks}${days}${tail}</div></section>`;
+  }).join('');
 }
 function renderJournalCalendar(entries, bounds) {
-  let buckets = calendarBuckets(journalHistoryState.scale, journalHistoryState.scopeStart, journalHistoryState.scopeEnd);
-  if (!ensureJournalHistoryState(bounds, buckets, entries)) buckets = calendarBuckets(journalHistoryState.scale, journalHistoryState.scopeStart, journalHistoryState.scopeEnd);
-  ensureJournalHistoryState(bounds, buckets, entries);
-  const bucketEntries = buckets.map(bucket => entries.filter(entry => {
-    const time = new Date(entry.at).getTime();
-    return time >= bucket.start && time <= bucket.end;
-  }));
-  const scaleLabel = { month: 'Месяцы', week: 'Недели', day: 'Дни' }[journalHistoryState.scale];
+  ensureJournalHistoryState(bounds);
+  const buckets = calendarBuckets(journalHistoryState.scale, journalHistoryState.scopeStart, journalHistoryState.scopeEnd);
+  const scaleLabel = journalHistoryState.scale === 'month' ? 'Месяцы' : 'Дни';
   $('#journal-calendar-scale').textContent = translate(scaleLabel);
   $('#journal-calendar-up').hidden = !(journalHistoryState.stack?.length);
   $('#journal-calendar').className = `journal-calendar ${journalHistoryState.scale}`;
-  $('#journal-calendar').innerHTML = buckets.length ? buckets.map((bucket, index) => {
-    const measurements = bucketEntries[index];
-    const count = measurements.length;
-    const selected = bucket.start === journalHistoryState.selectedStart && bucket.end === journalHistoryState.selectedEnd;
-    const first = measurements.some(entry => entry.id === journalChartState.firstId);
-    const second = measurements.some(entry => entry.id === journalChartState.secondId);
-    const nextScale = journalHistoryState.scale === 'month' ? 'week' : journalHistoryState.scale === 'week' ? 'day' : '';
-    const hint = nextScale ? `${countLabel(count, 'measurement')} · ${translate('Нажмите, чтобы приблизить')}` : countLabel(count, 'measurement');
-    const markers = journalHistoryState.scale === 'day' ? measurements.map(entry => {
-      const entryFirst = entry.id === journalChartState.firstId;
-      const entrySecond = entry.id === journalChartState.secondId;
-      const date = new Date(entry.at);
-      const time = date.toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' });
-      const chartValue = entry.values?.[journalChartState.testId];
-      const test = journalTest(journalChartState.testId);
-      const detail = hasJournalValue(chartValue) ? ` · ${translate(test.label)} ${fmt(number(chartValue), 3)} ${translate(test.unit)}` : '';
-      return `<button type="button" class="journal-calendar-reading ${entryFirst ? 'first' : ''} ${entrySecond ? 'second' : ''}" data-calendar-entry="${esc(entry.id)}" title="${esc(`${date.toLocaleString(intlLocale())}${detail}`)}" aria-label="${esc(`${translate('Измерение')} ${date.toLocaleString(intlLocale())}${detail}`)}">${esc(time)}</button>`;
-    }).join('') : '';
-    return `<div class="journal-calendar-cell ${count ? 'has-data' : ''} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''}"><button type="button" class="journal-calendar-cell-main" data-calendar-start="${bucket.start}" data-calendar-end="${bucket.end}" data-calendar-label="${esc(bucket.label)}" title="${esc(hint)}"><span>${esc(bucket.label)}</span><b>${count}</b></button>${markers ? `<div class="journal-calendar-measurements">${markers}</div>` : ''}<span class="journal-calendar-tooltip" role="tooltip">${esc(hint)}</span></div>`;
-  }).join('') : `<div class="empty">${translate('Для выбранного периода нет календарных ячеек.')}</div>`;
+  if (!buckets.length) $('#journal-calendar').innerHTML = `<div class="empty">${translate('Для выбранного периода нет календарных ячеек.')}</div>`;
+  else if (journalHistoryState.scale === 'month') $('#journal-calendar').innerHTML = buckets.map(bucket => calendarCellHtml(bucket, entriesInRange(entries, bucket.start, bucket.end), true)).join('');
+  else $('#journal-calendar').innerHTML = classicCalendarHtml(buckets, entries);
+}
+function readingChoiceHtml(entry) {
+  const first = entry.id === journalChartState.firstId;
+  const second = entry.id === journalChartState.secondId;
+  const value = entry.values?.[journalChartState.testId];
+  const test = journalTest(journalChartState.testId);
+  return `<button type="button" class="journal-reading-choice ${first ? 'first' : ''} ${second ? 'second' : ''}" data-calendar-entry="${esc(entry.id)}"><span>${new Date(entry.at).toLocaleString(intlLocale())}</span><b>${hasJournalValue(value) ? `${fmt(number(value), 3)} ${esc(translate(test.unit))}` : '—'}</b></button>`;
+}
+function renderJournalSelectionPanel(entries) {
+  const panel = $('.journal-calendar-readings');
+  const layout = $('.journal-calendar-layout');
+  const hasSelection = journalHistoryState.selectedStart != null;
+  panel.hidden = !hasSelection;
+  layout.classList.toggle('has-selection', hasSelection);
+  if (!hasSelection) return;
+  const selectedEntries = entriesInRange(entries, journalHistoryState.selectedStart, journalHistoryState.selectedEnd)
+    .sort((left, right) => new Date(left.at) - new Date(right.at));
+  $('#journal-readings-title').textContent = journalHistoryState.selectedLabel || translate('Параметры измерения');
+  $('#journal-readings-count').textContent = countLabel(selectedEntries.length, 'entry');
+  if (!selectedEntries.length) {
+    $('#journal-list').innerHTML = `<div class="empty">${translate('В выбранном интервале нет фактических измерений. Значение на графике интерполировано.')}</div>`;
+    return;
+  }
+  const active = selectedEntries.find(entry => entry.id === journalHistoryState.selectedEntryId);
+  const choices = selectedEntries.length > 1 ? `<div class="journal-reading-choices"><p>${translate('Выберите вложенное измерение: левый клик — первый отсчёт, правый — второй.')}</p>${selectedEntries.map(readingChoiceHtml).join('')}</div>` : '';
+  const detail = active ? journalEntryHtml(active, currentJournal()) : selectedEntries.length === 1 ? journalEntryHtml(selectedEntries[0], currentJournal()) : '';
+  $('#journal-list').innerHTML = `${choices}${detail || `<div class="empty">${translate('Выберите измерение из списка.')}</div>`}`;
 }
 function renderJournalList() {
   const bounds = journalHistoryBounds();
@@ -999,13 +1061,7 @@ function renderJournalList() {
     $('#journal-history-period').textContent = `${rangeFormat.format(new Date(bounds.start))} — ${rangeFormat.format(new Date(bounds.end))}`;
   } else $('#journal-history-period').textContent = translate('Укажите корректный период.');
   renderJournalCalendar(entries, bounds);
-  const selectedEntries = journalHistoryState.selectedStart == null ? [] : entries
-    .filter(entry => { const time = new Date(entry.at).getTime(); return time >= journalHistoryState.selectedStart && time <= journalHistoryState.selectedEnd; })
-    .sort((a, b) => new Date(b.at) - new Date(a.at));
-  const cards = selectedEntries.map(entry => journalEntryHtml(entry, currentJournal())).filter(Boolean);
-  $('#journal-readings-title').textContent = journalHistoryState.selectedLabel || translate('Параметры измерения');
-  $('#journal-readings-count').textContent = countLabel(cards.length, 'entry');
-  $('#journal-list').innerHTML = cards.length ? cards.join('') : `<div class="empty">${entries.length ? translate('В выбранной ячейке нет измерений.') : translate('В выбранном периоде нет измерений.')}</div>`;
+  renderJournalSelectionPanel(entries);
   renderJournalChart();
 }
 
@@ -1460,7 +1516,7 @@ for (const id of ['journal-chart-from', 'journal-chart-to']) $('#'+id).addEventL
   resetJournalHistoryZoom();
   renderJournalList();
 });
-function selectChartReading(kind, id) {
+function assignChartReading(kind, id) {
   const candidate = state.journal.find(entry => entry.id === id);
   const counterpartId = kind === 'first' ? journalChartState.secondId : journalChartState.firstId;
   const counterpart = state.journal.find(entry => entry.id === counterpartId);
@@ -1470,10 +1526,15 @@ function selectChartReading(kind, id) {
     const invalid = kind === 'first' ? candidateAt > counterpartAt : candidateAt < counterpartAt;
     if (invalid) {
       toast(kind === 'first' ? 'Первый отсчёт не может быть позже второго.' : 'Второй отсчёт не может быть раньше первого.');
-      return;
+      return false;
     }
   }
   journalChartState[kind === 'first' ? 'firstId' : 'secondId'] = id;
+  return true;
+}
+function selectChartReading(kind, id) {
+  if (!assignChartReading(kind, id)) return;
+  journalHistoryState.selectedKind = kind;
   focusCalendarOnEntry(id);
   renderJournalList();
 }
@@ -1482,32 +1543,57 @@ function focusCalendarOnEntry(id) {
   const bounds = journalHistoryBounds();
   if (!entry || !bounds) return;
   const time = new Date(entry.at).getTime();
-  let buckets = calendarBuckets(journalHistoryState.scale, journalHistoryState.scopeStart, journalHistoryState.scopeEnd);
-  let bucket = buckets.find(item => time >= item.start && time <= item.end);
-  if (!bucket) {
-    journalHistoryState.scale = journalDefaultCalendarScale(bounds);
-    journalHistoryState.scopeStart = bounds.start;
-    journalHistoryState.scopeEnd = bounds.end;
-    journalHistoryState.stack = [];
-    buckets = calendarBuckets(journalHistoryState.scale, journalHistoryState.scopeStart, journalHistoryState.scopeEnd);
-    bucket = buckets.find(item => time >= item.start && time <= item.end);
+  const dayStart = startOfDay(time);
+  const dayEnd = endBefore(addDays(dayStart, 1));
+  if (journalHistoryState.scale !== 'day' || time < journalHistoryState.scopeStart || time > journalHistoryState.scopeEnd) {
+    if (journalHistoryState.scale === 'month') {
+      journalHistoryState.stack ??= [];
+      journalHistoryState.stack.push({
+        scale: journalHistoryState.scale, scopeStart: journalHistoryState.scopeStart, scopeEnd: journalHistoryState.scopeEnd,
+        selectedStart: journalHistoryState.selectedStart, selectedEnd: journalHistoryState.selectedEnd,
+        selectedLabel: journalHistoryState.selectedLabel, selectedEntryId: journalHistoryState.selectedEntryId, selectedKind: journalHistoryState.selectedKind,
+      });
+    }
+    journalHistoryState.scale = 'day';
+    journalHistoryState.scopeStart = startOfMonth(time).getTime();
+    journalHistoryState.scopeEnd = endBefore(addMonths(startOfMonth(time), 1)).getTime();
   }
-  if (!bucket) return;
-  journalHistoryState.selectedStart = bucket.start;
-  journalHistoryState.selectedEnd = bucket.end;
-  journalHistoryState.selectedLabel = bucket.label;
+  journalHistoryState.selectedStart = dayStart.getTime();
+  journalHistoryState.selectedEnd = dayEnd.getTime();
+  journalHistoryState.selectedLabel = new Intl.DateTimeFormat(intlLocale(), { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }).format(dayStart);
   journalHistoryState.selectedEntryId = id;
 }
+function selectJournalRange(start, end, label, kind, zoomToMonth = false) {
+  const entries = entriesInRange(journalHistoryEntries(), start, end);
+  if (zoomToMonth) {
+    journalHistoryState.stack ??= [];
+    journalHistoryState.stack.push({
+      scale: journalHistoryState.scale, scopeStart: journalHistoryState.scopeStart, scopeEnd: journalHistoryState.scopeEnd,
+      selectedStart: journalHistoryState.selectedStart, selectedEnd: journalHistoryState.selectedEnd,
+      selectedLabel: journalHistoryState.selectedLabel, selectedEntryId: journalHistoryState.selectedEntryId, selectedKind: journalHistoryState.selectedKind,
+    });
+    journalHistoryState.scale = 'day';
+    journalHistoryState.scopeStart = start;
+    journalHistoryState.scopeEnd = end;
+  }
+  journalHistoryState.selectedStart = start;
+  journalHistoryState.selectedEnd = end;
+  journalHistoryState.selectedLabel = label;
+  journalHistoryState.selectedKind = kind;
+  journalHistoryState.selectedEntryId = entries.length === 1 ? entries[0].id : null;
+  if (entries.length === 1) assignChartReading(kind, entries[0].id);
+  renderJournalList();
+}
 $('#journal-chart').addEventListener('click', event => {
-  const column = event.target.closest('[data-chart-entry]');
+  const column = event.target.closest('[data-chart-start]');
   if (!column) return;
-  selectChartReading(event.shiftKey ? 'second' : 'first', column.dataset.chartEntry);
+  selectJournalRange(Number(column.dataset.chartStart), Number(column.dataset.chartEnd), column.dataset.chartLabel, event.shiftKey ? 'second' : 'first');
 });
 $('#journal-chart').addEventListener('contextmenu', event => {
-  const column = event.target.closest('[data-chart-entry]');
+  const column = event.target.closest('[data-chart-start]');
   if (!column) return;
   event.preventDefault();
-  selectChartReading('second', column.dataset.chartEntry);
+  selectJournalRange(Number(column.dataset.chartStart), Number(column.dataset.chartEnd), column.dataset.chartLabel, 'second');
 });
 $('#journal-calendar').addEventListener('click', event => {
   const reading = event.target.closest('[data-calendar-entry]');
@@ -1519,36 +1605,24 @@ $('#journal-calendar').addEventListener('click', event => {
   if (!cell) return;
   const start = Number(cell.dataset.calendarStart);
   const end = Number(cell.dataset.calendarEnd);
-  journalHistoryState.selectedStart = start;
-  journalHistoryState.selectedEnd = end;
-  journalHistoryState.selectedLabel = cell.dataset.calendarLabel;
-  journalHistoryState.selectedEntryId = null;
-  if (journalHistoryState.scale === 'month' || journalHistoryState.scale === 'week') {
-    journalHistoryState.stack ??= [];
-    journalHistoryState.stack.push({
-      scale: journalHistoryState.scale, scopeStart: journalHistoryState.scopeStart, scopeEnd: journalHistoryState.scopeEnd,
-      selectedStart: journalHistoryState.selectedStart, selectedEnd: journalHistoryState.selectedEnd, selectedLabel: journalHistoryState.selectedLabel,
-    });
-    journalHistoryState.scale = journalHistoryState.scale === 'month' ? 'week' : 'day';
-    journalHistoryState.scopeStart = start;
-    journalHistoryState.scopeEnd = end;
-    journalHistoryState.selectedStart = null;
-    journalHistoryState.selectedEnd = null;
-    journalHistoryState.selectedLabel = '';
-  }
-  renderJournalList();
+  selectJournalRange(start, end, cell.dataset.calendarLabel, event.shiftKey ? 'second' : 'first', journalHistoryState.scale === 'month');
 });
 $('#journal-calendar').addEventListener('contextmenu', event => {
   const reading = event.target.closest('[data-calendar-entry]');
-  if (!reading) return;
+  if (reading) {
+    event.preventDefault();
+    selectChartReading('second', reading.dataset.calendarEntry);
+    return;
+  }
+  const cell = event.target.closest('[data-calendar-start]');
+  if (!cell) return;
   event.preventDefault();
-  selectChartReading('second', reading.dataset.calendarEntry);
+  selectJournalRange(Number(cell.dataset.calendarStart), Number(cell.dataset.calendarEnd), cell.dataset.calendarLabel, 'second', journalHistoryState.scale === 'month');
 });
 $('#journal-calendar-up').addEventListener('click', () => {
   const previous = journalHistoryState.stack?.pop();
   if (!previous) return;
   Object.assign(journalHistoryState, previous);
-  journalHistoryState.selectedEntryId = null;
   renderJournalList();
 });
 let syncingChartDetails = false;
@@ -1676,6 +1750,11 @@ $('#custom-test-add').addEventListener('click', () => {
   renderJournalChart();
 });
 $('#journal-list').addEventListener('click', event => {
+  const reading = event.target.closest('[data-calendar-entry]');
+  if (reading) {
+    selectChartReading(event.shiftKey ? 'second' : 'first', reading.dataset.calendarEntry);
+    return;
+  }
   const button = event.target.closest('[data-journal-action]');
   if (!button) return;
   const entry = state.journal.find(item => item.id === button.dataset.id);
@@ -1689,6 +1768,12 @@ $('#journal-list').addEventListener('click', event => {
     renderJournalList();
     renderAquariumList();
   }
+});
+$('#journal-list').addEventListener('contextmenu', event => {
+  const reading = event.target.closest('[data-calendar-entry]');
+  if (!reading) return;
+  event.preventDefault();
+  selectChartReading('second', reading.dataset.calendarEntry);
 });
 
 $('#custom-kind').addEventListener('change', renderCustomKind);

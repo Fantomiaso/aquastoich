@@ -74,6 +74,54 @@ export function journalSeries(entries, { testId, location = 'aquarium', period =
     .filter(entry => validReading(entry.values?.[testId]));
 }
 
+const bucketStart = (value, scale) => {
+  const date = new Date(value);
+  date.setHours(0, 0, 0, 0);
+  if (scale === 'week') date.setDate(date.getDate() - (date.getDay() + 6) % 7);
+  if (scale === 'month') date.setDate(1);
+  return date;
+};
+const nextBucket = (value, scale) => {
+  const date = new Date(value);
+  if (scale === 'month') date.setMonth(date.getMonth() + 1, 1);
+  else date.setDate(date.getDate() + (scale === 'week' ? 7 : 1));
+  return date;
+};
+
+export function journalTrendBuckets(entries, testId, scale = 'day') {
+  const readings = (entries ?? []).filter(entry => validReading(entry.values?.[testId]))
+    .sort((left, right) => new Date(left.at).getTime() - new Date(right.at).getTime());
+  if (!readings.length) return [];
+  const first = bucketStart(readings[0].at, scale);
+  const last = bucketStart(readings.at(-1).at, scale);
+  const buckets = [];
+  for (let cursor = first; cursor.getTime() <= last.getTime(); cursor = nextBucket(cursor, scale)) {
+    const next = nextBucket(cursor, scale);
+    const start = cursor.getTime();
+    const end = next.getTime() - 1;
+    const members = readings.filter(entry => {
+      const timestamp = new Date(entry.at).getTime();
+      return timestamp >= start && timestamp <= end;
+    });
+    const measuredValue = members.length ? members.reduce((sum, entry) => sum + Number(entry.values[testId]), 0) / members.length : null;
+    buckets.push({ start, end, entries: members, value: measuredValue, measured: members.length > 0, interpolated: false });
+  }
+  const measuredIndexes = buckets.map((bucket, index) => bucket.measured ? index : -1).filter(index => index >= 0);
+  for (let pair = 0; pair < measuredIndexes.length - 1; pair += 1) {
+    const leftIndex = measuredIndexes[pair];
+    const rightIndex = measuredIndexes[pair + 1];
+    const span = rightIndex - leftIndex;
+    if (span <= 1) continue;
+    const leftValue = buckets[leftIndex].value;
+    const rightValue = buckets[rightIndex].value;
+    for (let index = leftIndex + 1; index < rightIndex; index += 1) {
+      buckets[index].value = leftValue + (rightValue - leftValue) * ((index - leftIndex) / span);
+      buckets[index].interpolated = true;
+    }
+  }
+  return buckets;
+}
+
 export function journalEntriesInPeriod(entries, { location = 'aquarium', period = 'month', from = '', to = '', now = new Date() } = {}) {
   const bounds = journalPeriodBounds(period, now, from, to);
   if (!bounds) return [];

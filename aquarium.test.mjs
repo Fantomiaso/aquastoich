@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { estimateAquariumVolume } from './aquarium.mjs';
-import { JOURNAL_TESTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalPeriodBounds, journalSeries } from './journal.mjs';
+import { JOURNAL_TESTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalPeriodBounds, journalSeries, journalTrendBuckets } from './journal.mjs';
 import { journalTable, journalXlsx } from './journal-export.mjs';
 import { MAX_LIGHT_CHANNELS, validLightChannels } from './light-channels.mjs';
 
@@ -38,6 +38,21 @@ test('journal chart filters standard and manual periods chronologically', () => 
   assert.deepEqual(journalEntriesInPeriod(entries, { period: 'week', location: 'aquarium', now: new Date('2026-09-21T12:00') })
     .map(entry => entry.id), ['middle', 'new']);
   assert.equal(journalPeriodBounds('manual', new Date(), '2026-09-20', '2026-09-19'), null);
+});
+
+test('journal trend keeps empty days and interpolates between measured buckets', () => {
+  const entries = [
+    { id: 'a', at: '2026-09-01T08:00', values: { TDS: 100 } },
+    { id: 'b', at: '2026-09-01T18:00', values: { TDS: 110 } },
+    { id: 'c', at: '2026-09-04T08:00', values: { TDS: 135 } },
+  ];
+  const buckets = journalTrendBuckets(entries, 'TDS', 'day');
+  assert.equal(buckets.length, 4);
+  assert.equal(buckets[0].value, 105);
+  assert.deepEqual(buckets.slice(1, 3).map(bucket => [bucket.measured, bucket.interpolated, bucket.value]), [
+    [false, true, 115], [false, true, 125],
+  ]);
+  assert.equal(buckets[3].value, 135);
 });
 
 test('chart comparison and complex-parameter components use the selected readings', () => {
