@@ -199,6 +199,10 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Добавить тест|Add test|Test hinzufügen|Añadir prueba
 История измерений|Measurement history|Messverlauf|Historial de mediciones
 Динамика измерений|Measurement trends|Messwertverlauf|Evolución de las mediciones
+Режим истории измерений|Measurement history view|Ansicht des Messverlaufs|Vista del historial de mediciones
+Переключить календарь и график|Switch between calendar and chart|Zwischen Kalender und Diagramm wechseln|Cambiar entre calendario y gráfico
+Календарь|Calendar|Kalender|Calendario
+График|Chart|Diagramm|Gráfico
 Период|Period|Zeitraum|Periodo
 Параметр|Parameter|Parameter|Parámetro
 Значение|Value|Wert|Valor
@@ -264,6 +268,7 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Пользовательские тесты|Custom tests|Eigene Tests|Pruebas personalizadas
 Календарь измерений|Measurement calendar|Messkalender|Calendario de mediciones
 Параметры измерения|Measurement parameters|Messparameter|Parámetros de medición
+Нажмите месяц, чтобы открыть классический календарь. Левый клик выбирает первый отсчёт, правый — второй.|Click a month to open the classic calendar. A left-click selects the first reading and a right-click selects the second.|Auf einen Monat klicken, um den klassischen Kalender zu öffnen. Linksklick wählt den ersten Messwert, Rechtsklick den zweiten.|Haga clic en un mes para abrir el calendario clásico. El clic izquierdo selecciona la primera lectura y el derecho la segunda.
 Нажмите месяц, чтобы открыть классический календарь. Клик по дню показывает измерения справа; левый клик выбирает первый отсчёт, правый — второй.|Click a month to open the classic calendar. Clicking a day shows its readings on the right; left-click selects the first reading and right-click selects the second.|Auf einen Monat klicken, um den klassischen Kalender zu öffnen. Ein Klick auf einen Tag zeigt rechts dessen Messungen; Linksklick wählt den ersten, Rechtsklick den zweiten Messwert.|Haga clic en un mes para abrir el calendario clásico. Al hacer clic en un día se muestran sus lecturas a la derecha; el clic izquierdo selecciona la primera y el derecho la segunda.
 Наведите на ячейку, чтобы увидеть количество измерений. Нажмите, чтобы перейти от месяца к неделям, затем к дням. В масштабе дней левый клик по времени выбирает первый отсчёт, правый — второй.|Hover over a cell to see its measurement count. Click to move from months to weeks, then to days. In day view, left-click a time to select the first reading and right-click to select the second.|Über eine Zelle fahren, um die Anzahl der Messungen zu sehen. Klicken, um von Monaten zu Wochen und dann zu Tagen zu wechseln. In der Tagesansicht wählt ein Linksklick auf eine Uhrzeit den ersten Messwert und ein Rechtsklick den zweiten.|Pase el cursor por una celda para ver el número de mediciones. Haga clic para pasar de meses a semanas y después a días. En la vista diaria, un clic izquierdo en una hora selecciona la primera lectura y un clic derecho la segunda.
 ← Назад|← Back|← Zurück|← Atrás
@@ -283,6 +288,7 @@ GH и KH задаются отдельно по тестам. Если ввод�
 В выбранной ячейке нет измерений.|The selected cell has no measurements.|Die ausgewählte Zelle enthält keine Messungen.|La celda seleccionada no contiene mediciones.
 В выбранном интервале нет фактических измерений. Значение на графике интерполировано.|There are no actual readings in the selected interval. The chart value is interpolated.|Im ausgewählten Intervall gibt es keine tatsächlichen Messungen. Der Diagrammwert ist interpoliert.|No hay mediciones reales en el intervalo seleccionado. El valor del gráfico está interpolado.
 Выберите вложенное измерение: левый клик — первый отсчёт, правый — второй.|Select a nested reading: left-click sets the first reading, right-click sets the second.|Verschachtelte Messung wählen: Linksklick setzt den ersten Messwert, Rechtsklick den zweiten.|Seleccione una lectura incluida: el clic izquierdo fija la primera y el derecho la segunda.
+Выберите измерение для этого отсчёта.|Select a measurement for this reading.|Messung für diesen Messwert auswählen.|Seleccione una medición para esta lectura.
 Выберите измерение из списка.|Select a reading from the list.|Messung aus der Liste auswählen.|Seleccione una lectura de la lista.
 В выбранном периоде нет измерений.|There are no measurements in the selected period.|Im gewählten Zeitraum gibt es keine Messungen.|No hay mediciones en el periodo seleccionado.
 Сравнение с|Compared with|Verglichen mit|Comparado con

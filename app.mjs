@@ -97,7 +97,7 @@ let selectedResultId = null;
 let editingMeasurementId = null;
 let journalDraft = { values: {}, notes: {} };
 let journalChartState = { period: 'month', testId: 'GH', location: 'aquarium', from: '', to: '', firstId: null, secondId: null };
-let journalHistoryState = { scale: '', scopeStart: null, scopeEnd: null, selectedStart: null, selectedEnd: null, selectedLabel: '', selectedEntryId: null, selectedKind: 'first', insightKey: '', insightTestId: '', focusedTestId: '', focusedGroup: '', comparisonTableTestId: '' };
+let journalHistoryState = { mode: state.journalHistoryMode === 'calendar' ? 'calendar' : 'chart', scale: '', scopeStart: null, scopeEnd: null, selectedStart: null, selectedEnd: null, selectedLabel: '', selectedEntryId: null, selectedKind: 'first', insightKey: '', insightTestId: '', focusedTestId: '', focusedGroup: '', comparisonTableTestId: '' };
 let journalDetailGroups = { related: Boolean(state.journalDetailGroups?.related), other: Boolean(state.journalDetailGroups?.other) };
 let lightChannelDraft = [];
 let editingProductId = null;
@@ -857,14 +857,32 @@ function chartParameterDifferences(first, second, testId, periodEntries) {
   return `${primary}${chartDifferenceSection(first, second, related, 'Разница связанных подпараметров', 'related', periodEntries)}${chartDifferenceSection(first, second, other, 'Разница остальных параметров', 'other', periodEntries)}`;
 }
 
-function chartReadingCard(entry, kind, test) {
+function journalCardSelectionHtml(kind, entries, insightIds) {
+  if (journalHistoryState.selectedKind !== kind || journalHistoryState.selectedStart == null) return '';
+  const selectedEntries = entriesInRange(entries, journalHistoryState.selectedStart, journalHistoryState.selectedEnd)
+    .sort((left, right) => new Date(left.at) - new Date(right.at));
+  if (selectedEntries.length > 1) {
+    return `<div class="journal-card-selection"><small>${esc(journalHistoryState.selectedLabel)}</small><div class="journal-reading-choices"><p>${translate('Выберите измерение для этого отсчёта.')}</p>${selectedEntries.map(item => readingChoiceHtml(item, insightIds, kind)).join('')}</div></div>`;
+  }
+  if (selectedEntries.length) return '';
+  const duration = journalHistoryState.selectedEnd - journalHistoryState.selectedStart;
+  const target = journalHistoryState.selectedStart + duration / 2;
+  const interpolation = duration <= DAY_MS ? journalInterpolatedReading(entries, target) : null;
+  return interpolation
+    ? `<div class="journal-card-selection">${interpolatedReadingHtml(interpolation)}</div>`
+    : `<div class="journal-card-selection empty">${translate('В выбранном интервале нет фактических измерений. Значение на графике интерполировано.')}</div>`;
+}
+
+function chartReadingCard(entry, kind, test, entries, insightIds) {
   const title = kind === 'first' ? 'Первый отсчёт' : 'Второй отсчёт';
   const hint = kind === 'first' ? 'Первый отсчёт выбирается левым кликом.' : 'Второй отсчёт выбирается правым кликом.';
-  if (!entry) return `<div class="journal-compare-card ${kind}"><strong>${title}</strong><small class="journal-click-hint">${translate(hint)}</small></div>`;
+  const selection = journalCardSelectionHtml(kind, entries, insightIds);
+  const heading = `<div class="journal-compare-card-heading"><strong>${translate(title)}</strong>${entry ? `<span><button type="button" class="text-button" data-journal-action="edit" data-id="${esc(entry.id)}">${translate('Изменить')}</button><button type="button" class="text-button danger-text" data-journal-action="delete" data-id="${esc(entry.id)}">${translate('Удалить')}</button></span>` : ''}</div>`;
+  if (!entry) return `<div class="journal-compare-card ${kind}">${heading}<small class="journal-click-hint">${translate(hint)}</small>${selection}</div>`;
   const value = entry.values?.[test.id];
   const note = entry.notes?.[test.id] || entry.note;
   const rendered = hasJournalValue(value) ? `${fmt(number(value), 3)} ${esc(translate(test.unit))}` : '—';
-  return `<div class="journal-compare-card ${kind}"><strong>${title}</strong><small class="journal-click-hint">${translate(hint)}</small><b>${rendered}</b><small>${new Date(entry.at).toLocaleString(intlLocale())}</small>${chartComponentHtml(entry, test.id)}${chartOtherParametersHtml(entry, test.id)}${note ? `<small>${esc(note)}</small>` : ''}</div>`;
+  return `<div class="journal-compare-card ${kind}">${heading}<small class="journal-click-hint">${translate(hint)}</small>${selection}<b>${rendered}</b><small>${new Date(entry.at).toLocaleString(intlLocale())}</small>${chartComponentHtml(entry, test.id)}${chartOtherParametersHtml(entry, test.id)}${note ? `<small>${esc(note)}</small>` : ''}</div>`;
 }
 
 function journalTrendScale(bounds) {
@@ -925,6 +943,25 @@ function renderJournalPeriodStatistics(statistics, test) {
   container.innerHTML = `<p class="journal-period-stats-scope">${esc(scope)}</p>${cards.map(card => `<div class="journal-period-stat"><span>${translate(card.title)}</span><b>${card.value}</b><small>${card.note}</small></div>`).join('')}`;
 }
 
+function renderJournalHistoryMode() {
+  const calendarMode = journalHistoryState.mode === 'calendar';
+  $('#journal-history-mode').checked = !calendarMode;
+  $('#journal-calendar-view').hidden = !calendarMode;
+  $('#journal-chart-view').hidden = calendarMode;
+  $('#journal-chart-count').hidden = calendarMode;
+}
+
+function updateJournalChartOverflowHints(scroll) {
+  const chart = scroll?.closest('.journal-chart');
+  if (!chart) return;
+  const overflow = scroll.scrollWidth - scroll.clientWidth > 2;
+  chart.classList.toggle('horizontally-scrollable', overflow);
+  const atStart = scroll.scrollLeft <= 2;
+  const atEnd = scroll.scrollLeft + scroll.clientWidth >= scroll.scrollWidth - 2;
+  chart.querySelector('.journal-chart-overflow-hint.left')?.classList.toggle('inactive', atStart);
+  chart.querySelector('.journal-chart-overflow-hint.right')?.classList.toggle('inactive', atEnd);
+}
+
 function renderJournalChart(context = {}) {
   const previousChartScrollLeft = $('#journal-chart .journal-chart-scroll')?.scrollLeft ?? 0;
   const tests = allJournalTests();
@@ -980,7 +1017,7 @@ function renderJournalChart(context = {}) {
       const dateLabel = trendScale === 'month' ? monthFormat.format(start) : dayFormat.format(start);
       const source = bucket.interpolated ? translate('Интерполированное значение') : bucket.entries.length > 1 ? countLabel(bucket.entries.length, 'measurement') : bucket.entries[0]?.at ? new Date(bucket.entries[0].at).toLocaleString(intlLocale()) : '';
       return `<button type="button" class="journal-chart-column ${bucket.measured ? 'measured' : 'interpolated'} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''} ${insight ? 'insight' : ''}" data-chart-start="${bucket.start}" data-chart-end="${bucket.end}" data-chart-label="${esc(label)}" aria-label="${esc(`${label}: ${fmt(value, Math.max(3, scaleDigits))} ${test.unit}. ${source}`)}" title="${esc(`${label} · ${fmt(value, Math.max(3, scaleDigits))} ${test.unit} · ${source}`)}"><span class="journal-chart-value">${fmt(value, scaleDigits)}</span><span class="journal-chart-track"><i class="journal-chart-bar" style="height:${height}%"></i></span><span class="journal-chart-date">${esc(dateLabel)}</span></button>`;
-    }).join('')}</div></div>`;
+    }).join('')}</div></div><span class="journal-chart-overflow-hint left" aria-hidden="true">‹</span><span class="journal-chart-overflow-hint right" aria-hidden="true">›</span>`;
   }
   const selectableEntries = journalHistoryEntries();
   const first = selectableEntries.find(entry => entry.id === journalChartState.firstId);
@@ -990,10 +1027,14 @@ function renderJournalChart(context = {}) {
   const difference = comparison
     ? `<div class="journal-compare-card"><strong>Разница</strong><b>${comparison.delta > 0 ? '+' : ''}${fmt(comparison.delta, 3)} ${esc(translate(test.unit))}</b><small>${translate('Между отсчётами')}: ${fmt(Math.abs(comparison.days), 2)} ${translate('сут.')}</small>${comparison.perDay == null ? '' : `<small>${translate('В сутки')}: ${comparison.perDay > 0 ? '+' : ''}${fmt(comparison.perDay, 3)} ${esc(translate(test.unit))}</small>`}${chartParameterDifferences(first, second, test.id, periodEntries)}</div>`
     : `<div class="journal-compare-card"><strong>Разница</strong><span>${translate(missingSelectedValue ? 'В выбранных отсчётах нет этого параметра.' : 'Выберите оба отсчёта.')}</span></div>`;
-  $('#journal-chart-comparison').innerHTML = `${chartReadingCard(first, 'first', test)}${chartReadingCard(second, 'second', test)}${difference}`;
+  $('#journal-chart-comparison').innerHTML = `${chartReadingCard(first, 'first', test, selectableEntries, insightIds)}${chartReadingCard(second, 'second', test, selectableEntries, insightIds)}${difference}`;
   requestAnimationFrame(() => {
     const scroll = $('#journal-chart .journal-chart-scroll');
-    if (scroll) scroll.scrollLeft = previousChartScrollLeft;
+    if (scroll) {
+      scroll.scrollLeft = previousChartScrollLeft;
+      updateJournalChartOverflowHints(scroll);
+      scroll.addEventListener('scroll', () => updateJournalChartOverflowHints(scroll), { passive: true });
+    }
   });
 }
 
@@ -1144,12 +1185,12 @@ function renderJournalCalendar(entries, bounds, insightIds) {
   else if (journalHistoryState.scale === 'month') $('#journal-calendar').innerHTML = buckets.map(bucket => calendarCellHtml(bucket, entriesInRange(entries, bucket.start, bucket.end), true, insightIds)).join('');
   else $('#journal-calendar').innerHTML = classicCalendarHtml(buckets, entries, insightIds);
 }
-function readingChoiceHtml(entry, insightIds) {
+function readingChoiceHtml(entry, insightIds, kind = journalHistoryState.selectedKind) {
   const first = entry.id === journalChartState.firstId;
   const second = entry.id === journalChartState.secondId;
   const value = entry.values?.[journalChartState.testId];
   const test = journalTest(journalChartState.testId);
-  return `<button type="button" class="journal-reading-choice ${first ? 'first' : ''} ${second ? 'second' : ''} ${insightIds.has(entry.id) ? 'insight' : ''}" data-calendar-entry="${esc(entry.id)}"><span>${new Date(entry.at).toLocaleString(intlLocale())}</span><b>${hasJournalValue(value) ? `${fmt(number(value), 3)} ${esc(translate(test.unit))}` : '—'}</b></button>`;
+  return `<button type="button" class="journal-reading-choice ${first ? 'first' : ''} ${second ? 'second' : ''} ${insightIds.has(entry.id) ? 'insight' : ''}" data-comparison-entry="${esc(entry.id)}" data-comparison-kind="${esc(kind)}"><span>${new Date(entry.at).toLocaleString(intlLocale())}</span><b>${hasJournalValue(value) ? `${fmt(number(value), 3)} ${esc(translate(test.unit))}` : '—'}</b></button>`;
 }
 function interpolatedReadingHtml(interpolation) {
   const knownOrder = new Map(allJournalTests().map((test, index) => [test.id, index]));
@@ -1165,32 +1206,6 @@ function interpolatedReadingHtml(interpolation) {
   const sourceFormat = new Intl.DateTimeFormat(intlLocale(), { dateStyle: 'medium', timeStyle: 'short' });
   return `<article class="journal-interpolation"><strong>${translate('Интерполированные данные')}</strong><p>${translate('Значения рассчитаны линейно между ближайшими фактическими измерениями.')}</p><small>${sourceFormat.format(new Date(interpolation.previous.at))} → ${sourceFormat.format(new Date(interpolation.next.at))}</small><div class="journal-interpolation-head"><span>${translate('Параметр')}</span><span>${translate('Значение')}</span></div>${rows}</article>`;
 }
-function renderJournalSelectionPanel(entries, insightIds) {
-  const panel = $('.journal-calendar-readings');
-  const layout = $('.journal-calendar-layout');
-  const hasSelection = journalHistoryState.selectedStart != null;
-  panel.hidden = !hasSelection;
-  layout.classList.toggle('has-selection', hasSelection);
-  if (!hasSelection) return;
-  const selectedEntries = entriesInRange(entries, journalHistoryState.selectedStart, journalHistoryState.selectedEnd)
-    .sort((left, right) => new Date(left.at) - new Date(right.at));
-  $('#journal-readings-title').textContent = journalHistoryState.selectedLabel || translate('Параметры измерения');
-  $('#journal-readings-count').textContent = countLabel(selectedEntries.length, 'entry');
-  if (!selectedEntries.length) {
-    const duration = journalHistoryState.selectedEnd - journalHistoryState.selectedStart;
-    const target = journalHistoryState.selectedStart + duration / 2;
-    const interpolation = duration <= DAY_MS ? journalInterpolatedReading(entries, target) : null;
-    if (interpolation) {
-      $('#journal-readings-count').textContent = translate('Интерполяция');
-      $('#journal-list').innerHTML = interpolatedReadingHtml(interpolation);
-    } else $('#journal-list').innerHTML = `<div class="empty">${translate('В выбранном интервале нет фактических измерений. Значение на графике интерполировано.')}</div>`;
-    return;
-  }
-  const active = selectedEntries.find(entry => entry.id === journalHistoryState.selectedEntryId);
-  const choices = selectedEntries.length > 1 ? `<div class="journal-reading-choices"><p>${translate('Выберите вложенное измерение: левый клик — первый отсчёт, правый — второй.')}</p>${selectedEntries.map(entry => readingChoiceHtml(entry, insightIds)).join('')}</div>` : '';
-  const detail = active ? journalEntryHtml(active, currentJournal(), insightIds) : selectedEntries.length === 1 ? journalEntryHtml(selectedEntries[0], currentJournal(), insightIds) : '';
-  $('#journal-list').innerHTML = `${choices}${detail || `<div class="empty">${translate('Выберите измерение из списка.')}</div>`}`;
-}
 function renderJournalList() {
   const bounds = journalHistoryBounds();
   const entries = journalHistoryEntries();
@@ -1203,8 +1218,8 @@ function renderJournalList() {
     const rangeFormat = new Intl.DateTimeFormat(intlLocale(), { day: '2-digit', month: 'short', year: 'numeric' });
     $('#journal-history-period').textContent = `${rangeFormat.format(new Date(bounds.start))} — ${rangeFormat.format(new Date(bounds.end))}`;
   } else $('#journal-history-period').textContent = translate('Укажите корректный период.');
+  renderJournalHistoryMode();
   renderJournalCalendar(entries, bounds, insightIds);
-  renderJournalSelectionPanel(entries, insightIds);
   renderJournalChart({ statistics, insightIds, periodEntries });
 }
 
@@ -1632,6 +1647,13 @@ $('#journal-auto-time').addEventListener('change', event => {
   $('#journal-at').disabled = event.target.checked;
   if (event.target.checked) $('#journal-at').value = localTime(new Date());
 });
+$('#journal-history-mode').addEventListener('change', event => {
+  journalHistoryState.mode = event.target.checked ? 'chart' : 'calendar';
+  state.journalHistoryMode = journalHistoryState.mode;
+  save();
+  renderJournalList();
+});
+window.addEventListener('resize', () => updateJournalChartOverflowHints($('#journal-chart .journal-chart-scroll')));
 $('#journal-chart-period').addEventListener('change', event => {
   journalChartState.period = event.target.value;
   journalChartState.firstId = null;
@@ -1722,6 +1744,12 @@ function selectJournalRange(start, end, label, kind, zoomToMonth = false) {
     journalHistoryState.scale = 'day';
     journalHistoryState.scopeStart = start;
     journalHistoryState.scopeEnd = end;
+    journalHistoryState.selectedStart = null;
+    journalHistoryState.selectedEnd = null;
+    journalHistoryState.selectedLabel = '';
+    journalHistoryState.selectedEntryId = null;
+    renderJournalList();
+    return;
   }
   journalHistoryState.selectedStart = start;
   journalHistoryState.selectedEnd = end;
@@ -1774,6 +1802,28 @@ $('#journal-calendar-up').addEventListener('click', () => {
 });
 let syncingChartDetails = false;
 $('#journal-chart-comparison').addEventListener('click', event => {
+  const action = event.target.closest('[data-journal-action]');
+  if (action) {
+    const entry = state.journal.find(item => item.id === action.dataset.id);
+    if (!entry) return;
+    if (action.dataset.journalAction === 'edit') editJournalEntry(entry);
+    if (action.dataset.journalAction === 'delete') {
+      if (!window.confirm(translate('Удалить это измерение из журнала?'))) return;
+      state.journal = state.journal.filter(item => item.id !== entry.id);
+      if (journalChartState.firstId === entry.id) journalChartState.firstId = null;
+      if (journalChartState.secondId === entry.id) journalChartState.secondId = null;
+      if (editingMeasurementId === entry.id) resetJournalForm();
+      save();
+      renderJournalList();
+      renderAquariumList();
+    }
+    return;
+  }
+  const reading = event.target.closest('[data-comparison-entry]');
+  if (reading) {
+    selectChartReading(reading.dataset.comparisonKind === 'second' ? 'second' : 'first', reading.dataset.comparisonEntry);
+    return;
+  }
   const cell = event.target.closest('[data-journal-insight][data-journal-insight-test]');
   const parameter = event.target.closest('[data-journal-chart-test]');
   if (!cell && !parameter) return;
@@ -1786,6 +1836,12 @@ $('#journal-chart-comparison').addEventListener('click', event => {
   journalHistoryState.insightKey = cell && !same ? cell.dataset.journalInsight : '';
   journalHistoryState.insightTestId = cell && !same ? testId : '';
   renderJournalList();
+});
+$('#journal-chart-comparison').addEventListener('contextmenu', event => {
+  const reading = event.target.closest('[data-comparison-entry]');
+  if (!reading) return;
+  event.preventDefault();
+  selectChartReading('second', reading.dataset.comparisonEntry);
 });
 $('#journal-selection-clear').addEventListener('click', () => {
   journalChartState.firstId = null;
@@ -1926,32 +1982,6 @@ $('#custom-test-add').addEventListener('click', () => {
   save();
   renderJournalTestFields();
   renderJournalChart();
-});
-$('#journal-list').addEventListener('click', event => {
-  const reading = event.target.closest('[data-calendar-entry]');
-  if (reading) {
-    selectChartReading(event.shiftKey ? 'second' : 'first', reading.dataset.calendarEntry);
-    return;
-  }
-  const button = event.target.closest('[data-journal-action]');
-  if (!button) return;
-  const entry = state.journal.find(item => item.id === button.dataset.id);
-  if (!entry) return;
-  if (button.dataset.journalAction === 'edit') editJournalEntry(entry);
-  if (button.dataset.journalAction === 'delete') {
-    if (!window.confirm(translate('Удалить это измерение из журнала?'))) return;
-    state.journal = state.journal.filter(item => item.id !== entry.id);
-    if (editingMeasurementId === entry.id) resetJournalForm();
-    save();
-    renderJournalList();
-    renderAquariumList();
-  }
-});
-$('#journal-list').addEventListener('contextmenu', event => {
-  const reading = event.target.closest('[data-calendar-entry]');
-  if (!reading) return;
-  event.preventDefault();
-  selectChartReading('second', reading.dataset.calendarEntry);
 });
 
 $('#custom-kind').addEventListener('change', renderCustomKind);
