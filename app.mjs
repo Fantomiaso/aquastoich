@@ -785,10 +785,10 @@ function chartComponentHtml(entry, testId) {
   if (!configured.length) return '';
   const components = journalComponents(entry, testId);
   if (!components.length) return `<details class="journal-components" data-chart-detail-group="related"${detailOpenAttribute('related')}><summary>${translate('Связанные подпараметры')}</summary><span>${translate('Подпараметры в этом замере не указаны.')}</span></details>`;
-  return `<details class="journal-components" data-chart-detail-group="related"${detailOpenAttribute('related')}><summary>${translate('Связанные подпараметры')}</summary><div class="journal-component-head"><span>${translate('Параметр')}</span><span>${translate('Значение')}</span></div>${components.map(component => {
+  return `<details class="journal-components" data-chart-detail-group="related"${detailOpenAttribute('related')}><summary>${translate('Связанные подпараметры')}</summary><div class="journal-comparison-table"><div class="journal-component-head"><span>${translate('Параметр')}</span><span>${translate('Значение')}</span></div>${components.map(component => {
     const test = journalTest(component.id);
     return `<div class="journal-component"><span>${esc(translate(test.label))}</span><span>${fmt(component.value, 3)} ${esc(translate(test.unit))}</span></div>`;
-  }).join('')}</details>`;
+  }).join('')}</div></details>`;
 }
 
 const hasJournalValue = value => value !== '' && value != null && Number.isFinite(Number(value));
@@ -810,7 +810,7 @@ function chartParameterRows(entry, ids) {
 }
 function chartOtherParametersHtml(entry, testId) {
   const ids = chartOtherParameterIds(entry, testId);
-  return ids.length ? `<details class="journal-components journal-other-parameters" data-chart-detail-group="other"${detailOpenAttribute('other')}><summary>${translate('Остальные параметры')}</summary><div class="journal-component-head"><span>${translate('Параметр')}</span><span>${translate('Значение')}</span></div>${chartParameterRows(entry, ids)}</details>` : '';
+  return ids.length ? `<details class="journal-components journal-other-parameters" data-chart-detail-group="other"${detailOpenAttribute('other')}><summary>${translate('Остальные параметры')}</summary><div class="journal-comparison-table"><div class="journal-component-head"><span>${translate('Параметр')}</span><span>${translate('Значение')}</span></div>${chartParameterRows(entry, ids)}</div></details>` : '';
 }
 function chartStatisticCell(statistics, key, test, group = 'primary') {
   const unit = esc(translate(test.unit));
@@ -857,11 +857,17 @@ function chartParameterDifferences(first, second, testId, periodEntries) {
   return `${primary}${chartDifferenceSection(first, second, related, 'Разница связанных подпараметров', 'related', periodEntries)}${chartDifferenceSection(first, second, other, 'Разница остальных параметров', 'other', periodEntries)}`;
 }
 
+function comparisonCardHeading(title, clearKind, disabled, actions = '') {
+  return `<div class="journal-compare-card-heading"><strong>${translate(title)}</strong><button type="button" class="button quiet journal-card-clear" data-comparison-clear="${esc(clearKind)}"${disabled ? ' disabled' : ''}>${translate('Сбросить выделение')}</button><span class="journal-card-actions">${actions}</span></div>`;
+}
+
 function journalCardSelectionHtml(kind, entries, insightIds) {
   if (journalHistoryState.selectedKind !== kind || journalHistoryState.selectedStart == null) return '';
   const selectedEntries = entriesInRange(entries, journalHistoryState.selectedStart, journalHistoryState.selectedEnd)
     .sort((left, right) => new Date(left.at) - new Date(right.at));
   if (selectedEntries.length > 1) {
+    const chosen = journalHistoryState.selectedEntryId && selectedEntries.some(item => item.id === journalHistoryState.selectedEntryId);
+    if (chosen) return `<div class="journal-card-back"><button type="button" class="button secondary" data-comparison-back="${esc(kind)}">${translate('← Назад к списку измерений')}</button></div>`;
     return `<div class="journal-card-selection"><small>${esc(journalHistoryState.selectedLabel)}</small><div class="journal-reading-choices"><p>${translate('Выберите измерение для этого отсчёта.')}</p>${selectedEntries.map(item => readingChoiceHtml(item, insightIds, kind)).join('')}</div></div>`;
   }
   if (selectedEntries.length) return '';
@@ -877,7 +883,9 @@ function chartReadingCard(entry, kind, test, entries, insightIds) {
   const title = kind === 'first' ? 'Первый отсчёт' : 'Второй отсчёт';
   const hint = kind === 'first' ? 'Первый отсчёт выбирается левым кликом.' : 'Второй отсчёт выбирается правым кликом.';
   const selection = journalCardSelectionHtml(kind, entries, insightIds);
-  const heading = `<div class="journal-compare-card-heading"><strong>${translate(title)}</strong>${entry ? `<span><button type="button" class="text-button" data-journal-action="edit" data-id="${esc(entry.id)}">${translate('Изменить')}</button><button type="button" class="text-button danger-text" data-journal-action="delete" data-id="${esc(entry.id)}">${translate('Удалить')}</button></span>` : ''}</div>`;
+  const actions = entry ? `<button type="button" class="text-button" data-journal-action="edit" data-id="${esc(entry.id)}">${translate('Изменить')}</button><button type="button" class="text-button danger-text" data-journal-action="delete" data-id="${esc(entry.id)}">${translate('Удалить')}</button>` : '';
+  const hasSelection = Boolean(entry) || (journalHistoryState.selectedKind === kind && journalHistoryState.selectedStart != null);
+  const heading = comparisonCardHeading(title, kind, !hasSelection, actions);
   if (!entry) return `<div class="journal-compare-card ${kind}">${heading}<small class="journal-click-hint">${translate(hint)}</small>${selection}</div>`;
   const value = entry.values?.[test.id];
   const note = entry.notes?.[test.id] || entry.note;
@@ -1024,9 +1032,12 @@ function renderJournalChart(context = {}) {
   const second = selectableEntries.find(entry => entry.id === journalChartState.secondId);
   const comparison = journalComparison(first, second, test.id);
   const missingSelectedValue = first && second && (!hasJournalValue(first.values?.[test.id]) || !hasJournalValue(second.values?.[test.id]));
+  const parameterSelectionActive = Boolean(journalHistoryState.focusedTestId || journalHistoryState.insightKey
+    || (journalHistoryState.comparisonTableTestId && journalChartState.testId !== journalHistoryState.comparisonTableTestId));
+  const differenceHeading = comparisonCardHeading('Разница', 'parameter', !parameterSelectionActive);
   const difference = comparison
-    ? `<div class="journal-compare-card"><strong>Разница</strong><b>${comparison.delta > 0 ? '+' : ''}${fmt(comparison.delta, 3)} ${esc(translate(test.unit))}</b><small>${translate('Между отсчётами')}: ${fmt(Math.abs(comparison.days), 2)} ${translate('сут.')}</small>${comparison.perDay == null ? '' : `<small>${translate('В сутки')}: ${comparison.perDay > 0 ? '+' : ''}${fmt(comparison.perDay, 3)} ${esc(translate(test.unit))}</small>`}${chartParameterDifferences(first, second, test.id, periodEntries)}</div>`
-    : `<div class="journal-compare-card"><strong>Разница</strong><span>${translate(missingSelectedValue ? 'В выбранных отсчётах нет этого параметра.' : 'Выберите оба отсчёта.')}</span></div>`;
+    ? `<div class="journal-compare-card difference">${differenceHeading}<b>${comparison.delta > 0 ? '+' : ''}${fmt(comparison.delta, 3)} ${esc(translate(test.unit))}</b><small>${translate('Между отсчётами')}: ${fmt(Math.abs(comparison.days), 2)} ${translate('сут.')}</small>${comparison.perDay == null ? '' : `<small>${translate('В сутки')}: ${comparison.perDay > 0 ? '+' : ''}${fmt(comparison.perDay, 3)} ${esc(translate(test.unit))}</small>`}${chartParameterDifferences(first, second, test.id, periodEntries)}</div>`
+    : `<div class="journal-compare-card difference">${differenceHeading}<span>${translate(missingSelectedValue ? 'В выбранных отсчётах нет этого параметра.' : 'Выберите оба отсчёта.')}</span></div>`;
   $('#journal-chart-comparison').innerHTML = `${chartReadingCard(first, 'first', test, selectableEntries, insightIds)}${chartReadingCard(second, 'second', test, selectableEntries, insightIds)}${difference}`;
   requestAnimationFrame(() => {
     const scroll = $('#journal-chart .journal-chart-scroll');
@@ -1802,6 +1813,37 @@ $('#journal-calendar-up').addEventListener('click', () => {
 });
 let syncingChartDetails = false;
 $('#journal-chart-comparison').addEventListener('click', event => {
+  const back = event.target.closest('[data-comparison-back]');
+  if (back) {
+    journalHistoryState.selectedKind = back.dataset.comparisonBack === 'second' ? 'second' : 'first';
+    journalHistoryState.selectedEntryId = null;
+    journalChartState[`${journalHistoryState.selectedKind}Id`] = null;
+    renderJournalList();
+    return;
+  }
+  const clear = event.target.closest('[data-comparison-clear]');
+  if (clear) {
+    const target = clear.dataset.comparisonClear;
+    if (target === 'parameter') {
+      const originalTestId = journalHistoryState.comparisonTableTestId;
+      if (allJournalTests().some(test => test.id === originalTestId)) journalChartState.testId = originalTestId;
+      journalHistoryState.focusedTestId = '';
+      journalHistoryState.focusedGroup = '';
+      journalHistoryState.insightKey = '';
+      journalHistoryState.insightTestId = '';
+    } else {
+      const kind = target === 'second' ? 'second' : 'first';
+      journalChartState[kind === 'first' ? 'firstId' : 'secondId'] = null;
+      if (journalHistoryState.selectedKind === kind) {
+        journalHistoryState.selectedStart = null;
+        journalHistoryState.selectedEnd = null;
+        journalHistoryState.selectedLabel = '';
+        journalHistoryState.selectedEntryId = null;
+      }
+    }
+    renderJournalList();
+    return;
+  }
   const action = event.target.closest('[data-journal-action]');
   if (action) {
     const entry = state.journal.find(item => item.id === action.dataset.id);

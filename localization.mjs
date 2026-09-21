@@ -273,6 +273,7 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Наведите на ячейку, чтобы увидеть количество измерений. Нажмите, чтобы перейти от месяца к неделям, затем к дням. В масштабе дней левый клик по времени выбирает первый отсчёт, правый — второй.|Hover over a cell to see its measurement count. Click to move from months to weeks, then to days. In day view, left-click a time to select the first reading and right-click to select the second.|Über eine Zelle fahren, um die Anzahl der Messungen zu sehen. Klicken, um von Monaten zu Wochen und dann zu Tagen zu wechseln. In der Tagesansicht wählt ein Linksklick auf eine Uhrzeit den ersten Messwert und ein Rechtsklick den zweiten.|Pase el cursor por una celda para ver el número de mediciones. Haga clic para pasar de meses a semanas y después a días. En la vista diaria, un clic izquierdo en una hora selecciona la primera lectura y un clic derecho la segunda.
 ← Назад|← Back|← Zurück|← Atrás
 ← Назад к периоду|← Back to period|← Zurück zum Zeitraum|← Volver al periodo
+← Назад к списку измерений|← Back to measurement list|← Zurück zur Messwertliste|← Volver a la lista de mediciones
 Месяцы|Months|Monate|Meses
 Недели|Weeks|Wochen|Semanas
 Дни|Days|Tage|Días
