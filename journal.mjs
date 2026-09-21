@@ -122,6 +122,31 @@ export function journalTrendBuckets(entries, testId, scale = 'day') {
   return buckets;
 }
 
+export function journalPeriodStatistics(entries, testId) {
+  const readings = (entries ?? []).filter(entry => validReading(entry.values?.[testId]))
+    .sort((left, right) => new Date(left.at).getTime() - new Date(right.at).getTime());
+  if (!readings.length) return null;
+  const values = readings.map(entry => Number(entry.values[testId]));
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  const changes = readings.slice(1).map((entry, index) => {
+    const previous = readings[index];
+    const delta = Number(entry.values[testId]) - Number(previous.values[testId]);
+    return { previous, entry, delta, absolute: Math.abs(delta) };
+  });
+  const maximumChange = changes.reduce((largest, change) => !largest || change.absolute > largest.absolute ? change : largest, null);
+  return {
+    readings,
+    minimum,
+    maximum,
+    minimumEntries: readings.filter(entry => Number(entry.values[testId]) === minimum),
+    maximumEntries: readings.filter(entry => Number(entry.values[testId]) === maximum),
+    averageAbsoluteChange: changes.length ? changes.reduce((sum, change) => sum + change.absolute, 0) / changes.length : null,
+    maximumChange,
+    changes,
+  };
+}
+
 export function journalEntriesInPeriod(entries, { location = 'aquarium', period = 'month', from = '', to = '', now = new Date() } = {}) {
   const bounds = journalPeriodBounds(period, now, from, to);
   if (!bounds) return [];

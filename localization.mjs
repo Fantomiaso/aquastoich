@@ -217,6 +217,14 @@ GH и KH задаются отдельно по тестам. Если ввод�
 Выберите столбец правым кликом.|Select a bar with a right-click.|Balken mit Rechtsklick auswählen.|Seleccione una barra con el clic derecho.
 Первый отсчёт выбирается левым кликом.|The first reading is selected with a left-click.|Der erste Messwert wird mit Linksklick ausgewählt.|La primera lectura se selecciona con un clic izquierdo.
 Второй отсчёт выбирается правым кликом.|The second reading is selected with a right-click.|Der zweite Messwert wird mit Rechtsklick ausgewählt.|La segunda lectura se selecciona con un clic derecho.
+Статистика за период|Period statistics|Zeitraumstatistik|Estadísticas del periodo
+Минимум за период|Period minimum|Minimum im Zeitraum|Mínimo del periodo
+Максимум за период|Period maximum|Maximum im Zeitraum|Máximo del periodo
+Среднее изменение за период|Average change in period|Mittlere Änderung im Zeitraum|Cambio medio del periodo
+Максимальное изменение|Maximum change|Größte Änderung|Cambio máximo
+Недостаточно измерений|Not enough readings|Nicht genügend Messwerte|No hay suficientes mediciones
+Средний модуль изменения|Mean absolute change|Mittlere absolute Änderung|Cambio absoluto medio
+интервалов между соседними замерами|intervals between adjacent readings|Intervalle zwischen aufeinanderfolgenden Messungen|intervalos entre lecturas consecutivas
 Выберите оба отсчёта.|Select both readings.|Beide Messwerte auswählen.|Seleccione ambas lecturas.
 Между отсчётами|Between readings|Zwischen den Messwerten|Entre lecturas
 В сутки|Per day|Pro Tag|Por día

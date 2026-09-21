@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { estimateAquariumVolume } from './aquarium.mjs';
-import { JOURNAL_TESTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalPeriodBounds, journalSeries, journalTrendBuckets } from './journal.mjs';
+import { JOURNAL_TESTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets } from './journal.mjs';
 import { journalTable, journalXlsx } from './journal-export.mjs';
 import { MAX_LIGHT_CHANNELS, validLightChannels } from './light-channels.mjs';
 
@@ -53,6 +53,23 @@ test('journal trend keeps empty days and interpolates between measured buckets',
     [false, true, 115], [false, true, 125],
   ]);
   assert.equal(buckets[3].value, 135);
+});
+
+test('journal period statistics use every adjacent reading', () => {
+  const entries = [
+    { id: 'a', at: '2026-09-01T08:00', values: { GH: 6 } },
+    { id: 'b', at: '2026-09-04T08:00', values: { GH: 8 } },
+    { id: 'c', at: '2026-09-08T08:00', values: { GH: 5 } },
+    { id: 'd', at: '2026-09-12T08:00', values: { GH: 7 } },
+  ];
+  const statistics = journalPeriodStatistics(entries, 'GH');
+  assert.equal(statistics.minimum, 5);
+  assert.deepEqual(statistics.minimumEntries.map(entry => entry.id), ['c']);
+  assert.equal(statistics.maximum, 8);
+  assert.deepEqual(statistics.maximumEntries.map(entry => entry.id), ['b']);
+  assert.equal(statistics.averageAbsoluteChange, 7 / 3);
+  assert.equal(statistics.maximumChange.absolute, 3);
+  assert.deepEqual([statistics.maximumChange.previous.id, statistics.maximumChange.entry.id], ['b', 'c']);
 });
 
 test('chart comparison and complex-parameter components use the selected readings', () => {
