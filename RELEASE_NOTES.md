@@ -6,15 +6,11 @@ In 1.0a, each light fixture can have up to eight selected or custom channels, ea
 
 TDS readings can now be entered for source water and each aquarium, used as a dosing target with a range, and recorded in the log (including Excel export). Calculated TDS is an estimate from the starting reading and known added ions; verify it with a meter.
 
-The measurement log now includes a bar chart for the last week, month, three months, six months, year, or a manual date range. Left- and right-click select two readings for comparison. Composite readings show recorded related values such as Ca/Mg for GH and HCO₃/CO₃ for KH.
-
 **Русский:** Версия 1.0a ещё проходит тестирование. Доступны отдельные приложения для Windows, macOS и Linux семейства Debian. Программа рассчитывает реминерализацию, удобрения, маточные растворы, соотношения ионов, подмены, pH и динамику замеров. Добавлены профили аквариумов, расчёт объёма по размерам, отдельные журналы с настройками света и экспортом в Excel. Проверяйте результаты тестами воды. При первом запуске выбран английский; русский, немецкий и испанский доступны в приложении. [Инструкция](README.ru.md) · [Лицензия](LICENSE.md).
 
 В 1.0a к светильнику можно добавить до восьми каналов из списка или своих, установив каждому яркость от 0 до 100 %. По умолчанию каналы не заданы. Они сохраняются в журнале и экспорте Excel. Знак повышения или снижения в эффектах отделён от заряда иона; суммарные показатели отмечены Σ. Пресеты задают целевые параметры воды и допустимые диапазоны. Встроенные пресеты можно изменить и восстановить; свои — создать, изменить и удалить. Они сохраняются локально. Сначала программа подбирает точные значения, при необходимости использует диапазон. Поля диапазонов помещаются в узкой панели. Эти уточнения выпущены под той же версией.
 
 Теперь TDS вводится отдельно для исходной воды и каждого аквариума, задаётся как цель с диапазоном и сохраняется в журнале и экспорте Excel. Расчётный TDS — оценка по начальному замеру и известным добавленным ионам; результат проверяйте прибором.
-
-В журнал добавлена столбчатая диаграмма за неделю, месяц, три месяца, полгода, год или ручной диапазон. Левый и правый клик выбирают два отсчёта для сравнения. Для комплексных показателей выводятся записанные подпараметры, например Ca/Mg для GH и HCO₃/CO₃ для KH.
 
 **Deutsch:** Version 1.0a befindet sich noch in der Testphase. Eigenständige Pakete für Windows, macOS und Debian-basierte Linux-Systeme sind verfügbar. Die App berechnet Remineralisierung, Dünger, Stammlösungen, Ionenverhältnisse, Wasserwechsel, pH und Messverläufe. Neu sind Aquarienprofile mit Volumenschätzung nach Abmessungen sowie getrennte Messprotokolle mit Beleuchtung und Excel-Export. Ergebnisse bitte mit Wassertests prüfen. Englisch ist beim ersten Start voreingestellt; Deutsch, Russisch und Spanisch sind auswählbar. [Anleitung](README.de.md) · [Lizenz](LICENSE.md).
 
@@ -22,14 +18,10 @@ In 1.0a lassen sich bis zu acht vordefinierte oder eigene Lichtkanäle mit jewei
 
 TDS-Messwerte können nun für Ausgangswasser und jedes Aquarium eingegeben, als Ziel mit Bereich verwendet und im Messprotokoll samt Excel-Export gespeichert werden. Der berechnete TDS-Wert ist eine Schätzung aus Anfangsmessung und bekannten zugesetzten Ionen; mit einem Messgerät prüfen.
 
-Das Messprotokoll enthält nun ein Balkendiagramm für Woche, Monat, drei Monate, sechs Monate, Jahr oder einen eigenen Zeitraum. Links- und Rechtsklick wählen zwei Vergleichswerte. Zusammengesetzte Werte zeigen erfasste Unterparameter wie Ca/Mg für GH und HCO₃/CO₃ für KH.
-
 **Español:** La versión 1.0a sigue en fase de pruebas. Hay paquetes independientes para Windows, macOS y Linux de la familia Debian. La aplicación estima remineralización, fertilizantes, soluciones madre, proporciones iónicas, cambios de agua, pH y tendencias de medición. Ahora incluye perfiles de acuarios, volumen calculado por dimensiones y registros separados con iluminación y exportación a Excel. Compruebe los resultados con pruebas de agua. El inglés es el idioma inicial; también se ofrecen español, ruso y alemán. [Instrucciones](README.es.md) · [Licencia](LICENSE.md).
 
 En 1.0a se pueden añadir hasta ocho canales de luz predefinidos o personalizados y ajustar cada uno entre 0 y 100 %. Al principio no hay canales seleccionados; el registro y la exportación a Excel los guardan. Las etiquetas de efectos separan el aumento o la disminución de la carga iónica; los valores totales se marcan con Σ. Los preajustes fijan parámetros objetivo y rangos permitidos. Los preajustes integrados se pueden editar y restaurar; los propios se pueden crear, editar y eliminar. Se guardan localmente. Primero se buscan los valores exactos y, cuando hace falta, se usa el rango. Los campos de rango caben en paneles estrechos. Estas mejoras mantienen la misma versión.
 
 Ahora se pueden introducir lecturas de TDS para el agua de origen y cada acuario, usarlas como objetivo con rango y guardarlas en el registro y la exportación a Excel. El TDS calculado es una estimación de la lectura inicial y los iones añadidos conocidos; compruébelo con un medidor.
-
-El registro incorpora un gráfico de barras para semana, mes, tres meses, seis meses, año o un intervalo manual. Los clics izquierdo y derecho eligen dos lecturas para comparar. Los parámetros compuestos muestran subparámetros registrados, como Ca/Mg para GH y HCO₃/CO₃ para KH.
 
 These builds are unsigned testing builds. Source use is limited to noncommercial purposes with attribution and a link to the original project.

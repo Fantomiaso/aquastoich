@@ -70,9 +70,14 @@ export function journalPeriodBounds(period, now = new Date(), from = '', to = ''
 }
 
 export function journalSeries(entries, { testId, location = 'aquarium', period = 'month', from = '', to = '', now = new Date() } = {}) {
+  return journalEntriesInPeriod(entries, { location, period, from, to, now })
+    .filter(entry => validReading(entry.values?.[testId]));
+}
+
+export function journalEntriesInPeriod(entries, { location = 'aquarium', period = 'month', from = '', to = '', now = new Date() } = {}) {
   const bounds = journalPeriodBounds(period, now, from, to);
-  if (!bounds || !testId) return [];
-  return (entries ?? []).filter(entry => entry.location === location && validReading(entry.values?.[testId]))
+  if (!bounds) return [];
+  return (entries ?? []).filter(entry => entry.location === location)
     .filter(entry => {
       const timestamp = new Date(entry.at).getTime();
       return Number.isFinite(timestamp) && timestamp >= bounds.start && timestamp <= bounds.end;
@@ -89,7 +94,7 @@ export function journalComparison(first, second, testId) {
   if (!first || !second || !validReading(first.values?.[testId]) || !validReading(second.values?.[testId])) return null;
   const firstAt = new Date(first.at).getTime();
   const secondAt = new Date(second.at).getTime();
-  if (!Number.isFinite(firstAt) || !Number.isFinite(secondAt)) return null;
+  if (!Number.isFinite(firstAt) || !Number.isFinite(secondAt) || firstAt > secondAt) return null;
   const firstValue = Number(first.values[testId]);
   const secondValue = Number(second.values[testId]);
   const days = (secondAt - firstAt) / 86400000;

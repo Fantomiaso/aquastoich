@@ -6,6 +6,8 @@
 
 **La versión 1.0a está en fase de pruebas.** AquaStoich calcula la remineralización del agua de acuarios de agua dulce, los fertilizantes y las soluciones madre. Compruebe las dosis y el pH con mediciones antes de usar el agua preparada.
 
+La versión de desarrollo `1.1a` está reservada localmente y aún no se ha publicado. El trabajo actual del gráfico y el calendario figura en el [registro de cambios](CHANGELOG.es.md).
+
 ## Descarga e instalación
 
 Descargue el paquete correspondiente de la [versión 1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a): instalador o `.exe` portátil para Windows, `.dmg` para macOS, `.deb` para Debian/Ubuntu o `.AppImage` para Linux. El primer inicio utiliza inglés; en la barra superior puede elegir inglés, ruso, alemán o español. Los paquetes de prueba no están firmados con un certificado de desarrollador y el sistema operativo puede pedir confirmación.

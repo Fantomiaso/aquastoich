@@ -11,7 +11,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand"><span class="brand-mark">A</span><div><strong>AquaStoich</strong><span>Расчёт воды для подмены</span></div></div>
-      <div class="top-actions"><label class="aquarium-switch"><span>Аквариум</span><select id="active-aquarium" aria-label="Выбрать аквариум"></select></label><span class="testing-badge">Версия 1.0a · тестирование</span><label class="language-picker"><span>Язык</span><select id="language" aria-label="Язык приложения"><option value="en">English</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="es">Español</option></select></label><button id="copy-summary" class="button quiet" type="button">Скопировать расчёт</button><button id="reset" class="button quiet" type="button">Новый расчёт</button></div>
+      <div class="top-actions"><label class="aquarium-switch"><span>Аквариум</span><select id="active-aquarium" aria-label="Выбрать аквариум"></select></label><span class="testing-badge">Версия 1.1a · тестирование</span><label class="language-picker"><span>Язык</span><select id="language" aria-label="Язык приложения"><option value="en">English</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="es">Español</option></select></label><button id="copy-summary" class="button quiet" type="button">Скопировать расчёт</button><button id="reset" class="button quiet" type="button">Новый расчёт</button></div>
     </header>
 
     <nav class="app-tabs" aria-label="Разделы программы">
@@ -154,7 +154,18 @@
           </section>
           <div class="section-heading split"><h2>История измерений</h2><div class="journal-history-actions"><span id="journal-count" class="count-pill"></span><button id="journal-export" class="button secondary" type="button">Экспорт в Excel</button></div></div>
           <p class="help">Δ от предыдущего замера того же теста и воды; скорость пересчитана на 24 часа. Это чистое изменение: внесения и подмены не вычитаются.</p>
-          <div id="journal-list" class="journal-list"></div>
+          <div class="journal-history-toolbar"><label class="mini-field"><span>Тип параметров</span><select id="journal-history-type"><option value="all">Все параметры</option><option value="physical">Физические параметры</option><option value="nutrient">Ионы и питательные вещества</option><option value="custom">Пользовательские тесты</option><option value="light">Настройки света</option></select></label><span id="journal-history-period" class="journal-history-period"></span></div>
+          <div class="journal-calendar-layout">
+            <section class="journal-calendar-panel" aria-labelledby="journal-calendar-title">
+              <div class="journal-calendar-heading"><button id="journal-calendar-up" class="text-button" type="button" hidden>← Назад</button><strong id="journal-calendar-title">Календарь измерений</strong><span id="journal-calendar-scale" class="count-pill"></span></div>
+              <p class="fine-print">Наведите на ячейку, чтобы увидеть количество измерений. Нажмите, чтобы перейти от месяца к неделям, затем к дням.</p>
+              <div id="journal-calendar" class="journal-calendar"></div>
+            </section>
+            <section class="journal-calendar-readings" aria-labelledby="journal-readings-title">
+              <div class="journal-calendar-heading"><strong id="journal-readings-title">Параметры измерения</strong><span id="journal-readings-count" class="count-pill"></span></div>
+              <div id="journal-list" class="journal-list"></div>
+            </section>
+          </div>
         </div>
       </div>
     </section>

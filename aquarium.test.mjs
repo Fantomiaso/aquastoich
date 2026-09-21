@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { estimateAquariumVolume } from './aquarium.mjs';
-import { JOURNAL_TESTS, journalComparison, journalComponents, journalDifference, journalPeriodBounds, journalSeries } from './journal.mjs';
+import { JOURNAL_TESTS, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalPeriodBounds, journalSeries } from './journal.mjs';
 import { journalTable, journalXlsx } from './journal-export.mjs';
 import { MAX_LIGHT_CHANNELS, validLightChannels } from './light-channels.mjs';
 
@@ -35,6 +35,8 @@ test('journal chart filters standard and manual periods chronologically', () => 
   assert.deepEqual(week.map(entry => entry.id), ['middle', 'new']);
   const manual = journalSeries(entries, { testId: 'GH', period: 'manual', location: 'aquarium', from: '2026-08-01', to: '2026-09-18' });
   assert.deepEqual(manual.map(entry => entry.id), ['old', 'middle']);
+  assert.deepEqual(journalEntriesInPeriod(entries, { period: 'week', location: 'aquarium', now: new Date('2026-09-21T12:00') })
+    .map(entry => entry.id), ['middle', 'new']);
   assert.equal(journalPeriodBounds('manual', new Date(), '2026-09-20', '2026-09-19'), null);
 });
 
@@ -43,6 +45,7 @@ test('chart comparison and complex-parameter components use the selected reading
   const second = { at: '2026-09-20T12:00', values: { GH: 6, Ca: 35, Mg: 7 } };
   assert.deepEqual(journalComponents(first, 'GH'), [{ id: 'Ca', value: 30 }, { id: 'Mg', value: 6 }]);
   assert.deepEqual(journalComparison(first, second, 'GH'), { firstValue: 5, secondValue: 6, delta: 1, days: 2, perDay: 0.5 });
+  assert.equal(journalComparison(second, first, 'GH'), null);
   assert.equal(journalComparison(first, null, 'GH'), null);
 });
 

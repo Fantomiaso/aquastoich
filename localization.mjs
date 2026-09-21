@@ -3,6 +3,7 @@
 const rows = `Расчёт воды для подмены|Aquarium water calculator|Aquarienwasser-Rechner|Calculadora de agua para acuarios
 Версия 1.0 · тестирование|Version 1.0 · testing|Version 1.0 · Testphase|Versión 1.0 · en pruebas
 Версия 1.0a · тестирование|Version 1.0a · testing|Version 1.0a · Testphase|Versión 1.0a · en pruebas
+Версия 1.1a · тестирование|Version 1.1a · testing|Version 1.1a · Testphase|Versión 1.1a · en pruebas
 Язык приложения|Application language|App-Sprache|Idioma de la aplicación
 Язык|Language|Sprache|Idioma
 Скопировать расчёт|Copy calculation|Berechnung kopieren|Copiar cálculo
@@ -212,10 +213,33 @@ GH и KH задаются отдельно по тестам. Если ввод�
 В сутки|Per day|Pro Tag|Por día
 сут.|days|Tage|días
 Связанные подпараметры|Related subparameters|Zugehörige Unterparameter|Subparámetros relacionados
+Остальные параметры|Other parameters|Weitere Parameter|Otros parámetros
+Разница связанных подпараметров|Related subparameter differences|Differenzen der zugehörigen Unterparameter|Diferencias de subparámetros relacionados
+Разница остальных параметров|Other parameter differences|Differenzen der weiteren Parameter|Diferencias de otros parámetros
 Подпараметры в этом замере не указаны.|No subparameters were recorded in this measurement.|Für diese Messung wurden keine Unterparameter erfasst.|No se registraron subparámetros en esta medición.
 нажмите для детализации|click for details|für Details anklicken|pulse para ver detalles
 Укажите начало и конец периода.|Set the period start and end.|Beginn und Ende des Zeitraums angeben.|Indique el inicio y el final del periodo.
 В выбранном периоде нет измерений этого параметра.|There are no readings for this parameter in the selected period.|Im gewählten Zeitraum gibt es keine Messwerte für diesen Parameter.|No hay mediciones de este parámetro en el periodo seleccionado.
+Первый отсчёт не может быть позже второго.|The first reading cannot be later than the second.|Der erste Messwert darf nicht nach dem zweiten liegen.|La primera lectura no puede ser posterior a la segunda.
+Второй отсчёт не может быть раньше первого.|The second reading cannot be earlier than the first.|Der zweite Messwert darf nicht vor dem ersten liegen.|La segunda lectura no puede ser anterior a la primera.
+Тип параметров|Parameter type|Parametertyp|Tipo de parámetro
+Все параметры|All parameters|Alle Parameter|Todos los parámetros
+Физические параметры|Physical parameters|Physikalische Parameter|Parámetros físicos
+Ионы и питательные вещества|Ions and nutrients|Ionen und Nährstoffe|Iones y nutrientes
+Пользовательские тесты|Custom tests|Eigene Tests|Pruebas personalizadas
+Календарь измерений|Measurement calendar|Messkalender|Calendario de mediciones
+Параметры измерения|Measurement parameters|Messparameter|Parámetros de medición
+Наведите на ячейку, чтобы увидеть количество измерений. Нажмите, чтобы перейти от месяца к неделям, затем к дням.|Hover over a cell to see its measurement count. Click to move from months to weeks, then to days.|Über eine Zelle fahren, um die Anzahl der Messungen zu sehen. Klicken, um von Monaten zu Wochen und dann zu Tagen zu wechseln.|Pase el cursor por una celda para ver el número de mediciones. Haga clic para pasar de meses a semanas y después a días.
+← Назад|← Back|← Zurück|← Atrás
+Месяцы|Months|Monate|Meses
+Недели|Weeks|Wochen|Semanas
+Дни|Days|Tage|Días
+Нажмите, чтобы приблизить|Click to zoom in|Zum Vergrößern klicken|Haga clic para ampliar
+Для выбранного периода нет календарных ячеек.|There are no calendar cells for the selected period.|Für den gewählten Zeitraum gibt es keine Kalenderzellen.|No hay celdas de calendario para el periodo seleccionado.
+Укажите корректный период.|Enter a valid period.|Gültigen Zeitraum angeben.|Indique un periodo válido.
+В выбранной ячейке нет параметров этого типа.|The selected cell has no parameters of this type.|Die ausgewählte Zelle enthält keine Parameter dieses Typs.|La celda seleccionada no contiene parámetros de este tipo.
+В выбранном периоде нет измерений.|There are no measurements in the selected period.|Im gewählten Zeitraum gibt es keine Messungen.|No hay mediciones en el periodo seleccionado.
+Сравнение с|Compared with|Verglichen mit|Comparado con
 Пока нет измерений. Добавьте первый замер слева.|No measurements yet. Add the first reading on the left.|Noch keine Messungen. Links die erste Messung hinzufügen.|Aún no hay mediciones. Añada la primera a la izquierda.
 первый замер|first reading|erste Messung|primera medición
 прирост|increase|Anstieg|aumento

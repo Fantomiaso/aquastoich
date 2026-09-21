@@ -6,6 +6,8 @@
 
 **Version 1.0a is a testing release.** AquaStoich calculates freshwater aquarium remineralization, fertilizer doses, stock solutions, ion ratios, and water changes. Verify doses and pH with measurements before using the prepared water.
 
+Development version `1.1a` is reserved locally and has not been published. See the [changelog](CHANGELOG.md) for its current measurement-chart and calendar work.
+
 ## Download and install
 
 Download the matching package from [release 1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a): Windows installer or portable `.exe`, macOS `.dmg`, Debian/Ubuntu `.deb`, or Linux `.AppImage`. The first launch uses English; the language selector in the top bar offers English, Russian, German, and Spanish. The testing builds are unsigned, so your operating system may ask you to confirm opening them.

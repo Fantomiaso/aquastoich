@@ -6,6 +6,8 @@
 
 **Version 1.0a befindet sich in der Testphase.** AquaStoich berechnet die Remineralisierung von Süßwasser-Aquarien, Dünger und Stammlösungen. Dosierungen und pH sollten vor der Verwendung des Wassers durch Messungen überprüft werden.
 
+Die Entwicklungsversion `1.1a` ist lokal reserviert und noch nicht veröffentlicht. Der aktuelle Stand von Messdiagramm und Kalender steht im [Änderungsprotokoll](CHANGELOG.de.md).
+
 ## Download und Installation
 
 Laden Sie im [Release 1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a) das passende Paket herunter: Windows-Installer oder portable `.exe`, macOS-`.dmg`, Debian/Ubuntu-`.deb` oder Linux-`.AppImage`. Beim ersten Start ist Englisch eingestellt. Über die Sprachauswahl oben können Sie Deutsch, Englisch, Russisch oder Spanisch wählen. Die Testpakete sind nicht mit einem Entwicklerzertifikat signiert; das Betriebssystem kann daher eine Bestätigung verlangen.
