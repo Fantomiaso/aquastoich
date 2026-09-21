@@ -2,9 +2,9 @@
 
 English · [Русский](CHANGELOG.ru.md) · [Deutsch](CHANGELOG.de.md) · [Español](CHANGELOG.es.md)
 
-## 1.1a — Unreleased
+## 0.1.1a — Testing release
 
-This version is reserved for the measurement analysis and calendar work. It remains a local testing build and has not been uploaded or published.
+This testing release introduces measurement analysis, the calendar history, comparison statistics, and the related readability and layout work.
 
 - Added a measurement bar chart for the last week, month, three months, six months, year, or a manual date range. Ranges up to three months retain every calendar day; missing days are shown as interpolated bars under a trend envelope.
 - Added period minimum, maximum, mean absolute adjacent-reading change, and maximum adjacent-reading change. Once both comparison readings are selected, statistics use every whole day between them; otherwise they use the current chart period.
@@ -24,8 +24,9 @@ This version is reserved for the measurement analysis and calendar work. It rema
 - Added a persistent theme selector to the top bar with light, dark, and colour-vision-safe modes. Clickable values and text actions in lists now remain visibly distinct without requiring a hover.
 - Added a Clear selection control for chart comparisons and highlights. Parameter switching is available only from the Difference card; values in the first and second reading cards are informational. A parameter selected on the right remains in both complete reading lists, where it is highlighted, while its main value remains above the list.
 - Kept the clicked row in its original Difference-table section while the chart changes parameter. Changing the chart parameter no longer clears the first and second readings, and selecting a reading no longer recentres or shifts the chart.
+- Moved the nested-list Back button into the card header between Clear selection and Edit, with responsive wrapping at narrow widths.
 - Fixed packaged resource loading and window display so the standalone portable build opens reliably from its ASAR archive.
 
-## 1.0a — Testing release
+## 0.1.0a — Testing release
 
-The `1.0a` tag is fixed at the last build before measurement charts were introduced. It includes aquarium profiles, geometry-based volume estimates, per-aquarium measurement logs, lighting channels, Excel export, TDS targets and logging, editable presets, and the dosing and remineralisation calculator.
+The `0.1.0a` tag is fixed at the last build before measurement charts were introduced. The same build was previously published as `1.0a`; only its version label was corrected. It includes aquarium profiles, geometry-based volume estimates, per-aquarium measurement logs, lighting channels, Excel export, TDS targets and logging, editable presets, and the dosing and remineralisation calculator.

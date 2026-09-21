@@ -2,9 +2,9 @@
 
 [English](CHANGELOG.md) · [Русский](CHANGELOG.ru.md) · [Deutsch](CHANGELOG.de.md) · Español
 
-## 1.1a — sin publicar
+## 0.1.1a — versión de prueba
 
-Esta versión queda reservada para el análisis de mediciones y el registro con calendario. Sigue siendo una compilación local de prueba y aún no se ha subido ni publicado.
+Esta versión de prueba incorpora el análisis de mediciones, el historial con calendario, estadísticas de comparación y las mejoras asociadas de legibilidad y maquetación.
 
 - Se añadió un gráfico de barras para la última semana, mes, tres meses, seis meses, año o un intervalo manual. En periodos de hasta tres meses se conserva cada día; los días sin mediciones aparecen como barras interpoladas bajo una envolvente de tendencia.
 - Se añadieron el mínimo, el máximo, el cambio absoluto medio entre lecturas consecutivas y el cambio máximo. Al seleccionar ambas lecturas de comparación, las estadísticas abarcan todos los días completos entre ellas; en caso contrario usan el periodo actual del gráfico.
@@ -24,8 +24,9 @@ Esta versión queda reservada para el análisis de mediciones y el registro con 
 - La barra superior incluye ahora un selector persistente de tema claro, oscuro o adaptado para daltonismo. Los valores y las acciones de texto que se pueden pulsar en las listas siguen siendo visibles sin pasar el cursor.
 - Se añadió un botón para borrar la comparación y el resaltado. El cambio de parámetro solo está disponible en la tarjeta Diferencia de la derecha; los valores de la primera y segunda lectura son informativos. El parámetro elegido a la derecha permanece resaltado en ambas listas completas y su valor principal sigue encima de la lista.
 - La fila pulsada permanece en su sección original de la tabla Diferencia al cambiar el parámetro del gráfico. Cambiar de parámetro ya no borra la primera ni la segunda lectura, y seleccionar una medición no centra ni desplaza el gráfico.
+- El botón Volver de la lista anidada se trasladó a la cabecera de la tarjeta, entre Borrar selección y Editar; en tarjetas estrechas los controles se distribuyen sin solaparse.
 - Se corrigieron la carga de recursos y la presentación de la ventana en la versión empaquetada para que la compilación portable autónoma se abra de forma fiable desde el archivo ASAR.
 
-## 1.0a — versión de prueba
+## 0.1.0a — versión de prueba
 
-La etiqueta `1.0a` queda fijada en la última compilación anterior a los gráficos de mediciones. Incluye perfiles de acuario, volumen calculado por geometría, registros separados, canales de luz, exportación a Excel, objetivos y registro de TDS, preajustes editables y el cálculo de dosificación y remineralización.
+La etiqueta `0.1.0a` queda fijada en la última compilación anterior a los gráficos de mediciones. La misma compilación se publicó antes como `1.0a`; solo se corrigió la etiqueta de versión. Incluye perfiles de acuario, volumen calculado por geometría, registros separados, canales de luz, exportación a Excel, objetivos y registro de TDS, preajustes editables y el cálculo de dosificación y remineralización.

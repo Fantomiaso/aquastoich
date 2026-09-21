@@ -2,9 +2,9 @@
 
 [English](CHANGELOG.md) · [Русский](CHANGELOG.ru.md) · Deutsch · [Español](CHANGELOG.es.md)
 
-## 1.1a — unveröffentlicht
+## 0.1.1a — Testversion
 
-Diese Version ist für Messwertanalyse und Kalenderprotokoll reserviert. Sie bleibt ein lokaler Test-Build und wurde noch nicht hochgeladen oder veröffentlicht.
+Diese Testversion führt Messwertanalyse, Kalenderverlauf, Vergleichsstatistiken sowie die zugehörigen Verbesserungen an Lesbarkeit und Layout ein.
 
 - Balkendiagramm für Woche, Monat, drei Monate, sechs Monate, Jahr oder einen eigenen Datumsbereich hinzugefügt. Bis zu drei Monate bleibt jeder Kalendertag erhalten; fehlende Tage erscheinen als interpolierte Balken unter einer Trendhüllkurve.
 - Minimum, Maximum, mittlere absolute Änderung zwischen aufeinanderfolgenden Messungen und größte Änderung hinzugefügt. Sobald beide Vergleichsmessungen gewählt sind, umfasst die Statistik alle vollständigen Tage dazwischen; andernfalls gilt der aktuelle Diagrammzeitraum.
@@ -24,8 +24,9 @@ Diese Version ist für Messwertanalyse und Kalenderprotokoll reserviert. Sie ble
 - Die obere Leiste enthält nun eine gespeicherte Auswahl für ein helles, dunkles oder farbsehschwächengerechtes Design. Anklickbare Werte und Textaktionen in Listen bleiben auch ohne Mauszeiger deutlich erkennbar.
 - Eine Schaltfläche setzt Vergleich und Hervorhebung zurück. Der Parameterwechsel ist nur in der rechten Differenzkarte möglich; Werte der ersten und zweiten Messung sind rein informativ. Der rechts gewählte Parameter bleibt in beiden vollständigen Messwertlisten hervorgehoben und sein Hauptwert steht weiterhin über der Liste.
 - Die angeklickte Zeile bleibt beim Parameterwechsel in ihrem ursprünglichen Abschnitt der Differenztabelle. Ein anderer Diagrammparameter löscht die erste und zweite Messung nicht mehr, und die Auswahl einer Messung verschiebt oder zentriert das Diagramm nicht.
+- Die Zurück-Schaltfläche der verschachtelten Liste steht nun in der Kartenkopfzeile zwischen Auswahl aufheben und Bearbeiten; bei schmalen Karten werden die Bedienelemente sauber umgebrochen.
 - Ressourcenladen und Fensteranzeige der gepackten Version wurden korrigiert, damit der eigenständige portable Build zuverlässig aus dem ASAR-Archiv startet.
 
-## 1.0a — Testversion
+## 0.1.0a — Testversion
 
-Das Tag `1.0a` ist auf den letzten Build vor Einführung der Messdiagramme festgelegt. Enthalten sind Aquarienprofile, Volumenberechnung nach Geometrie, getrennte Messprotokolle, Lichtkanäle, Excel-Export, TDS-Ziele und -Protokoll, bearbeitbare Vorlagen sowie Dosierungs- und Remineralisierungsberechnung.
+Das Tag `0.1.0a` ist auf den letzten Build vor Einführung der Messdiagramme festgelegt. Derselbe Build war zuvor als `1.0a` veröffentlicht; nur die Versionsbezeichnung wurde korrigiert. Enthalten sind Aquarienprofile, Volumenberechnung nach Geometrie, getrennte Messprotokolle, Lichtkanäle, Excel-Export, TDS-Ziele und -Protokoll, bearbeitbare Vorlagen sowie Dosierungs- und Remineralisierungsberechnung.

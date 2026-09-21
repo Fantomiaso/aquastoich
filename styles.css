@@ -368,13 +368,12 @@ tbody td:last-child { color: #173f2c; font-weight: 750; }
 .journal-compare-card.first { border-color: #b9dde1; background: #f0f8f8; }
 .journal-compare-card.second { border-color: #ecd6b6; background: #fff9f0; }
 .journal-compare-card strong { display: block; margin-bottom: 3px; color: var(--journal-heading); font-size: 12px; }
-.journal-compare-card-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: "title clear actions"; align-items: center; gap: 5px 8px; min-height: 30px; }
+.journal-compare-card-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto auto minmax(0, 1fr); grid-template-areas: "title clear back actions"; align-items: center; gap: 5px 8px; min-height: 30px; }
 .journal-compare-card-heading strong { grid-area: title; margin-bottom: 0; }
 .journal-card-actions { grid-area: actions; display: flex; justify-content: flex-end; gap: 5px; }
 .journal-compare-card-heading .text-button { font-size: 10.5px; }
 .journal-card-clear { grid-area: clear; justify-self: center; padding: 4px 8px; border-width: 1px; font-size: 10.5px; white-space: nowrap; }
-.journal-card-back { display: flex; justify-content: center; margin: 6px 0 8px; }
-.journal-card-back .button { padding: 4px 8px; font-size: 10.5px; }
+.journal-card-back { grid-area: back; justify-self: center; padding: 4px 8px; font-size: 10.5px; white-space: nowrap; }
 .journal-compare-card b { color: var(--journal-value); font-size: 12px; }
 .journal-compare-card small { display: block; margin-top: 3px; color: var(--journal-muted); }
 .journal-compare-card .journal-click-hint { margin: 2px 0 5px; color: var(--journal-text); font-weight: 650; }
@@ -747,20 +746,28 @@ html[data-theme="colorblind"] { color: #1d3442; background: #eef5fa; }
 input::placeholder,
 textarea::placeholder { color: #617669; opacity: 1; }
 
+@container (max-width: 520px) {
+  .journal-compare-card-heading {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "title clear back" "actions actions actions";
+  }
+  .journal-card-actions { min-height: 18px; }
+}
+
 @container (max-width: 360px) {
   .journal-compare-card-heading {
     grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "title clear" "actions actions";
+    grid-template-areas: "title clear" "back actions";
   }
-  .journal-card-actions { min-height: 18px; }
 }
 
 @container (max-width: 230px) {
   .journal-compare-card-heading {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "title" "clear" "actions";
+    grid-template-areas: "title" "clear" "back" "actions";
   }
-  .journal-card-clear { justify-self: start; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .journal-card-clear,
+  .journal-card-back { justify-self: start; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 }
 
 [data-theme="dark"] input::placeholder,

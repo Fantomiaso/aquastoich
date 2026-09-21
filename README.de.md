@@ -2,15 +2,15 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
-## [⬇ AquaStoich 1.0a herunterladen · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a)
+## [⬇ AquaStoich 0.1.1a herunterladen · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a)
 
-**Version 1.0a befindet sich in der Testphase.** AquaStoich berechnet die Remineralisierung von Süßwasser-Aquarien, Dünger und Stammlösungen. Dosierungen und pH sollten vor der Verwendung des Wassers durch Messungen überprüft werden.
+**Version 0.1.1a befindet sich in der Testphase.** AquaStoich berechnet Remineralisierung, Dünger, Stammlösungen, Ionenverhältnisse, Wasserwechsel und Messverläufe. Dosierungen, pH und interpretierte Trends sollten mit tatsächlichen Messungen überprüft werden.
 
-Die Entwicklungsversion `1.1a` ist lokal reserviert und noch nicht veröffentlicht. Der aktuelle Stand von Messdiagramm und Kalender steht im [Änderungsprotokoll](CHANGELOG.de.md).
+Die vorherige Testversion bleibt als [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) verfügbar. Die Unterschiede stehen im [Änderungsprotokoll](CHANGELOG.de.md).
 
 ## Download und Installation
 
-Laden Sie im [Release 1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a) das passende Paket herunter: Windows-Installer oder portable `.exe`, macOS-`.dmg`, Debian/Ubuntu-`.deb` oder Linux-`.AppImage`. Beim ersten Start ist Englisch eingestellt. Über die Sprachauswahl oben können Sie Deutsch, Englisch, Russisch oder Spanisch wählen. Die Testpakete sind nicht mit einem Entwicklerzertifikat signiert; das Betriebssystem kann daher eine Bestätigung verlangen.
+Laden Sie im [Release 0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) das passende Paket herunter: Windows-Installer oder portable `.exe`, macOS-`.dmg` oder `.zip`, Debian/Ubuntu-`.deb` oder Linux-`.AppImage`. Beim ersten Start ist Englisch eingestellt. Über die Sprachauswahl oben können Sie Deutsch, Englisch, Russisch oder Spanisch wählen. Die Testpakete sind nicht mit einem Entwicklerzertifikat signiert; das Betriebssystem kann daher eine Bestätigung verlangen.
 
 Die Anwendung arbeitet offline ohne Konto. Berechnung, eigene Stoffe, Messprotokoll und Sprache werden im Anwendungsdatenverzeichnis des jeweiligen Benutzers gespeichert:
 
@@ -60,7 +60,9 @@ Unter **Stoffdatenbank** können trockene Stoffe, trockene Mischungen und fertig
 
 Im **Messprotokoll** Aquarium und Wasserquelle wählen, Tropfentestwerte sowie eine allgemeine Notiz oder Notizen zu einzelnen Tests eintragen. Die Uhrzeit wird beim Speichern automatisch gesetzt, sofern nicht die manuelle Eingabe gewählt ist. Fehlende Tests können mit eigener Einheit ergänzt werden. Unterschiede beziehen sich nur auf denselben Test, dieselbe Wasserquelle und dasselbe Aquarium. Die Tagesrate ist eine Nettoänderung der Konzentration; Dosierungen, Wasserwechsel, Verdünnung und Messfehler werden dabei nicht herausgerechnet. Beleuchtung und bis zu acht Kanäle werden je Eintrag gespeichert und nach Excel exportiert.
 
-Das Balkendiagramm zeigt die letzte Woche, den letzten Monat, drei Monate, sechs Monate, ein Jahr oder einen manuell gewählten Datumsbereich. Parameter und Messort auswählen. Ein Linksklick auf einen Balken setzt den ersten Messwert, ein Rechtsklick den zweiten; Werte, Zeitabstand, vorzeichenbehaftete Differenz und tägliche Änderung stehen darunter. Zusammengesetzte Werte zeigen, sofern erfasst, zugehörige Messungen desselben Eintrags: GH zeigt Ca/Mg, KH zeigt HCO₃/CO₃, Gesamtammoniak zeigt NH₄/NH₃ und TDS zeigt Leitfähigkeit sowie erfasste Haupt-Ionen. Diese Angaben erläutern den Messwert und werden wegen unterschiedlicher Einheiten und Bedeutung nicht addiert.
+Über dem Messverlauf wechselt **Kalender / Diagramm** die Ansicht. Der Zeitraum umfasst Woche, Monat, drei Monate, sechs Monate, Jahr oder einen eigenen Datumsbereich und begrenzt zugleich Kalender, Statistik, sichtbare Einträge und Excel-Export. Lange Bereiche beginnen mit kompakten Monatszellen; ein Klick öffnet das klassische Tagesraster, **Zurück zum Zeitraum** führt zur Übersicht. Ein Tag mit mehreren Messungen öffnet ihre Liste in der passenden Vergleichskarte. In der Diagrammansicht bleiben bei bis zu drei Monaten auch Tage ohne Messung erhalten und werden unter der Hüllkurve linear interpoliert; ein Klick auf einen leeren Tag zeigt die interpolierten Werte und Quellzeitpunkte.
+
+Linksklick auf Tag oder Balken setzt den ersten Messwert, Rechtsklick den zweiten; der erste darf nicht später liegen. Alle drei Karten verwenden gleich ausgerichtete Spalten. Zugehörige Unterparameter und weitere Werte sind einklappbar, öffnen sich in allen Karten gemeinsam und speichern ihren Zustand. GH zeigt Ca/Mg, KH HCO₃/CO₃, Gesamtammoniak NH₄/NH₃ und TDS Leitfähigkeit sowie Haupt-Ionen; diese Erläuterungen werden nicht addiert. Die Periodenkarten zeigen Minimum, Maximum, mittlere absolute Änderung benachbarter Messungen und größte Änderung. Minimum, Maximum und größte Änderung markieren per Klick ihre Ausgangszellen; der Mittelwert ist rein informativ. **Auswahl aufheben** leert die jeweilige Karte. Nach der Wahl aus einem Tag mit mehreren Messungen steht **Zurück zur Messwertliste** zwischen Aufheben und Bearbeiten.
 
 ## Zusammensetzungsdaten und Methodik
 

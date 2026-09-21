@@ -857,8 +857,9 @@ function chartParameterDifferences(first, second, testId, periodEntries) {
   return `${primary}${chartDifferenceSection(first, second, related, 'Разница связанных подпараметров', 'related', periodEntries)}${chartDifferenceSection(first, second, other, 'Разница остальных параметров', 'other', periodEntries)}`;
 }
 
-function comparisonCardHeading(title, clearKind, disabled, actions = '') {
-  return `<div class="journal-compare-card-heading"><strong>${translate(title)}</strong><button type="button" class="button secondary journal-card-clear" data-comparison-clear="${esc(clearKind)}"${disabled ? ' disabled' : ''}>${translate('Сбросить выделение')}</button><span class="journal-card-actions">${actions}</span></div>`;
+function comparisonCardHeading(title, clearKind, disabled, actions = '', backKind = '') {
+  const back = backKind ? `<button type="button" class="button secondary journal-card-back" data-comparison-back="${esc(backKind)}">${translate('← Назад к списку измерений')}</button>` : '';
+  return `<div class="journal-compare-card-heading"><strong>${translate(title)}</strong><button type="button" class="button secondary journal-card-clear" data-comparison-clear="${esc(clearKind)}"${disabled ? ' disabled' : ''}>${translate('Сбросить выделение')}</button>${back}<span class="journal-card-actions">${actions}</span></div>`;
 }
 
 function journalCardSelectionHtml(kind, entries, insightIds) {
@@ -867,7 +868,7 @@ function journalCardSelectionHtml(kind, entries, insightIds) {
     .sort((left, right) => new Date(left.at) - new Date(right.at));
   if (selectedEntries.length > 1) {
     const chosen = journalHistoryState.selectedEntryId && selectedEntries.some(item => item.id === journalHistoryState.selectedEntryId);
-    if (chosen) return `<div class="journal-card-back"><button type="button" class="button secondary" data-comparison-back="${esc(kind)}">${translate('← Назад к списку измерений')}</button></div>`;
+    if (chosen) return '';
     return `<div class="journal-card-selection"><small>${esc(journalHistoryState.selectedLabel)}</small><div class="journal-reading-choices"><p>${translate('Выберите измерение для этого отсчёта.')}</p>${selectedEntries.map(item => readingChoiceHtml(item, insightIds, kind)).join('')}</div></div>`;
   }
   if (selectedEntries.length) return '';
@@ -885,7 +886,11 @@ function chartReadingCard(entry, kind, test, entries, insightIds) {
   const selection = journalCardSelectionHtml(kind, entries, insightIds);
   const actions = entry ? `<button type="button" class="text-button" data-journal-action="edit" data-id="${esc(entry.id)}">${translate('Изменить')}</button><button type="button" class="text-button danger-text" data-journal-action="delete" data-id="${esc(entry.id)}">${translate('Удалить')}</button>` : '';
   const hasSelection = Boolean(entry) || (journalHistoryState.selectedKind === kind && journalHistoryState.selectedStart != null);
-  const heading = comparisonCardHeading(title, kind, !hasSelection, actions);
+  const selectedEntries = journalHistoryState.selectedKind === kind && journalHistoryState.selectedStart != null
+    ? entriesInRange(entries, journalHistoryState.selectedStart, journalHistoryState.selectedEnd)
+    : [];
+  const hasBack = selectedEntries.length > 1 && journalHistoryState.selectedEntryId && selectedEntries.some(item => item.id === journalHistoryState.selectedEntryId);
+  const heading = comparisonCardHeading(title, kind, !hasSelection, actions, hasBack ? kind : '');
   if (!entry) return `<div class="journal-compare-card ${kind}">${heading}<small class="journal-click-hint">${translate(hint)}</small>${selection}</div>`;
   const value = entry.values?.[test.id];
   const note = entry.notes?.[test.id] || entry.note;

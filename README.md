@@ -2,15 +2,15 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
-## [⬇ Download AquaStoich 1.0a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a)
+## [⬇ Download AquaStoich 0.1.1a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a)
 
-**Version 1.0a is a testing release.** AquaStoich calculates freshwater aquarium remineralization, fertilizer doses, stock solutions, ion ratios, and water changes. Verify doses and pH with measurements before using the prepared water.
+**Version 0.1.1a is a testing release.** AquaStoich calculates freshwater aquarium remineralization, fertilizer doses, stock solutions, ion ratios, water changes and measurement trends. Verify doses, pH and interpreted trends with actual measurements.
 
-Development version `1.1a` is reserved locally and has not been published. See the [changelog](CHANGELOG.md) for its current measurement-chart and calendar work.
+The previous testing build remains available as [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). See the [changelog](CHANGELOG.md) for the differences.
 
 ## Download and install
 
-Download the matching package from [release 1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a): Windows installer or portable `.exe`, macOS `.dmg`, Debian/Ubuntu `.deb`, or Linux `.AppImage`. The first launch uses English; the language selector in the top bar offers English, Russian, German, and Spanish. The testing builds are unsigned, so your operating system may ask you to confirm opening them.
+Download the matching package from [release 0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a): Windows installer or portable `.exe`, macOS `.dmg` or `.zip`, Debian/Ubuntu `.deb`, or Linux `.AppImage`. The first launch uses English; the language selector in the top bar offers English, Russian, German, and Spanish. The testing builds are unsigned, so your operating system may ask you to confirm opening them.
 
 The app works offline and has no account or remote database. Electron stores the calculation, custom substances, journal, and language setting in the current user's application data directory:
 
@@ -61,7 +61,9 @@ In **Substance database**, add a dry substance, dry mixture, or ready-made liqui
 
 In **Measurement log**, choose the aquarium and water source, enter drop-test values and the TDS reading, and add a general note or a note for an individual test. Time is inserted when the entry is saved unless you choose manual entry. If a test is missing, add a custom test and unit. Differences compare the same test, water source, and aquarium; the daily rate is the net concentration change, not a measurement of biological uptake because dosing, water changes, dilution, and test error are not subtracted. Lighting settings and up to eight channels are saved with each entry and exported to Excel.
 
-The bar chart can show the last week, month, three months, six months, year, or a manually selected date range. Choose a parameter and measurement location. Left-click a bar to set the first reading and right-click another bar to set the second; the values, elapsed time, signed difference, and daily change appear below. Composite readings show related values from the same log entry when available: GH shows Ca/Mg, KH shows HCO₃/CO₃, total ammonia shows NH₄/NH₃, and TDS shows conductivity and recorded major ions. These related values are explanatory and are not added together because their units and meanings differ.
+Use the **Calendar / Chart** switch above Measurement history. The period selector covers the last week, month, three months, six months, year, or a manual date range and also limits the calendar, statistics, displayed history and Excel export. Long calendar ranges begin with compact month cells; open a month to reach its classic day grid and use **Back to period** to return. A day with several readings opens their list in the corresponding comparison card. In Chart mode, ranges up to three months retain the days without readings and fill them by linear interpolation under the trend envelope; clicking an empty day shows the interpolated values and their source times.
+
+Left-click a day or bar to set the First reading and right-click to set the Second; the first cannot be later than the second. The three cards share aligned columns. Related subparameters and other recorded values are collapsible, open in all three cards together and remember their state. Composite readings include GH with Ca/Mg, KH with HCO₃/CO₃, total ammonia with NH₄/NH₃, and TDS with conductivity and recorded major ions; these explanatory values are not added together. Period cards show minimum, maximum, mean absolute change between adjacent readings and maximum change. Minimum, maximum and maximum change are clickable and highlight their source cells; the average is informational. **Clear selection** resets each card, while **Back to measurement list** appears between Clear and Edit after one item is chosen from a multi-reading day.
 
 ## Build from source
 

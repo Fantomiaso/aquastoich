@@ -2,15 +2,15 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
-## [⬇ Descargar AquaStoich 1.0a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a)
+## [⬇ Descargar AquaStoich 0.1.1a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a)
 
-**La versión 1.0a está en fase de pruebas.** AquaStoich calcula la remineralización del agua de acuarios de agua dulce, los fertilizantes y las soluciones madre. Compruebe las dosis y el pH con mediciones antes de usar el agua preparada.
+**La versión 0.1.1a está en fase de pruebas.** AquaStoich calcula remineralización, fertilizantes, soluciones madre, proporciones iónicas, cambios de agua y tendencias de medición. Compruebe las dosis, el pH y la interpretación de tendencias mediante mediciones reales.
 
-La versión de desarrollo `1.1a` está reservada localmente y aún no se ha publicado. El trabajo actual del gráfico y el calendario figura en el [registro de cambios](CHANGELOG.es.md).
+La versión de prueba anterior sigue disponible como [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). Las diferencias figuran en el [registro de cambios](CHANGELOG.es.md).
 
 ## Descarga e instalación
 
-Descargue el paquete correspondiente de la [versión 1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v1.0a): instalador o `.exe` portátil para Windows, `.dmg` para macOS, `.deb` para Debian/Ubuntu o `.AppImage` para Linux. El primer inicio utiliza inglés; en la barra superior puede elegir inglés, ruso, alemán o español. Los paquetes de prueba no están firmados con un certificado de desarrollador y el sistema operativo puede pedir confirmación.
+Descargue el paquete correspondiente de la [versión 0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a): instalador o `.exe` portátil para Windows, `.dmg` o `.zip` para macOS, `.deb` para Debian/Ubuntu o `.AppImage` para Linux. El primer inicio utiliza inglés; en la barra superior puede elegir inglés, ruso, alemán o español. Los paquetes de prueba no están firmados con un certificado de desarrollador y el sistema operativo puede pedir confirmación.
 
 La aplicación funciona sin conexión ni cuenta. El cálculo, las sustancias propias, el registro y el idioma se guardan en la carpeta de datos del usuario:
 
@@ -60,7 +60,9 @@ En **Base de sustancias** se pueden añadir sustancias secas, mezclas secas o l�
 
 En **Registro de mediciones**, elija el acuario y la procedencia del agua, anote las pruebas de gotas y añada una nota general o notas individuales. La hora se inserta al guardar, salvo que se seleccione la entrada manual. Si falta una prueba, añada una prueba personalizada con su unidad. Las diferencias solo comparan la misma prueba, procedencia y acuario. La tasa diaria es el cambio neto de concentración; no descuenta dosis, cambios de agua, dilución ni errores de medida, por lo que no representa por sí sola el consumo biológico. La iluminación y hasta ocho canales se guardan con cada entrada y se exportan a Excel.
 
-El gráfico de barras muestra la última semana, el último mes, tres meses, seis meses, un año o un intervalo de fechas manual. Seleccione el parámetro y el lugar de medición. Un clic izquierdo en una barra fija la primera lectura y un clic derecho fija la segunda; debajo aparecen los valores, el intervalo, la diferencia con signo y el cambio diario. Los parámetros compuestos muestran mediciones relacionadas de la misma entrada cuando existen: GH muestra Ca/Mg, KH muestra HCO₃/CO₃, amoníaco total muestra NH₄/NH₃ y TDS muestra conductividad e iones principales registrados. Son datos explicativos y no se suman porque tienen unidades y significados distintos.
+El selector **Calendario / Gráfico** aparece sobre el historial. El periodo puede ser una semana, un mes, tres meses, seis meses, un año o un intervalo manual y limita a la vez el calendario, las estadísticas, las entradas visibles y la exportación a Excel. Los intervalos largos empiezan con celdas compactas de meses; al pulsar una se abre la cuadrícula clásica de días y **Volver al periodo** regresa al resumen. Un día con varias mediciones abre su lista en la tarjeta de comparación correspondiente. En modo Gráfico, los intervalos de hasta tres meses conservan los días sin lectura y los rellenan mediante interpolación lineal bajo la envolvente; al pulsar un día vacío se muestran los valores interpolados y las horas de origen.
+
+El clic izquierdo en un día o barra fija la primera lectura y el derecho la segunda; la primera no puede ser posterior. Las tres tarjetas usan columnas alineadas. Los subparámetros relacionados y los demás valores se pueden plegar, se abren a la vez en todas las tarjetas y recuerdan su estado. GH muestra Ca/Mg, KH HCO₃/CO₃, amoníaco total NH₄/NH₃ y TDS conductividad e iones principales; estos datos explicativos no se suman. Las tarjetas del periodo muestran mínimo, máximo, cambio absoluto medio entre lecturas consecutivas y cambio máximo. Al pulsar mínimo, máximo o cambio máximo se resaltan sus celdas de origen; el promedio es informativo. **Borrar selección** limpia cada tarjeta y, tras elegir una entrada de un día con varias mediciones, **Volver a la lista de mediciones** aparece entre Borrar y Editar.
 
 ## Datos de composición y metodología
 
