@@ -8,6 +8,7 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'rem', privileges: { standard: t
 const root = path.resolve(__dirname, '..');
 const allowed = new Set(['index.html', 'styles.css', 'app.mjs', 'builtin-catalog.mjs', 'catalog.mjs', 'chemistry.mjs', 'journal.mjs', 'presets.mjs', 'localization.mjs', 'aquarium.mjs', 'journal-export.mjs', 'light-channels.mjs', 'README.md']);
 const contentTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.md': 'text/plain; charset=utf-8' };
+const windows = new Set();
 
 app.whenReady().then(() => {
   // Electron stores the default session (and its localStorage) under app.getPath('userData').
@@ -27,18 +28,18 @@ app.whenReady().then(() => {
   const createWindow = () => {
     const window = new BrowserWindow({
       width: 1380, height: 900, minWidth: 880, minHeight: 620,
-      show: false, autoHideMenuBar: true, icon: path.join(root, 'assets', 'icon.png'),
+      show: true, autoHideMenuBar: true, icon: path.join(root, 'assets', 'icon.png'),
       webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true }
     });
+    windows.add(window);
+    window.on('closed', () => windows.delete(window));
     window.webContents.setWindowOpenHandler(({ url }) => {
       if (/^https:\/\//i.test(url)) shell.openExternal(url);
       return { action: 'deny' };
     });
     window.loadURL('rem://app/index.html')
-      .then(() => { if (!window.isDestroyed()) window.show(); })
       .catch(error => {
         console.error('Unable to load AquaStoich:', error);
-        if (!window.isDestroyed()) window.show();
       });
   };
   createWindow();
