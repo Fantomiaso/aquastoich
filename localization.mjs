@@ -3,6 +3,7 @@
 const rows = `Расчёт воды для подмены|Aquarium water calculator|Aquarienwasser-Rechner|Calculadora de agua para acuarios
 Версия 0.1.0a · тестирование|Version 0.1.0a · testing|Version 0.1.0a · Testphase|Versión 0.1.0a · en pruebas
 Версия 0.1.1a · тестирование|Version 0.1.1a · testing|Version 0.1.1a · Testphase|Versión 0.1.1a · en pruebas
+Версия 0.1.2a · тестирование|Version 0.1.2a · testing|Version 0.1.2a · Testphase|Versión 0.1.2a · en pruebas
 Тема приложения|Application theme|App-Design|Tema de la aplicación
 Тема|Theme|Design|Tema
 Светлая|Light|Hell|Claro

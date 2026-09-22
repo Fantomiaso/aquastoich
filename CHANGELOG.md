@@ -2,6 +2,16 @@
 
 English · [Русский](CHANGELOG.ru.md) · [Deutsch](CHANGELOG.de.md) · [Español](CHANGELOG.es.md)
 
+## 0.1.2a — Testing release
+
+This release improves distribution transparency and documentation. Calculator and measurement-analysis behaviour is unchanged from 0.1.1a.
+
+- Added a prominent notice to every README that Windows and macOS packages are not digitally signed or notarized. The project is free and noncommercial, has no signing budget, and does not intend to pay platform fees to sign software that should remain free.
+- Added a concise, dated version history to the English, Russian, German, and Spanish README files, with direct links to every published release and the full language-specific changelog.
+- Expanded first-launch guidance for Windows SmartScreen and macOS Gatekeeper and emphasized downloading only from the official `Fantomiaso/aquastoich` releases page.
+- Updated the application badge, package filenames, workflow, release notes, and download links to 0.1.2a.
+- Verified launchability of the Linux AppImage and DEB payload and the macOS x64 and ARM64 applications on clean GitHub-hosted runners before preparing this release.
+
 ## 0.1.1a — Testing release
 
 This testing release introduces measurement analysis, the calendar history, comparison statistics, and the related readability and layout work.

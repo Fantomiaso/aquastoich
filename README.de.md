@@ -2,15 +2,18 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
-## [⬇ AquaStoich 0.1.1a herunterladen · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a)
+## [⬇ AquaStoich 0.1.2a herunterladen · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a)
 
-**Version 0.1.1a befindet sich in der Testphase.** AquaStoich berechnet Remineralisierung, Dünger, Stammlösungen, Ionenverhältnisse, Wasserwechsel und Messverläufe. Dosierungen, pH und interpretierte Trends sollten mit tatsächlichen Messungen überprüft werden.
+**Version 0.1.2a befindet sich in der Testphase.** AquaStoich berechnet Remineralisierung, Dünger, Stammlösungen, Ionenverhältnisse, Wasserwechsel und Messverläufe. Dosierungen, pH und interpretierte Trends sollten mit tatsächlichen Messungen überprüft werden.
 
-Die vorherige Testversion bleibt als [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) verfügbar. Die Unterschiede stehen im [Änderungsprotokoll](CHANGELOG.de.md).
+Frühere Testversionen bleiben als [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) und [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) verfügbar. Die Unterschiede stehen im [vollständigen Änderungsprotokoll](CHANGELOG.de.md).
+
+> [!WARNING]
+> **Die Anwendung ist nicht digital signiert.** Dieses kostenlose, nichtkommerzielle Projekt hat weder Geld noch die Absicht, Plattformgebühren für Signaturzertifikate oder die Notarisierung von Software zu bezahlen, die kostenlos bleiben soll. Laden Sie Pakete nur von der offiziellen Seite [GitHub Releases](https://github.com/Fantomiaso/aquastoich/releases) herunter und prüfen Sie, dass `Fantomiaso` der Repository-Inhaber ist.
 
 ## Download und Installation
 
-Laden Sie im [Release 0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) das passende Paket herunter: Windows-Installer oder portable `.exe`, macOS-`.dmg` oder `.zip`, Debian/Ubuntu-`.deb` oder Linux-`.AppImage`. Beim ersten Start ist Englisch eingestellt. Über die Sprachauswahl oben können Sie Deutsch, Englisch, Russisch oder Spanisch wählen. Die Testpakete sind nicht mit einem Entwicklerzertifikat signiert; das Betriebssystem kann daher eine Bestätigung verlangen.
+Laden Sie im [Release 0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) das passende Paket herunter: Windows-Installer oder portable `.exe`, macOS-`.dmg` oder `.zip`, Debian/Ubuntu-`.deb` oder Linux-`.AppImage`. Beim ersten Start ist Englisch eingestellt. Über die Sprachauswahl oben können Sie Deutsch, Englisch, Russisch oder Spanisch wählen. Wegen der fehlenden Signatur können Windows SmartScreen oder macOS Gatekeeper beim ersten Start eine ausdrückliche Bestätigung verlangen.
 
 Die Anwendung arbeitet offline ohne Konto. Berechnung, eigene Stoffe, Messprotokoll und Sprache werden im Anwendungsdatenverzeichnis des jeweiligen Benutzers gespeichert:
 
@@ -21,6 +24,16 @@ Die Anwendung arbeitet offline ohne Konto. Berechnung, eigene Stoffe, Messprotok
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
 
 Die Browser-Version speichert Daten getrennt im lokalen Speicher des Browsers; eine automatische Übernahme in die Desktop-App findet nicht statt.
+
+## Versionsverlauf
+
+| Version | Datum | Zusammenfassung |
+| --- | --- | --- |
+| [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 22.09.2026 | Aktueller Test-Build. Dokumentation und Installationshinweise wurden erweitert, der Hinweis auf die fehlende Signatur wurde hervorgehoben und Linux AppImage/DEB sowie macOS x64/ARM64 wurden auf Startfähigkeit geprüft. |
+| [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) | 21.09.2026 | Kalender- und Diagrammansicht für Messverläufe, Interpolation, Zeitraumstatistik, Vergleich zweier Messungen, Designs und eine umfassende Überarbeitung der Lesbarkeit. |
+| [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) | 16.09.2026 | Erste Standalone-Version mit Aquarienprofilen, Volumenberechnung, getrennten Protokollen, Lichtkanälen, Excel-Export, TDS, bearbeitbaren Vorlagen, Stoffdatenbank, Dosierung und Remineralisierung. |
+
+Einzelheiten stehen im [vollständigen Änderungsprotokoll](CHANGELOG.de.md).
 
 ## Funktionen
 

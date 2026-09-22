@@ -2,6 +2,16 @@
 
 [English](CHANGELOG.md) · [Русский](CHANGELOG.ru.md) · Deutsch · [Español](CHANGELOG.es.md)
 
+## 0.1.2a — Testversion
+
+Diese Version verbessert die Transparenz der Verteilung und die Dokumentation. Rechner und Messwertanalyse verhalten sich unverändert wie in 0.1.1a.
+
+- Jede README enthält nun einen deutlichen Hinweis, dass Windows- und macOS-Pakete weder digital signiert noch notarisiert sind. Das kostenlose, nichtkommerzielle Projekt hat kein Signaturbudget und beabsichtigt nicht, Plattformgebühren für die Signatur kostenloser Software zu bezahlen.
+- Die englische, russische, deutsche und spanische README enthält nun einen kurzen datierten Versionsverlauf mit direkten Links zu jedem veröffentlichten Release und dem vollständigen Änderungsprotokoll der jeweiligen Sprache.
+- Die Hinweise zum ersten Start über Windows SmartScreen und macOS Gatekeeper wurden erweitert; Pakete sollen ausschließlich von der offiziellen Release-Seite `Fantomiaso/aquastoich` geladen werden.
+- Versionsanzeige, Paketnamen, Workflow, Release-Text und Download-Links wurden auf 0.1.2a aktualisiert.
+- Vor der Vorbereitung dieses Releases wurden Linux AppImage und DEB-Inhalt sowie die macOS-Anwendungen für x64 und ARM64 auf sauberen GitHub-hosted Systemen gestartet und geprüft.
+
 ## 0.1.1a — Testversion
 
 Diese Testversion führt Messwertanalyse, Kalenderverlauf, Vergleichsstatistiken sowie die zugehörigen Verbesserungen an Lesbarkeit und Layout ein.

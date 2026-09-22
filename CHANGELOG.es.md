@@ -2,6 +2,16 @@
 
 [English](CHANGELOG.md) · [Русский](CHANGELOG.ru.md) · [Deutsch](CHANGELOG.de.md) · Español
 
+## 0.1.2a — versión de prueba
+
+Esta versión mejora la transparencia de la distribución y la documentación. El comportamiento de la calculadora y del análisis de mediciones no cambia respecto a 0.1.1a.
+
+- Cada README incluye ahora un aviso destacado de que los paquetes de Windows y macOS no están firmados digitalmente ni notarizados. El proyecto es gratuito y no comercial, no tiene presupuesto para firmas ni intención de pagar tarifas de plataforma por firmar software que debe seguir siendo gratuito.
+- Los README en inglés, ruso, alemán y español incorporan un historial breve y fechado con enlaces directos a cada versión publicada y al registro de cambios completo del idioma correspondiente.
+- Se ampliaron las instrucciones del primer inicio para Windows SmartScreen y macOS Gatekeeper, y se indica que los paquetes deben descargarse únicamente desde las versiones oficiales de `Fantomiaso/aquastoich`.
+- La versión mostrada, los nombres de paquetes, el workflow, las notas de la versión y los enlaces de descarga se actualizaron a 0.1.2a.
+- Antes de preparar esta versión se comprobó el arranque de Linux AppImage y del contenido DEB, además de las aplicaciones macOS x64 y ARM64, en sistemas limpios alojados por GitHub.
+
 ## 0.1.1a — versión de prueba
 
 Esta versión de prueba incorpora el análisis de mediciones, el historial con calendario, estadísticas de comparación y las mejoras asociadas de legibilidad y maquetación.

@@ -2,15 +2,18 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
-## [⬇ Download AquaStoich 0.1.1a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a)
+## [⬇ Download AquaStoich 0.1.2a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a)
 
-**Version 0.1.1a is a testing release.** AquaStoich calculates freshwater aquarium remineralization, fertilizer doses, stock solutions, ion ratios, water changes and measurement trends. Verify doses, pH and interpreted trends with actual measurements.
+**Version 0.1.2a is a testing release.** AquaStoich calculates freshwater aquarium remineralization, fertilizer doses, stock solutions, ion ratios, water changes and measurement trends. Verify doses, pH and interpreted trends with actual measurements.
 
-The previous testing build remains available as [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). See the [changelog](CHANGELOG.md) for the differences.
+Previous testing builds remain available as [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) and [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). See the [full changelog](CHANGELOG.md) for the differences.
+
+> [!WARNING]
+> **The application is not digitally signed.** This free, noncommercial project has no budget and no intention of paying platform fees for code-signing certificates or notarization of software that should remain free. Download packages only from the official [GitHub Releases](https://github.com/Fantomiaso/aquastoich/releases) page and verify the repository owner is `Fantomiaso`.
 
 ## Download and install
 
-Download the matching package from [release 0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a): Windows installer or portable `.exe`, macOS `.dmg` or `.zip`, Debian/Ubuntu `.deb`, or Linux `.AppImage`. The first launch uses English; the language selector in the top bar offers English, Russian, German, and Spanish. The testing builds are unsigned, so your operating system may ask you to confirm opening them.
+Download the matching package from [release 0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a): Windows installer or portable `.exe`, macOS `.dmg` or `.zip`, Debian/Ubuntu `.deb`, or Linux `.AppImage`. The first launch uses English; the language selector in the top bar offers English, Russian, German, and Spanish. Because the packages are unsigned, Windows SmartScreen or macOS Gatekeeper may require an explicit confirmation before the first launch.
 
 The app works offline and has no account or remote database. Electron stores the calculation, custom substances, journal, and language setting in the current user's application data directory:
 
@@ -21,6 +24,16 @@ The app works offline and has no account or remote database. Electron stores the
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
 
 The optional browser version keeps separate data in that browser's local storage. It does not migrate data into the desktop app automatically.
+
+## Version history
+
+| Version | Date | Summary |
+| --- | --- | --- |
+| [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 2026-09-22 | Current testing build. Documentation and release guidance were expanded, the unsigned-package notice was made explicit, and the Linux AppImage/DEB plus macOS x64/ARM64 packages were launch-tested. |
+| [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) | 2026-09-21 | Added calendar and chart views for measurement history, interpolation, period statistics, two-reading comparison, themes, and the major readability pass. |
+| [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) | 2026-09-16 | Established the standalone calculator with aquarium profiles, geometry-based volume, per-aquarium logs, lighting channels, Excel export, TDS, editable presets, substances, dosing, and remineralization. |
+
+See the [complete changelog](CHANGELOG.md) for detailed changes in every version.
 
 ## What it does
 
