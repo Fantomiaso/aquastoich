@@ -1,11 +1,12 @@
 import { IONS, PRODUCTS, PRODUCT_BY_ID, TARGETS, RATIO_IONS, DEFAULT_PH_CO2_MG_L, activeRatios, actualRatio, ratioLimits, ratioSatisfied, ratioTargetSatisfied, targetLimits, invertRatio, number, stockGramsPerL, displayDoseToAmount, calculate, calibratePHCO2, ghFromIons, khFromIons, khFromProduct, productComposition, setCustomProducts, solveTargets } from './chemistry.mjs';
 import { EFFECTS, CATALOG_SORTS, customProductFromForm, effectParts, normalizeFormula, primaryEffect, productEffects, productKind, sortedProducts, suggestChemicalName } from './catalog.mjs';
 import { PRESETS, getPresets, mergePresets, normalizeUserPreset } from './presets.mjs';
-import { JOURNAL_TESTS, JOURNAL_COMPONENTS, journalChartHeight, journalChartScale, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalEntriesInSelectedDays, journalInterpolatedReading, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets } from './journal.mjs';
+import { JOURNAL_TESTS, JOURNAL_COMPONENTS, journalChartHeight, journalChartScale, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalEntriesInSelectedDays, journalInterpolatedReading, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets, latestAquariumWaterReading, waterChangeCalculatedReading, waterChangeCurrentReading, waterChangeTankInput } from './journal.mjs';
 import { getLocale, intlLocale, startLocalization, translate } from './localization.mjs';
 import { estimateAquariumVolume, makeAquarium } from './aquarium.mjs';
 import { journalXlsx } from './journal-export.mjs';
 import { LIGHT_CHANNELS, MAX_LIGHT_CHANNELS, channelName, validLightChannels } from './light-channels.mjs';
+import { installLocalizedNumberInputs, refreshLocalizedNumberInputs } from './localized-number.mjs';
 
 const STORAGE_KEY = 'rem-aquarium-v1';
 const THEME_KEY = 'aqua-stoich-theme';
@@ -25,13 +26,14 @@ const defaultRatios = () => [
 ];
 const initialState = () => {
   const aquarium = makeAquarium(`${translate('Аквариум')} 1`);
-  return { mode: 'prepare', volume: 100, tankVolume: 100, tankGH: '', tankKH: '', tankPH: '', tankTDS: '', tank: {}, aquariums: [aquarium], activeAquariumId: aquarium.id, sourceGH: 0, sourceKH: 0, sourcePH: '', sourceTDS: '', phCO2: DEFAULT_PH_CO2_MG_L, measuredPH: '', calibration: null, phModelV2: true, source: {}, targets: { GH: 6, KH: 3 }, targetRanges: {}, ratios: defaultRatios(), selectedPresets: [], userPresets: [], presetBackups: {}, presetTargetBackups: {}, presetWaterTargetsV1: true, customProducts: [], journal: [], customTests: [], customLightChannels: [], ratioPresetsV4: true, rows: [makeRow('watersci-gh'), makeRow('watersci-kh')] };
+  return { mode: 'prepare', volume: 100, tankVolume: 100, tankGH: '', tankKH: '', tankPH: '', tankTDS: '', tank: {}, waterChangeJournalMode: 'latest', waterChangeLoadedEntryId: null, aquariums: [aquarium], activeAquariumId: aquarium.id, sourceGH: 0, sourceKH: 0, sourcePH: '', sourceTDS: '', phCO2: DEFAULT_PH_CO2_MG_L, measuredPH: '', calibration: null, phModelV2: true, source: {}, targets: { GH: 6, KH: 3 }, targetRanges: {}, ratios: defaultRatios(), selectedPresets: [], userPresets: [], presetBackups: {}, presetTargetBackups: {}, presetWaterTargetsV1: true, customProducts: [], journal: [], customTests: [], customLightChannels: [], ratioPresetsV4: true, rows: [makeRow('watersci-gh'), makeRow('watersci-kh')] };
 };
 
 function loadState() {
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!stored || !Array.isArray(stored.rows)) return initialState();
+    delete stored.recordCalculatedAfterChange;
     setCustomProducts(stored.customProducts ?? []);
     const ratios = Array.isArray(stored.ratios) ? [...stored.ratios] : defaultRatios();
     if (!stored.ratioPresetsV3) {
@@ -79,6 +81,8 @@ function loadState() {
       }
     }
     return { ...base, ...stored, mode: stored.mode === 'change' ? 'change' : 'prepare',
+      waterChangeJournalMode: stored.waterChangeJournalMode === 'current' ? 'current' : 'latest',
+      waterChangeLoadedEntryId: null,
       aquariums, activeAquariumId, tankVolume: active.tankVolume, tankGH: active.tankGH,
       tankKH: active.tankKH, tankPH: active.tankPH, tankTDS: active.tankTDS ?? '', tank: { ...(active.tank ?? {}) },
       customProducts: stored.customProducts ?? [],
@@ -138,6 +142,7 @@ function applyAquariumProfile(profile) {
   state.activeAquariumId = profile.id;
   for (const key of ['tankVolume', 'tankGH', 'tankKH', 'tankPH', 'tankTDS']) state[key] = profile[key] ?? '';
   state.tank = { ...(profile.tank ?? {}) };
+  state.waterChangeLoadedEntryId = null;
 }
 function save() { try { syncAquariumProfile(); localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* private browsing */ } }
 function getRow(id) { return state.rows.find(row => row.id === id); }
@@ -294,6 +299,7 @@ function renderMode() {
   $('.ph-note').textContent = state.mode === 'change'
     ? 'pH после подмены — оценка по итоговому KH, фосфату и CO₂ при 25 °C. Измеренный pH можно использовать для калибровки.'
     : 'pH приготовленной воды — оценка по KH, фосфату и CO₂ при 25 °C. Измеренный pH после смешивания можно использовать для калибровки.';
+  renderWaterChangeJournalControls();
 }
 
 function syncStaticFields() {
@@ -313,6 +319,7 @@ function syncStaticFields() {
   document.querySelectorAll('[data-target-bound]').forEach(input => { input.value = state.targetRanges?.[input.dataset.targetBound]?.[input.dataset.bound] ?? ''; });
   document.querySelectorAll('[data-source]').forEach(input => { input.value = state.source[input.dataset.source] ?? ''; });
   document.querySelectorAll('[data-tank]').forEach(input => { input.value = state.tank[input.dataset.tank] ?? ''; });
+  refreshLocalizedNumberInputs(document, intlLocale);
   renderMode();
 }
 
@@ -356,6 +363,7 @@ function recalculate({ solve = true, render = false } = {}) {
   if (render) renderRows();
   syncDoseInputs();
   renderResults();
+  refreshLocalizedNumberInputs(document, intlLocale);
 }
 
 function syncDoseInputs() {
@@ -434,6 +442,7 @@ function renderResultBreakdown(result, cards) {
 
 function renderResults() {
   const result = calculate(state);
+  $('#record-calculated-result').hidden = state.mode !== 'change';
   const hasTDS = state.sourceTDS !== '' && state.sourceTDS != null && (state.mode !== 'change' || state.tankTDS !== '' && state.tankTDS != null);
   const startingPH = state.mode === 'change' ? state.tankPH : state.sourcePH;
   const hasSourcePH = startingPH !== '' && startingPH != null && Number.isFinite(number(startingPH, NaN));
@@ -676,6 +685,63 @@ function countLabel(count, kind) {
 }
 
 function currentJournal() { return state.journal.filter(entry => entry.aquariumId === state.activeAquariumId); }
+function latestWaterChangeReading() { return latestAquariumWaterReading(state.journal, state.activeAquariumId); }
+function loadLatestWaterChangeReading() {
+  const entry = latestWaterChangeReading();
+  state.waterChangeLoadedEntryId = entry?.id ?? null;
+  if (!entry) return null;
+  Object.assign(state, waterChangeTankInput(entry));
+  return entry;
+}
+function renderWaterChangeJournalControls() {
+  const mode = state.waterChangeJournalMode === 'current' ? 'current' : 'latest';
+  $('#change-journal-mode-toggle').checked = mode === 'current';
+  document.querySelectorAll('[data-change-journal-mode]').forEach(button => {
+    const active = button.dataset.changeJournalMode === mode;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  const latest = latestWaterChangeReading();
+  $('#load-change-journal-values').disabled = mode !== 'latest' || !latest;
+  const locked = state.mode === 'change' && mode === 'latest';
+  for (const input of [$('#tank-gh'), $('#tank-kh'), $('#tank-ph'), $('#tank-tds'), ...document.querySelectorAll('[data-tank]')]) input.readOnly = locked;
+  $('#change-journal-controls').classList.toggle('using-latest', locked);
+  const loaded = currentJournal().find(entry => entry.id === state.waterChangeLoadedEntryId);
+  if (mode === 'current') $('#change-journal-status').textContent = translate('Текущие параметры будут добавлены в журнал при расчёте доз.');
+  else if (!latest) $('#change-journal-status').textContent = translate('В журнале нет подходящих тестов воды этого аквариума.');
+  else if (!loaded) $('#change-journal-status').textContent = translate('Нажмите «Загрузить значения», чтобы взять параметры последнего теста.');
+  else {
+    const suffix = loaded.calculated ? ` · ${translate('Расчётное')}` : '';
+    $('#change-journal-status').textContent = `${translate('Используются параметры теста от')} ${new Date(loaded.at).toLocaleString(intlLocale())}${suffix}`;
+  }
+}
+function waterChangeJournalEntry(values, { calculated = false, note = '', at = localTime(new Date()) } = {}) {
+  return { id: `measure-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, at,
+    aquariumId: state.activeAquariumId, location: 'aquarium', values, notes: {}, light: {}, note,
+    origin: calculated ? 'water-change-calculation' : 'water-change-current', calculated };
+}
+function recordCurrentWaterChangeJournalEntry() {
+  if (state.mode !== 'change' || state.waterChangeJournalMode !== 'current') return '';
+  const at = localTime(new Date());
+  const values = waterChangeCurrentReading(state);
+  if (!Object.keys(values).length) return translate('Нет параметров, которые можно внести в журнал.');
+  state.journal.push(waterChangeJournalEntry(values, { at, note: translate('Параметры аквариума перед подменой, добавлены из формы расчёта.') }));
+  save();
+  renderAquariumList();
+  return translate('В журнал добавлена запись до подмены.');
+}
+function recordCalculatedWaterChangeJournalEntry() {
+  if (state.mode !== 'change') return translate('Расчётная запись доступна только в режиме подмены воды.');
+  const values = waterChangeCalculatedReading(state, calculate(state));
+  if (!Object.keys(values).length) return translate('Нет параметров, которые можно внести в журнал.');
+  state.journal.push(waterChangeJournalEntry(values, {
+    calculated: true,
+    note: translate('Расчётные параметры аквариума после подмены. Это расчёт, а не фактический замер.'),
+  }));
+  save();
+  renderAquariumList();
+  return translate('В журнал добавлена расчётная запись после подмены.');
+}
 function renderAquariumList() {
   $('#active-aquarium').innerHTML = state.aquariums.map(item => `<option value="${esc(item.id)}">${esc(item.name)}</option>`).join('');
   $('#active-aquarium').value = state.activeAquariumId;
@@ -727,11 +793,11 @@ function readLightForm() {
   const light = {};
   for (const input of document.querySelectorAll('[data-light]')) {
     if (input.value === '') continue;
-    const value = NUMERIC_LIGHT_FIELDS.has(input.dataset.light) ? Number(input.value) : input.value.trim();
+    const value = NUMERIC_LIGHT_FIELDS.has(input.dataset.light) ? number(input.value, NaN) : input.value.trim();
     if (value !== '') light[input.dataset.light] = value;
   }
   if (lightChannelDraft.length) light.channels = lightChannelDraft.map(channel => ({
-    id: channel.id, ...(channel.name ? { name: channel.name } : {}), value: Number(channel.value)
+    id: channel.id, ...(channel.name ? { name: channel.name } : {}), value: number(channel.value, NaN)
   }));
   return light;
 }
@@ -895,7 +961,8 @@ function chartReadingCard(entry, kind, test, entries, insightIds) {
   const value = entry.values?.[test.id];
   const note = entry.notes?.[test.id] || entry.note;
   const rendered = hasJournalValue(value) ? `${fmt(number(value), 3)} ${esc(translate(test.unit))}` : '—';
-  return `<div class="journal-compare-card ${kind}">${heading}<small class="journal-click-hint">${translate(hint)}</small>${selection}<b>${rendered}</b><small>${new Date(entry.at).toLocaleString(intlLocale())}</small>${chartComponentHtml(entry, test.id)}${chartOtherParametersHtml(entry, test.id)}${note ? `<small>${esc(note)}</small>` : ''}</div>`;
+  const calculated = entry.calculated ? `<span class="journal-calculated-badge">${translate('Расчётное')}</span>` : '';
+  return `<div class="journal-compare-card ${kind} ${entry.calculated ? 'calculated' : ''}">${heading}<small class="journal-click-hint">${translate(hint)}</small>${selection}<b>${rendered}</b><small>${new Date(entry.at).toLocaleString(intlLocale())}${calculated}</small>${chartComponentHtml(entry, test.id)}${chartOtherParametersHtml(entry, test.id)}${note ? `<small>${esc(note)}</small>` : ''}</div>`;
 }
 
 function journalTrendScale(bounds) {
@@ -1024,12 +1091,16 @@ function renderJournalChart(context = {}) {
       const second = bucket.entries.some(entry => entry.id === journalChartState.secondId);
       const selected = journalHistoryState.selectedStart != null && journalHistoryState.selectedStart <= bucket.end && journalHistoryState.selectedEnd >= bucket.start;
       const insight = bucket.entries.some(entry => insightIds.has(entry.id));
+      const calculatedCount = bucket.entries.filter(entry => entry.calculated).length;
+      const calculated = calculatedCount > 0 && calculatedCount === bucket.entries.length;
+      const mixedCalculated = calculatedCount > 0 && !calculated;
       const height = journalChartHeight(value, scale);
       const start = new Date(bucket.start);
       const label = trendBucketLabel(bucket, trendScale);
       const dateLabel = trendScale === 'month' ? monthFormat.format(start) : dayFormat.format(start);
-      const source = bucket.interpolated ? translate('Интерполированное значение') : bucket.entries.length > 1 ? countLabel(bucket.entries.length, 'measurement') : bucket.entries[0]?.at ? new Date(bucket.entries[0].at).toLocaleString(intlLocale()) : '';
-      return `<button type="button" class="journal-chart-column ${bucket.measured ? 'measured' : 'interpolated'} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''} ${insight ? 'insight' : ''}" data-chart-start="${bucket.start}" data-chart-end="${bucket.end}" data-chart-label="${esc(label)}" aria-label="${esc(`${label}: ${fmt(value, Math.max(3, scaleDigits))} ${test.unit}. ${source}`)}" title="${esc(`${label} · ${fmt(value, Math.max(3, scaleDigits))} ${test.unit} · ${source}`)}"><span class="journal-chart-value">${fmt(value, scaleDigits)}</span><span class="journal-chart-track"><i class="journal-chart-bar" style="height:${height}%"></i></span><span class="journal-chart-date">${esc(dateLabel)}</span></button>`;
+      const sourceBase = bucket.interpolated ? translate('Интерполированное значение') : bucket.entries.length > 1 ? countLabel(bucket.entries.length, 'measurement') : bucket.entries[0]?.at ? new Date(bucket.entries[0].at).toLocaleString(intlLocale()) : '';
+      const source = `${sourceBase}${calculatedCount ? ` · ${translate('Расчётное')}` : ''}`;
+      return `<button type="button" class="journal-chart-column ${bucket.measured ? 'measured' : 'interpolated'} ${calculated ? 'calculated' : ''} ${mixedCalculated ? 'mixed-calculated' : ''} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''} ${insight ? 'insight' : ''}" data-chart-start="${bucket.start}" data-chart-end="${bucket.end}" data-chart-label="${esc(label)}" aria-label="${esc(`${label}: ${fmt(value, Math.max(3, scaleDigits))} ${test.unit}. ${source}`)}" title="${esc(`${label} · ${fmt(value, Math.max(3, scaleDigits))} ${test.unit} · ${source}`)}"><span class="journal-chart-value">${fmt(value, scaleDigits)}</span><span class="journal-chart-track"><i class="journal-chart-bar" style="height:${height}%"></i></span><span class="journal-chart-date">${esc(dateLabel)}</span></button>`;
     }).join('')}</div></div><span class="journal-chart-overflow-hint left" aria-hidden="true">‹</span><span class="journal-chart-overflow-hint right" aria-hidden="true">›</span>`;
   }
   const selectableEntries = journalHistoryEntries();
@@ -1126,7 +1197,8 @@ function journalEntryHtml(entry, comparisonEntries, insightIds = new Set()) {
   const locationLabel = { aquarium: 'Аквариум', source: 'Исходная вода', prepared: 'Приготовленная вода' };
   const headings = tests ? `<div class="journal-parameter-head journal-parameter-grid" aria-hidden="true"><span>${translate('Параметр')}</span><span>${translate('Значение')}</span><span>${translate('Изменение')}</span><span>${translate('Тип изменения')}</span><span>${translate('В сутки')}</span><span>${translate('Единица времени')}</span></div>` : '';
   const selected = entry.id === journalChartState.firstId || entry.id === journalChartState.secondId;
-  return `<article class="journal-entry ${selected ? 'chart-selected' : ''} ${insightIds.has(entry.id) ? 'insight' : ''}" data-journal-entry="${esc(entry.id)}"><div class="journal-entry-head"><div><strong>${esc(translate(locationLabel[entry.location] ?? entry.location))}</strong><span>${new Date(entry.at).toLocaleString(intlLocale())}</span></div><div><button type="button" class="text-button" data-journal-action="edit" data-id="${esc(entry.id)}">${translate('Изменить')}</button><button type="button" class="text-button danger-text" data-journal-action="delete" data-id="${esc(entry.id)}">${translate('Удалить')}</button></div></div>${entry.note ? `<p class="journal-general-note">${esc(entry.note)}</p>` : ''}<div class="journal-parameter-table">${headings}${tests}</div>${light.length ? `<details class="journal-result-test journal-light-settings"><summary>${translate('Настройки света')}</summary><div class="journal-test-note">${esc(light.join(' · '))}</div></details>` : ''}</article>`;
+  const calculated = entry.calculated ? `<span class="journal-calculated-badge">${translate('Расчётное')}</span>` : '';
+  return `<article class="journal-entry ${entry.calculated ? 'calculated' : ''} ${selected ? 'chart-selected' : ''} ${insightIds.has(entry.id) ? 'insight' : ''}" data-journal-entry="${esc(entry.id)}"><div class="journal-entry-head"><div><strong>${esc(translate(locationLabel[entry.location] ?? entry.location))}</strong><span>${new Date(entry.at).toLocaleString(intlLocale())}</span>${calculated}</div><div><button type="button" class="text-button" data-journal-action="edit" data-id="${esc(entry.id)}">${translate('Изменить')}</button><button type="button" class="text-button danger-text" data-journal-action="delete" data-id="${esc(entry.id)}">${translate('Удалить')}</button></div></div>${entry.note ? `<p class="journal-general-note">${esc(entry.note)}</p>` : ''}<div class="journal-parameter-table">${headings}${tests}</div>${light.length ? `<details class="journal-result-test journal-light-settings"><summary>${translate('Настройки света')}</summary><div class="journal-test-note">${esc(light.join(' · '))}</div></details>` : ''}</article>`;
 }
 function ensureJournalHistoryState(bounds) {
   const signature = `${state.activeAquariumId}|${journalChartState.location}|${journalChartState.period}|${journalChartState.from}|${journalChartState.to}`;
@@ -1158,16 +1230,18 @@ function calendarCellHtml(bucket, measurements, compact = false, insightIds = ne
   const first = measurements.some(entry => entry.id === journalChartState.firstId);
   const second = measurements.some(entry => entry.id === journalChartState.secondId);
   const insight = measurements.some(entry => insightIds.has(entry.id));
+  const hasCalculated = measurements.some(entry => entry.calculated);
   const hint = `${countLabel(count, 'measurement')}${compact ? ` · ${translate('Нажмите, чтобы открыть календарь месяца')}` : ''}`;
   const markers = compact ? '' : measurements.map(entry => {
     const entryFirst = entry.id === journalChartState.firstId;
     const entrySecond = entry.id === journalChartState.secondId;
     const date = new Date(entry.at);
     const time = date.toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' });
-    return `<button type="button" class="journal-calendar-reading ${entryFirst ? 'first' : ''} ${entrySecond ? 'second' : ''} ${insightIds.has(entry.id) ? 'insight' : ''}" data-calendar-entry="${esc(entry.id)}" title="${esc(date.toLocaleString(intlLocale()))}" aria-label="${esc(`${translate('Измерение')} ${date.toLocaleString(intlLocale())}`)}">${esc(time)}</button>`;
+    const calculated = entry.calculated ? ` · ${translate('Расчётное')}` : '';
+    return `<button type="button" class="journal-calendar-reading ${entry.calculated ? 'calculated' : ''} ${entryFirst ? 'first' : ''} ${entrySecond ? 'second' : ''} ${insightIds.has(entry.id) ? 'insight' : ''}" data-calendar-entry="${esc(entry.id)}" title="${esc(`${date.toLocaleString(intlLocale())}${calculated}`)}" aria-label="${esc(`${translate('Измерение')} ${date.toLocaleString(intlLocale())}${calculated}`)}">${esc(time)}</button>`;
   }).join('');
   const dayNumber = new Date(bucket.start).getDate();
-  return `<div class="journal-calendar-cell ${compact ? 'month-cell' : 'day-cell'} ${count ? 'has-data' : ''} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''} ${insight ? 'insight' : ''}"><button type="button" class="journal-calendar-cell-main" data-calendar-start="${bucket.start}" data-calendar-end="${bucket.end}" data-calendar-label="${esc(bucket.label)}" title="${esc(hint)}"><span>${compact ? esc(bucket.label) : dayNumber}</span><b>${count || ''}</b></button>${markers ? `<div class="journal-calendar-measurements">${markers}</div>` : ''}<span class="journal-calendar-tooltip" role="tooltip">${esc(hint)}</span></div>`;
+  return `<div class="journal-calendar-cell ${compact ? 'month-cell' : 'day-cell'} ${count ? 'has-data' : ''} ${hasCalculated ? 'has-calculated' : ''} ${selected ? 'selected' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''} ${insight ? 'insight' : ''}"><button type="button" class="journal-calendar-cell-main" data-calendar-start="${bucket.start}" data-calendar-end="${bucket.end}" data-calendar-label="${esc(bucket.label)}" title="${esc(hint)}"><span>${compact ? esc(bucket.label) : dayNumber}</span><b>${count || ''}</b></button>${markers ? `<div class="journal-calendar-measurements">${markers}</div>` : ''}<span class="journal-calendar-tooltip" role="tooltip">${esc(hint)}</span></div>`;
 }
 function classicCalendarHtml(buckets, entries, insightIds) {
   const groups = new Map();
@@ -1206,7 +1280,8 @@ function readingChoiceHtml(entry, insightIds, kind = journalHistoryState.selecte
   const second = entry.id === journalChartState.secondId;
   const value = entry.values?.[journalChartState.testId];
   const test = journalTest(journalChartState.testId);
-  return `<button type="button" class="journal-reading-choice ${first ? 'first' : ''} ${second ? 'second' : ''} ${insightIds.has(entry.id) ? 'insight' : ''}" data-comparison-entry="${esc(entry.id)}" data-comparison-kind="${esc(kind)}"><span>${new Date(entry.at).toLocaleString(intlLocale())}</span><b>${hasJournalValue(value) ? `${fmt(number(value), 3)} ${esc(translate(test.unit))}` : '—'}</b></button>`;
+  const calculated = entry.calculated ? `<em class="journal-calculated-badge">${translate('Расчётное')}</em>` : '';
+  return `<button type="button" class="journal-reading-choice ${entry.calculated ? 'calculated' : ''} ${first ? 'first' : ''} ${second ? 'second' : ''} ${insightIds.has(entry.id) ? 'insight' : ''}" data-comparison-entry="${esc(entry.id)}" data-comparison-kind="${esc(kind)}"><span>${new Date(entry.at).toLocaleString(intlLocale())}${calculated}</span><b>${hasJournalValue(value) ? `${fmt(number(value), 3)} ${esc(translate(test.unit))}` : '—'}</b></button>`;
 }
 function interpolatedReadingHtml(interpolation) {
   const knownOrder = new Map(allJournalTests().map((test, index) => [test.id, index]));
@@ -1435,9 +1510,30 @@ $('#aquarium-delete').addEventListener('click', () => {
 });
 document.querySelectorAll('[data-calc-mode]').forEach(button => button.addEventListener('click', () => {
   state.mode = button.dataset.calcMode;
-  renderMode();
+  syncStaticFields();
   recalculate();
 }));
+function setWaterChangeJournalMode(mode) {
+  const nextMode = mode === 'current' ? 'current' : 'latest';
+  if (state.waterChangeJournalMode === nextMode) return;
+  state.waterChangeJournalMode = nextMode;
+  state.waterChangeLoadedEntryId = null;
+  syncStaticFields();
+  recalculate();
+}
+$('#change-journal-mode-toggle').addEventListener('change', event => {
+  setWaterChangeJournalMode(event.target.checked ? 'current' : 'latest');
+});
+$('#change-journal-controls').addEventListener('click', event => {
+  const button = event.target.closest('[data-change-journal-mode]');
+  if (button) setWaterChangeJournalMode(button.dataset.changeJournalMode);
+});
+$('#load-change-journal-values').addEventListener('click', () => {
+  const entry = state.waterChangeJournalMode === 'latest' ? loadLatestWaterChangeReading() : null;
+  syncStaticFields();
+  recalculate();
+  toast(entry ? translate('Параметры последнего теста загружены.') : translate('В журнале нет подходящих тестов воды этого аквариума.'));
+});
 $('#volume').addEventListener('input', event => { state.volume = number(event.target.value); recalculate(); });
 $('#tank-volume').addEventListener('input', event => { state.tankVolume = event.target.value; $('#aquarium-volume').value = event.target.value; recalculate(); renderAquariumList(); });
 $('#tank-gh').addEventListener('input', event => { state.tankGH = event.target.value; recalculate(); });
@@ -1572,7 +1668,13 @@ $('#source-fields').addEventListener('input', event => {
 });
 $('#solve').addEventListener('click', () => {
   recalculate();
-  toast(!hasConstraints() ? 'Задайте хотя бы одну цель' : !state.rows.some(row => row.mode === 'auto') ? 'Выберите вещество в режиме «Авто»' : solverWarning || 'Дозировки рассчитаны');
+  const calculationMessage = !hasConstraints() ? 'Задайте хотя бы одну цель' : !state.rows.some(row => row.mode === 'auto') ? 'Выберите вещество в режиме «Авто»' : solverWarning || 'Дозировки рассчитаны';
+  const journalMessage = recordCurrentWaterChangeJournalEntry();
+  toast(journalMessage ? `${calculationMessage} · ${journalMessage}` : calculationMessage);
+});
+$('#record-calculated-result').addEventListener('click', () => {
+  recalculate();
+  toast(recordCalculatedWaterChangeJournalEntry());
 });
 $('#add-product').addEventListener('click', () => {
   const id = $('#catalog').value;
@@ -1645,7 +1747,9 @@ $('#copy-summary').addEventListener('click', async () => {
 $('#reset').addEventListener('click', () => {
   const preserved = { customProducts: state.customProducts, userPresets: state.userPresets, journal: state.journal, customTests: state.customTests,
     aquariums: state.aquariums, activeAquariumId: state.activeAquariumId, tankVolume: state.tankVolume,
-    tankGH: state.tankGH, tankKH: state.tankKH, tankPH: state.tankPH, tankTDS: state.tankTDS, tank: state.tank };
+    tankGH: state.tankGH, tankKH: state.tankKH, tankPH: state.tankPH, tankTDS: state.tankTDS, tank: state.tank,
+    waterChangeJournalMode: state.waterChangeJournalMode,
+    waterChangeLoadedEntryId: state.waterChangeLoadedEntryId };
   state = { ...initialState(), ...preserved };
   presetDraft = null;
   renderPresetEditor();
@@ -1988,7 +2092,8 @@ $('#journal-save').addEventListener('click', () => {
   const light = readLightForm();
   if ((!Object.keys(values).length && !Object.keys(light).length) || Object.values(values).some(value => !Number.isFinite(value))) { toast('Укажите результат теста или настройки света'); return; }
   const notes = Object.fromEntries(Object.entries(journalDraft.notes).filter(([id, note]) => id in values && note.trim()));
-  const entry = { id: editingMeasurementId ?? `measure-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, at,
+  const previous = editingMeasurementId ? state.journal.find(item => item.id === editingMeasurementId) : null;
+  const entry = { ...(previous ?? {}), id: editingMeasurementId ?? `measure-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, at,
     aquariumId: state.activeAquariumId, location: $('#journal-location').value, values, notes,
     light, note: $('#journal-note').value.trim() };
   if (editingMeasurementId) state.journal = state.journal.map(item => item.id === editingMeasurementId ? entry : item);
@@ -2164,6 +2269,8 @@ document.addEventListener('aqua-locale-change', () => {
   renderJournalList();
   renderAquariums();
   renderDatabaseList();
+  refreshLocalizedNumberInputs(document, intlLocale);
 });
 $('#theme').addEventListener('change', event => applyTheme(event.target.value));
+installLocalizedNumberInputs(document, intlLocale);
 startLocalization();

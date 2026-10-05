@@ -2,18 +2,20 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
-## [⬇ Descargar AquaStoich 0.1.2a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a)
+## [⬇ Descargar AquaStoich 0.1.3a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a)
 
-**La versión 0.1.2a está en fase de pruebas.** AquaStoich calcula remineralización, fertilizantes, soluciones madre, proporciones iónicas, cambios de agua y tendencias de medición. Compruebe las dosis, el pH y la interpretación de tendencias mediante mediciones reales.
+**La versión 0.1.3a está en fase de pruebas.** AquaStoich calcula remineralización, fertilizantes, soluciones madre, proporciones iónicas, cambios de agua y tendencias de medición. Compruebe las dosis, el pH y la interpretación de tendencias mediante mediciones reales.
 
-Las versiones de prueba anteriores siguen disponibles como [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) y [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). Las diferencias figuran en el [registro de cambios completo](CHANGELOG.es.md).
+Las versiones de prueba anteriores siguen disponibles como [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a), [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) y [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). Las diferencias figuran en el [registro de cambios completo](CHANGELOG.es.md).
 
 > [!WARNING]
 > **La aplicación no está firmada digitalmente.** Este proyecto gratuito y no comercial no tiene dinero ni intención de pagar tarifas de plataforma por certificados de firma o notarización de software que debe seguir siendo gratuito. Descargue los paquetes únicamente desde la página oficial de [GitHub Releases](https://github.com/Fantomiaso/aquastoich/releases) y compruebe que `Fantomiaso` sea el propietario del repositorio.
 
 ## Descarga e instalación
 
-Descargue el paquete correspondiente de la [versión 0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a): instalador o `.exe` portátil para Windows, `.dmg` o `.zip` para macOS, `.deb` para Debian/Ubuntu o `.AppImage` para Linux. El primer inicio utiliza inglés; en la barra superior puede elegir inglés, ruso, alemán o español. Debido a la falta de firma, Windows SmartScreen o macOS Gatekeeper pueden exigir una confirmación explícita durante el primer inicio.
+Descargue el paquete correspondiente de la [versión 0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a): instalador o `.exe` portátil para Windows, `.dmg` o `.zip` para macOS, `.deb` para Debian/Ubuntu o `.AppImage` para Linux. El primer inicio utiliza inglés; en la barra superior puede elegir inglés, ruso, alemán o español. Debido a la falta de firma, Windows SmartScreen o macOS Gatekeeper pueden exigir una confirmación explícita durante el primer inicio.
+
+Los campos numéricos aceptan tanto punto como coma. El valor se reescribe de inmediato con el separador decimal del idioma elegido; la tecla decimal del teclado numérico sigue la misma regla.
 
 La aplicación funciona sin conexión ni cuenta. El cálculo, las sustancias propias, el registro y el idioma se guardan en la carpeta de datos del usuario:
 
@@ -29,7 +31,8 @@ La versión web guarda sus datos por separado en el navegador. No existe una mig
 
 | Versión | Fecha | Resumen |
 | --- | --- | --- |
-| [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 22/09/2026 | Compilación de prueba actual. Se ampliaron la documentación y las instrucciones de instalación, se destacó la ausencia de firma y se comprobó el arranque de Linux AppImage/DEB y macOS x64/ARM64. |
+| [0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a) | 05/10/2026 | Compilación de prueba actual. Integración del cambio de agua con el registro, identificación visual de lecturas calculadas, entrada decimal localizada y mayor contraste de los rangos en el tema oscuro. |
+| [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 22/09/2026 | Se ampliaron la documentación y las instrucciones de instalación, se destacó la ausencia de firma y se comprobó el arranque de Linux AppImage/DEB y macOS x64/ARM64. |
 | [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) | 21/09/2026 | Añadió calendario y gráfico del historial, interpolación, estadísticas del periodo, comparación de dos lecturas, temas y una amplia mejora de legibilidad. |
 | [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) | 16/09/2026 | Primera versión independiente con perfiles de acuarios, cálculo de volumen, registros separados, canales de luz, Excel, TDS, preajustes editables, base de sustancias, dosificación y remineralización. |
 
@@ -51,7 +54,7 @@ Consulte el [registro de cambios completo](CHANGELOG.es.md) para ver todos los d
 
 Antes de calcular un cambio de agua, cree o elija un perfil en **Acuarios**. Para **Según dimensiones**, introduzca las medidas exteriores y los descuentos. La estimación no descuenta el agua desplazada por decoración o equipos. El selector superior determina el acuario activo; su volumen, valores iniciales y registro se guardan por separado. En **Registro de mediciones**, puede anotar la iluminación y usar **Exportar a Excel** para guardar los datos del acuario elegido. Las mediciones nuevas proponen los últimos ajustes de luz guardados para ese acuario. Al actualizar, el registro existente se asigna al primer acuario.
 
-1. Elija **Preparación** o **Cambio de agua**. Introduzca el volumen, GH/KH/TDS del agua de origen y los iones conocidos. Para un cambio, añada también el volumen y la lectura de TDS del acuario. Si no dispone de una medición, deje TDS en blanco.
+1. Elija **Preparación** o **Cambio de agua**. Introduzca el volumen, GH/KH/TDS del agua de origen y los iones conocidos. En un cambio, el selector vertical del registro permite cargar expresamente la última medición mediante **Cargar valores**, o conservar los campos actuales y guardarlos como una nueva lectura previa al pulsar **Calcular dosis**. El botón situado en la parte superior de **Resultado** guarda por separado los parámetros calculados tras el cambio; estas estimaciones llevan una marca y un color propios en el registro. Si no dispone de una medición de TDS, deje el campo en blanco.
 2. Rellene solo los objetivos necesarios. Un campo vacío se ignora; cero es válido. Abra **Rango permitido** bajo cada parámetro para fijar uno o ambos límites, incluso sin objetivo exacto. Uno o varios preajustes establecen objetivos de agua, sus rangos y proporciones iónicas. Use **Editar** junto a un preajuste para cambiar objetivos, límites y proporciones; **Restaurar original** recupera uno integrado. **+ Preajuste propio** crea uno nuevo, que se puede editar o eliminar. Los preajustes guardados permanecen en este dispositivo. Los rangos que se solapan se intersectan; los incompatibles se explican. Ajuste estos ejemplos a sus especies y mediciones. También puede establecer NO₃:PO₄ = 12:1 con límites opcionales.
 3. Elija sustancias en **Sustancias y dosis**. Busque por nombre, sinónimo o fórmula. La etiqueta `+` o `−` indica el sentido del cambio por separado de la carga iónica, por ejemplo `+` con `Mg²⁺` o `−` con `NO₃⁻`. `PO₄ (Σ)` indica fosfato total. Ordene por nombre, efecto o sustancia/mezcla/solución.
 4. Para una sal seca, elija forma y pureza, y dosificación seca o solución madre. Introduzca la masa y el volumen final; también puede calcular la masa para una dosis cómoda en mililitros.

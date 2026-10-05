@@ -25,7 +25,7 @@ export function validLightChannels(channels) {
   return Array.isArray(channels) && channels.length <= MAX_LIGHT_CHANNELS
     && channels.every((channel, index) => {
       const id = String(channel.id ?? '');
-      const value = Number(channel.value);
+      const value = Number(String(channel.value).replace(',', '.'));
       return id && channel.value !== '' && Number.isFinite(value) && value >= 0 && value <= 100
         && (LIGHT_CHANNELS.some(item => item.id === id) || String(channel.name ?? '').trim())
         && !channels.slice(0, index).some(previous => previous.id === id);

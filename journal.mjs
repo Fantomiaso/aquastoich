@@ -46,6 +46,63 @@ export const JOURNAL_COMPONENTS = Object.freeze({
   Cl2total: ['Cl2free'],
 });
 
+// Parameters that can be transferred between the water-change calculator and
+// the aquarium measurement log. The calculator has no input fields for the
+// remaining optional tests, so those stay untouched in the journal.
+export const WATER_CHANGE_READING_IONS = Object.freeze([
+  'Ca', 'Mg', 'K', 'Na', 'NH4', 'NO2', 'NO3', 'PO4', 'HCO3', 'CO3', 'SO4', 'Cl', 'Fe', 'Mn',
+]);
+
+const transferableReadingValue = value => value !== '' && value != null && Number.isFinite(Number(String(value).replace(',', '.')));
+const normalizedReadingValue = value => Number(String(value).replace(',', '.'));
+
+export function latestAquariumWaterReading(entries, aquariumId) {
+  let latest = null;
+  let latestTime = -Infinity;
+  for (const entry of entries ?? []) {
+    if (entry.aquariumId !== aquariumId || entry.location !== 'aquarium') continue;
+    if (!Object.entries(entry.values ?? {}).some(([id, value]) =>
+      ['pH', 'GH', 'KH', 'TDS', ...WATER_CHANGE_READING_IONS].includes(id) && transferableReadingValue(value))) continue;
+    const time = new Date(entry.at).getTime();
+    if (!Number.isFinite(time) || time < latestTime) continue;
+    latest = entry;
+    latestTime = time;
+  }
+  return latest;
+}
+
+export function waterChangeTankInput(entry) {
+  const value = id => transferableReadingValue(entry?.values?.[id]) ? normalizedReadingValue(entry.values[id]) : '';
+  return {
+    tankGH: value('GH'), tankKH: value('KH'), tankPH: value('pH'), tankTDS: value('TDS'),
+    tank: Object.fromEntries(WATER_CHANGE_READING_IONS.map(id => [id, value(id)])),
+  };
+}
+
+export function waterChangeCurrentReading(state) {
+  const candidates = [
+    ['GH', state?.tankGH], ['KH', state?.tankKH], ['pH', state?.tankPH], ['TDS', state?.tankTDS],
+    ...WATER_CHANGE_READING_IONS.map(id => [id, state?.tank?.[id]]),
+  ];
+  return Object.fromEntries(candidates.filter(([, value]) => transferableReadingValue(value))
+    .map(([id, value]) => [id, normalizedReadingValue(value)]));
+}
+
+export function waterChangeCalculatedReading(state, result) {
+  const values = {};
+  const add = (id, value) => { if (transferableReadingValue(value)) values[id] = normalizedReadingValue(value); };
+  if (transferableReadingValue(state?.tankGH)) add('GH', result?.gh);
+  if (transferableReadingValue(state?.tankKH)) add('KH', result?.kh);
+  add('pH', result?.ph);
+  if (transferableReadingValue(state?.tankTDS) && transferableReadingValue(state?.sourceTDS)) add('TDS', result?.tds);
+  for (const id of WATER_CHANGE_READING_IONS) {
+    const knownBefore = transferableReadingValue(state?.tank?.[id]) || transferableReadingValue(state?.source?.[id]);
+    const added = Math.abs(Number(result?.additions?.[id])) > 1e-12;
+    if (knownBefore || added) add(id, result?.ions?.[id]);
+  }
+  return values;
+}
+
 const validReading = value => value !== '' && value != null && Number.isFinite(Number(value));
 const dateStart = value => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ''))) return null;

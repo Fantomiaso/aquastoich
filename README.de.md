@@ -2,18 +2,20 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
-## [⬇ AquaStoich 0.1.2a herunterladen · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a)
+## [⬇ AquaStoich 0.1.3a herunterladen · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a)
 
-**Version 0.1.2a befindet sich in der Testphase.** AquaStoich berechnet Remineralisierung, Dünger, Stammlösungen, Ionenverhältnisse, Wasserwechsel und Messverläufe. Dosierungen, pH und interpretierte Trends sollten mit tatsächlichen Messungen überprüft werden.
+**Version 0.1.3a befindet sich in der Testphase.** AquaStoich berechnet Remineralisierung, Dünger, Stammlösungen, Ionenverhältnisse, Wasserwechsel und Messverläufe. Dosierungen, pH und interpretierte Trends sollten mit tatsächlichen Messungen überprüft werden.
 
-Frühere Testversionen bleiben als [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) und [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) verfügbar. Die Unterschiede stehen im [vollständigen Änderungsprotokoll](CHANGELOG.de.md).
+Frühere Testversionen bleiben als [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a), [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) und [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) verfügbar. Die Unterschiede stehen im [vollständigen Änderungsprotokoll](CHANGELOG.de.md).
 
 > [!WARNING]
 > **Die Anwendung ist nicht digital signiert.** Dieses kostenlose, nichtkommerzielle Projekt hat weder Geld noch die Absicht, Plattformgebühren für Signaturzertifikate oder die Notarisierung von Software zu bezahlen, die kostenlos bleiben soll. Laden Sie Pakete nur von der offiziellen Seite [GitHub Releases](https://github.com/Fantomiaso/aquastoich/releases) herunter und prüfen Sie, dass `Fantomiaso` der Repository-Inhaber ist.
 
 ## Download und Installation
 
-Laden Sie im [Release 0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) das passende Paket herunter: Windows-Installer oder portable `.exe`, macOS-`.dmg` oder `.zip`, Debian/Ubuntu-`.deb` oder Linux-`.AppImage`. Beim ersten Start ist Englisch eingestellt. Über die Sprachauswahl oben können Sie Deutsch, Englisch, Russisch oder Spanisch wählen. Wegen der fehlenden Signatur können Windows SmartScreen oder macOS Gatekeeper beim ersten Start eine ausdrückliche Bestätigung verlangen.
+Laden Sie im [Release 0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a) das passende Paket herunter: Windows-Installer oder portable `.exe`, macOS-`.dmg` oder `.zip`, Debian/Ubuntu-`.deb` oder Linux-`.AppImage`. Beim ersten Start ist Englisch eingestellt. Über die Sprachauswahl oben können Sie Deutsch, Englisch, Russisch oder Spanisch wählen. Wegen der fehlenden Signatur können Windows SmartScreen oder macOS Gatekeeper beim ersten Start eine ausdrückliche Bestätigung verlangen.
+
+Zahlenfelder akzeptieren sowohl Punkt als auch Komma. Der Wert wird sofort mit dem Dezimaltrennzeichen der gewählten Anwendungssprache dargestellt; die Dezimaltaste des Ziffernblocks folgt derselben Regel.
 
 Die Anwendung arbeitet offline ohne Konto. Berechnung, eigene Stoffe, Messprotokoll und Sprache werden im Anwendungsdatenverzeichnis des jeweiligen Benutzers gespeichert:
 
@@ -29,7 +31,8 @@ Die Browser-Version speichert Daten getrennt im lokalen Speicher des Browsers; e
 
 | Version | Datum | Zusammenfassung |
 | --- | --- | --- |
-| [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 22.09.2026 | Aktueller Test-Build. Dokumentation und Installationshinweise wurden erweitert, der Hinweis auf die fehlende Signatur wurde hervorgehoben und Linux AppImage/DEB sowie macOS x64/ARM64 wurden auf Startfähigkeit geprüft. |
+| [0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a) | 05.10.2026 | Aktueller Test-Build. Messprotokoll-Anbindung für Wasserwechsel, getrennte Kennzeichnung berechneter Einträge, lokalisierte Dezimaleingabe und kontrastreichere Bereichsfelder im dunklen Design. |
+| [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 22.09.2026 | Dokumentation und Installationshinweise wurden erweitert, der Hinweis auf die fehlende Signatur wurde hervorgehoben und Linux AppImage/DEB sowie macOS x64/ARM64 wurden auf Startfähigkeit geprüft. |
 | [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) | 21.09.2026 | Kalender- und Diagrammansicht für Messverläufe, Interpolation, Zeitraumstatistik, Vergleich zweier Messungen, Designs und eine umfassende Überarbeitung der Lesbarkeit. |
 | [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) | 16.09.2026 | Erste Standalone-Version mit Aquarienprofilen, Volumenberechnung, getrennten Protokollen, Lichtkanälen, Excel-Export, TDS, bearbeitbaren Vorlagen, Stoffdatenbank, Dosierung und Remineralisierung. |
 
@@ -51,7 +54,7 @@ Einzelheiten stehen im [vollständigen Änderungsprotokoll](CHANGELOG.de.md).
 
 Vor einer Wasserwechselberechnung unter **Aquarien** ein Becken anlegen oder auswählen. Bei **Aus Abmessungen** Außenmaße und Abzüge eintragen. Die Schätzung berücksichtigt keine Verdrängung durch Dekoration oder Technik. Das ausgewählte Aquarium steht oben in der Auswahl; sein Volumen, seine Ausgangswerte und sein Messprotokoll bleiben von anderen Becken getrennt. Im **Messprotokoll** können Beleuchtungseinstellungen erfasst und mit **Nach Excel exportieren** für dieses Aquarium gespeichert werden. Die nächste Messung übernimmt die zuletzt gespeicherten Beleuchtungseinstellungen als Vorschlag. Ein bestehendes Protokoll wird beim Update dem ersten Aquarium zugeordnet.
 
-1. **Aufbereitung** oder **Wasserwechsel** auswählen. Volumen, GH/KH/TDS des Ausgangswassers und bekannte Ionen eintragen. Beim Wasserwechsel auch Aquarienvolumen und TDS-Messwert des Aquariums angeben. Ohne Messung das TDS-Feld leer lassen.
+1. **Aufbereitung** oder **Wasserwechsel** auswählen. Volumen, GH/KH/TDS des Ausgangswassers und bekannte Ionen eintragen. Beim Wasserwechsel kann der vertikale Protokollschalter den letzten Messwert nach einem ausdrücklichen Klick auf **Werte laden** übernehmen. Alternativ werden die aktuellen Felder beim Klick auf **Dosierungen berechnen** als neuer Messwert vor dem Wasserwechsel gespeichert. Oben im Ergebnisbereich kann der berechnete Zustand nach dem Wasserwechsel separat in das Protokoll übernommen werden; solche Schätzwerte sind farblich und als berechnet gekennzeichnet. Ohne Messung das TDS-Feld leer lassen.
 2. Nur benötigte Zielwerte ausfüllen. Ein leeres Feld wird ignoriert; null ist ein gültiger Zielwert. Unter jedem Wasserziel kann **Zulässiger Bereich** geöffnet und eine oder beide Grenzen eingetragen werden, auch ohne exaktes Ziel. Eine oder mehrere Vorlagen setzen Wasserziele, deren Bereiche und Ionenverhältnisse. Mit **Bearbeiten** neben einer Vorlage lassen sich Ziele, Grenzen und Verhältnisse ändern; **Original wiederherstellen** setzt eine integrierte Vorlage zurück. Mit **+ Eigene Vorlage** wird eine neue Vorlage erstellt, die bearbeitet oder gelöscht werden kann. Gespeicherte Vorlagen bleiben lokal auf diesem Gerät. Überlappende Bereiche werden geschnitten; unvereinbare Bereiche werden erklärt. Die Beispiele an Arten und Messwerte anpassen. Bei Bedarf ein Verhältnis wie NO₃:PO₄ = 12:1 mit Grenzen angeben.
 3. Stoffe in **Stoffe und Dosierungen** auswählen. Nach Name, Synonym oder Formel suchen. Das Tag `+` oder `−` zeigt die Änderungsrichtung getrennt von der Ionenladung, etwa `+` mit `Mg²⁺` oder `−` mit `NO₃⁻`. `PO₄ (Σ)` steht für Gesamtphosphat. Nach Name, Wirkung oder Stoff/Mischung/Lösung sortieren.
 4. Bei Trockensalzen Form, Reinheit und trockene Zugabe oder Stammlösung wählen. Einwaage und Endvolumen angeben; eine praktische Milliliter-Dosis kann berechnet werden.

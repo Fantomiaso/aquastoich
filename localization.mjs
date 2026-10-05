@@ -3,7 +3,7 @@
 const rows = `Расчёт воды для подмены|Aquarium water calculator|Aquarienwasser-Rechner|Calculadora de agua para acuarios
 Версия 0.1.0a · тестирование|Version 0.1.0a · testing|Version 0.1.0a · Testphase|Versión 0.1.0a · en pruebas
 Версия 0.1.1a · тестирование|Version 0.1.1a · testing|Version 0.1.1a · Testphase|Versión 0.1.1a · en pruebas
-Версия 0.1.2a · тестирование|Version 0.1.2a · testing|Version 0.1.2a · Testphase|Versión 0.1.2a · en pruebas
+Версия 0.1.3a · тестирование|Version 0.1.3a · testing|Version 0.1.3a · Testphase|Versión 0.1.3a · en pruebas
 Тема приложения|Application theme|App-Design|Tema de la aplicación
 Тема|Theme|Design|Tema
 Светлая|Light|Hell|Claro
@@ -29,6 +29,25 @@ const rows = `Расчёт воды для подмены|Aquarium water calcula
 Объём подменяемой воды|Water change volume|Wechselwassermenge|Volumen del cambio de agua
 Объём аквариума с водой|Aquarium water volume|Wasservolumen im Aquarium|Volumen de agua del acuario
 Вода в аквариуме до подмены|Aquarium water before the change|Aquarienwasser vor dem Wechsel|Agua del acuario antes del cambio
+Связь с журналом измерений|Measurement log link|Verknüpfung mit dem Messprotokoll|Vínculo con el registro de mediciones
+Режим связи с журналом|Measurement log mode|Messprotokoll-Modus|Modo del registro de mediciones
+Взять параметры из последнего теста|Use parameters from the latest test|Werte aus dem letzten Test übernehmen|Usar los parámetros de la última prueba
+Внести текущие параметры как последний тест|Add current parameters as the latest test|Aktuelle Werte als letzten Test eintragen|Añadir los parámetros actuales como última prueba
+Загрузить значения|Load values|Werte laden|Cargar valores
+Нажмите «Загрузить значения», чтобы взять параметры последнего теста.|Press “Load values” to use the latest test parameters.|Klicken Sie auf „Werte laden“, um die Werte des letzten Tests zu übernehmen.|Pulse «Cargar valores» para usar los parámetros de la última prueba.
+Параметры последнего теста загружены.|The latest test parameters were loaded.|Die Werte des letzten Tests wurden geladen.|Se cargaron los parámetros de la última prueba.
+Добавить расчёт в журнал|Add calculated result to log|Berechnetes Ergebnis protokollieren|Añadir resultado calculado al registro
+Расчётная запись доступна только в режиме подмены воды.|A calculated entry is available only in water-change mode.|Ein berechneter Eintrag ist nur im Wasserwechselmodus verfügbar.|La entrada calculada solo está disponible en el modo de cambio de agua.
+В журнале нет подходящих тестов воды этого аквариума.|There are no suitable water tests for this aquarium in the log.|Für dieses Aquarium gibt es keine passenden Wassertests im Protokoll.|No hay pruebas de agua adecuadas para este acuario en el registro.
+Используются параметры теста от|Using parameters from the test dated|Verwendet werden die Werte des Tests vom|Se usan los parámetros de la prueba del
+Текущие параметры будут добавлены в журнал при расчёте доз.|The current parameters will be added to the log when doses are calculated.|Die aktuellen Werte werden beim Berechnen der Dosierungen ins Protokoll eingetragen.|Los parámetros actuales se añadirán al registro al calcular las dosis.
+Параметры аквариума перед подменой, добавлены из формы расчёта.|Aquarium parameters before the water change, added from the calculator.|Aquarienwerte vor dem Wasserwechsel, aus dem Rechner übernommen.|Parámetros del acuario antes del cambio, añadidos desde la calculadora.
+Расчётные параметры аквариума после подмены. Это расчёт, а не фактический замер.|Calculated aquarium parameters after the water change. This is a calculation, not an actual measurement.|Berechnete Aquarienwerte nach dem Wasserwechsel. Dies ist eine Berechnung und keine tatsächliche Messung.|Parámetros calculados del acuario tras el cambio. Es un cálculo, no una medición real.
+В журнал добавлена запись до подмены.|The pre-change entry was added to the log.|Der Eintrag vor dem Wasserwechsel wurde zum Protokoll hinzugefügt.|La entrada anterior al cambio se añadió al registro.
+В журнал добавлена расчётная запись после подмены.|The calculated post-change entry was added to the log.|Der berechnete Eintrag nach dem Wasserwechsel wurde zum Protokoll hinzugefügt.|La entrada calculada posterior al cambio se añadió al registro.
+Нет параметров, которые можно внести в журнал.|There are no parameters that can be added to the log.|Es gibt keine Werte, die ins Protokoll eingetragen werden können.|No hay parámetros que puedan añadirse al registro.
+Расчётная запись|Calculated entry|Berechneter Eintrag|Entrada calculada
+Расчётное|Calculated|Berechnet|Calculado
 Исходный GH|Source GH|Ausgangs-GH|GH de origen
 Исходный KH|Source KH|Ausgangs-KH|KH de origen
 Исходный TDS|Source TDS|Ausgangs-TDS|TDS de origen

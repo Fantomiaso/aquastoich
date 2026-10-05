@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { estimateAquariumVolume } from './aquarium.mjs';
-import { JOURNAL_TESTS, journalChartHeight, journalChartScale, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalEntriesInSelectedDays, journalInterpolatedReading, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets } from './journal.mjs';
+import { JOURNAL_TESTS, journalChartHeight, journalChartScale, journalComparison, journalComponents, journalDifference, journalEntriesInPeriod, journalEntriesInSelectedDays, journalInterpolatedReading, journalPeriodBounds, journalPeriodStatistics, journalSeries, journalTrendBuckets, latestAquariumWaterReading, waterChangeCalculatedReading, waterChangeCurrentReading, waterChangeTankInput } from './journal.mjs';
 import { journalTable, journalXlsx } from './journal-export.mjs';
 import { MAX_LIGHT_CHANNELS, validLightChannels } from './light-channels.mjs';
 
@@ -22,6 +22,30 @@ test('journal differences never cross aquarium profiles', () => {
     { id: 'c', aquariumId: 'tank-a', at: '2026-09-16T12:00', location: 'aquarium', values: { NO3: 6 } }
   ];
   assert.equal(journalDifference(entries, entries[2], 'NO3').previous.id, 'a');
+});
+
+test('water-change inputs use the latest compatible aquarium reading', () => {
+  const entries = [
+    { id: 'old', aquariumId: 'tank-a', at: '2026-09-20T10:00', location: 'aquarium', values: { GH: 5, Ca: 28 } },
+    { id: 'source', aquariumId: 'tank-a', at: '2026-09-22T10:00', location: 'source', values: { GH: 1 } },
+    { id: 'other', aquariumId: 'tank-b', at: '2026-09-23T10:00', location: 'aquarium', values: { GH: 20 } },
+    { id: 'before', aquariumId: 'tank-a', at: '2026-09-24T10:00', location: 'aquarium', values: { GH: 6, KH: 3 } },
+    { id: 'after', aquariumId: 'tank-a', at: '2026-09-24T10:00', location: 'aquarium', calculated: true, values: { GH: 6.4, KH: 3.2, TDS: 155, NO3: 8 } },
+  ];
+  const latest = latestAquariumWaterReading(entries, 'tank-a');
+  assert.equal(latest.id, 'after');
+  assert.deepEqual(waterChangeTankInput(latest), {
+    tankGH: 6.4, tankKH: 3.2, tankPH: '', tankTDS: 155,
+    tank: { Ca: '', Mg: '', K: '', Na: '', NH4: '', NO2: '', NO3: 8, PO4: '', HCO3: '', CO3: '', SO4: '', Cl: '', Fe: '', Mn: '' },
+  });
+});
+
+test('water-change journal snapshots keep measured and calculated values separate', () => {
+  const state = { tankGH: '6', tankKH: 3, tankPH: '', tankTDS: 150,
+    tank: { Ca: 30, Mg: '', NO3: 7 }, sourceTDS: 20, source: { NO3: 0 } };
+  assert.deepEqual(waterChangeCurrentReading(state), { GH: 6, KH: 3, TDS: 150, Ca: 30, NO3: 7 });
+  const result = { gh: 6.5, kh: 3.2, ph: 7.6, tds: 158, ions: { Ca: 31, Mg: 8, NO3: 8, PO4: 0.6 }, additions: { Ca: 1, Mg: 0, NO3: 1, PO4: 0.6 } };
+  assert.deepEqual(waterChangeCalculatedReading(state, result), { GH: 6.5, KH: 3.2, pH: 7.6, TDS: 158, Ca: 31, NO3: 8, PO4: 0.6 });
 });
 
 test('journal chart filters standard and manual periods chronologically', () => {

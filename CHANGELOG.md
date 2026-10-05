@@ -2,6 +2,17 @@
 
 English · [Русский](CHANGELOG.ru.md) · [Deutsch](CHANGELOG.de.md) · [Español](CHANGELOG.es.md)
 
+## 0.1.3a — Testing release
+
+This release connects water-change calculations with the measurement log and improves localized numeric entry.
+
+- Added a vertical journal-source selector to Water change mode. The latest compatible aquarium test is loaded only after an explicit **Load values** action; the alternative mode saves the current aquarium fields as a measured pre-change entry when **Calculate doses** is pressed.
+- Added **Add calculation to log** near the top of the Result panel. It saves the estimated post-change aquarium parameters separately from measured values.
+- Calculated log entries now have a distinct colour and a **Calculated** badge in the calendar, chart, nested choices, history and comparison cards.
+- Numeric fields accept both decimal dot and comma, immediately display the separator required by the selected app language, and interpret the numeric keypad decimal key as a separator regardless of the operating-system keyboard locale.
+- Increased the text contrast of target and ratio range fields in the dark theme.
+- Added tests for the water-change journal snapshots and locale-aware decimal normalization; the full suite contains 56 passing tests.
+
 ## 0.1.2a — Testing release
 
 This release improves distribution transparency and documentation. Calculator and measurement-analysis behaviour is unchanged from 0.1.1a.

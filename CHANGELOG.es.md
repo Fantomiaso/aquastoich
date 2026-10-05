@@ -2,6 +2,17 @@
 
 [English](CHANGELOG.md) · [Русский](CHANGELOG.ru.md) · [Deutsch](CHANGELOG.de.md) · Español
 
+## 0.1.3a — versión de prueba
+
+Esta versión conecta los cálculos de cambio de agua con el registro de mediciones y mejora la entrada numérica localizada.
+
+- El modo de cambio de agua incorpora un selector vertical del origen del registro. La última prueba compatible del acuario se carga únicamente tras pulsar **Cargar valores**; el modo alternativo guarda los campos actuales como lectura real previa al pulsar **Calcular dosis**.
+- Se añadió **Añadir cálculo al registro** en la parte superior de Resultado para guardar por separado los parámetros estimados después del cambio.
+- Las entradas calculadas tienen un color propio y la etiqueta **Calculado** en el calendario, el gráfico, las listas anidadas, el historial y las tarjetas de comparación.
+- Los campos numéricos aceptan tanto el punto como la coma, muestran de inmediato el separador decimal del idioma elegido y tratan la tecla decimal del teclado numérico como separador con independencia de la configuración regional del sistema.
+- Se aumentó el contraste del texto en los campos de rango de objetivos y proporciones del tema oscuro.
+- Se añadieron pruebas de las lecturas del cambio de agua y de la normalización decimal localizada; las 56 pruebas pasan correctamente.
+
 ## 0.1.2a — versión de prueba
 
 Esta versión mejora la transparencia de la distribución y la documentación. El comportamiento de la calculadora y del análisis de mediciones no cambia respecto a 0.1.1a.

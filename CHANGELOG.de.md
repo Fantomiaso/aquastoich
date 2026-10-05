@@ -2,6 +2,17 @@
 
 [English](CHANGELOG.md) · [Русский](CHANGELOG.ru.md) · Deutsch · [Español](CHANGELOG.es.md)
 
+## 0.1.3a — Testversion
+
+Diese Version verbindet Wasserwechselberechnungen mit dem Messprotokoll und verbessert die lokalisierte Zahleneingabe.
+
+- Im Wasserwechselmodus gibt es einen vertikalen Schalter für die Protokollquelle. Der letzte passende Messwert des gewählten Aquariums wird erst nach **Werte laden** übernommen; der alternative Modus speichert die aktuellen Aquarienfelder beim Klick auf **Dosierungen berechnen** als tatsächlichen Messwert vor dem Wasserwechsel.
+- Oben im Ergebnisbereich wurde **Berechnung zum Protokoll hinzufügen** ergänzt. Damit werden die geschätzten Werte nach dem Wasserwechsel getrennt von Messwerten gespeichert.
+- Berechnete Protokolleinträge haben nun eine eigene Farbe und die Kennzeichnung **Berechnet** in Kalender, Diagramm, Auswahllisten, Verlauf und Vergleichskarten.
+- Zahlenfelder akzeptieren Punkt und Komma, zeigen sofort das Dezimaltrennzeichen der gewählten Anwendungssprache und behandeln die Dezimaltaste des Ziffernblocks unabhängig von der Tastaturlokalisierung als Trennzeichen.
+- Der Textkontrast der Ziel- und Verhältnisbereiche im dunklen Design wurde erhöht.
+- Tests für Wasserwechsel-Protokolleinträge und lokalisierte Dezimaleingabe wurden ergänzt; alle 56 Tests bestehen.
+
 ## 0.1.2a — Testversion
 
 Diese Version verbessert die Transparenz der Verteilung und die Dokumentation. Rechner und Messwertanalyse verhalten sich unverändert wie in 0.1.1a.

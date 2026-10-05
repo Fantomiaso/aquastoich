@@ -1,13 +1,14 @@
 // Dimensions are external centimetres; glass is millimetres. Substrate depth is
 // an average over the footprint. Equipment and decor displacement is excluded.
 export function estimateAquariumVolume(geometry = {}) {
-  const length = Number(geometry.lengthCm);
-  const width = Number(geometry.widthCm);
-  const height = Number(geometry.heightCm);
-  const diameter = Number(geometry.diameterCm);
-  const glass = Number(geometry.glassMm ?? 0) / 10;
-  const substrate = Number(geometry.substrateCm ?? 0);
-  const topGap = Number(geometry.topGapCm ?? 0);
+  const value = item => Number(String(item ?? '').replace(',', '.'));
+  const length = value(geometry.lengthCm);
+  const width = value(geometry.widthCm);
+  const height = value(geometry.heightCm);
+  const diameter = value(geometry.diameterCm);
+  const glass = value(geometry.glassMm ?? 0) / 10;
+  const substrate = value(geometry.substrateCm ?? 0);
+  const topGap = value(geometry.topGapCm ?? 0);
   if (![height, glass, substrate, topGap].every(Number.isFinite)
     || height <= 0 || glass < 0 || substrate < 0 || topGap < 0) return null;
   const waterHeight = height - glass - substrate - topGap;

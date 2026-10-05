@@ -131,7 +131,7 @@ export function customProductFromForm(form) {
         if (!manual || !normalizeFormula(item.formula)) throw error;
         parsed = { normalized: normalizeFormula(item.formula), ions: {}, ionCharges: {}, molarMass: 0 };
       }
-      const solubility = Number(item.solubility);
+      const solubility = Number(String(item.solubility).replace(',', '.'));
       if (!Number.isFinite(solubility) || solubility <= 0) throw new Error(`Укажите растворимость формы ${index + 1} при 20 °C.`);
       return { id: `form-${index + 1}`, name: parsed.normalized, formula: parsed.ions, molarMass: parsed.molarMass,
         ionCharges: parsed.ionCharges, solubilityGPerL: solubility,
@@ -147,7 +147,7 @@ export function customProductFromForm(form) {
       unknownCounterions: Boolean(manual), manualComposition: manual,
       note: manual ? 'Ионный состав указан вручную.' : 'Ионный состав каждой формы рассчитан по её формуле. Растворимость указана отдельно для каждой формы.' };
   }
-  const solubility = Number(form.solubility);
+  const solubility = Number(String(form.solubility).replace(',', '.'));
   if (!Number.isFinite(solubility) || solubility <= 0) throw new Error('Укажите растворимость при 20 °C в г/л.');
   const components = Array.isArray(form.components) ? form.components.filter(item => String(item.formula ?? '').trim()) : [];
   if (!components.length || components.some(item => !normalizeFormula(item.formula))) throw new Error('Укажите формулу каждого компонента.');
@@ -157,7 +157,7 @@ export function customProductFromForm(form) {
   const ionCharges = {};
   let totalPercent = 0;
   if (!manual) for (const item of components) {
-    const amount = Number(item.amount);
+    const amount = Number(String(item.amount).replace(',', '.'));
     if (!Number.isFinite(amount) || amount <= 0) throw new Error('Количество каждого компонента должно быть больше нуля.');
     if (type === 'dry') totalPercent += amount;
     const parsed = parseSaltFormula(item.formula);
@@ -177,7 +177,7 @@ export function customProductFromForm(form) {
     formulaText, solubilityGPerL: solubility, solubilityTemperatureC: 20,
     type, group: kind === 'substance' ? 'Мои вещества' : 'Мои смеси', composition, ionCharges,
     unknownCounterions: Boolean(manual), note: manual ? 'Ионный состав введён вручную.' : `Состав рассчитан по формулам: ${formulaText}.`,
-    components: components.map(item => ({ formula: normalizeFormula(item.formula), amount: Number(item.amount) })), kind,
+    components: components.map(item => ({ formula: normalizeFormula(item.formula), amount: Number(String(item.amount).replace(',', '.')) })), kind,
     manualComposition: manual,
   };
   return product;

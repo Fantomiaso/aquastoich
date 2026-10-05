@@ -64,7 +64,7 @@ jobs:
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
-          name: AquaStoich 0.1.2a · Testing / Тестирование
+          name: AquaStoich 0.1.3a · Testing / Тестирование
           prerelease: true
-          body_path: RELEASE_NOTES_0.1.2a.md
+          body_path: RELEASE_NOTES_0.1.3a.md
           files: release/*

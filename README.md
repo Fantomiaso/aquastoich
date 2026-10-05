@@ -2,18 +2,20 @@
 
 [![English](https://img.shields.io/badge/English-README-2d7d58)](README.md) [![Русский](https://img.shields.io/badge/Русский-README-2d7d58)](README.ru.md) [![Deutsch](https://img.shields.io/badge/Deutsch-README-2d7d58)](README.de.md) [![Español](https://img.shields.io/badge/Espa%C3%B1ol-README-2d7d58)](README.es.md)
 
-## [⬇ Download AquaStoich 0.1.2a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a)
+## [⬇ Download AquaStoich 0.1.3a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a)
 
-**Version 0.1.2a is a testing release.** AquaStoich calculates freshwater aquarium remineralization, fertilizer doses, stock solutions, ion ratios, water changes and measurement trends. Verify doses, pH and interpreted trends with actual measurements.
+**Version 0.1.3a is a testing release.** AquaStoich calculates freshwater aquarium remineralization, fertilizer doses, stock solutions, ion ratios, water changes and measurement trends. Verify doses, pH and interpreted trends with actual measurements.
 
-Previous testing builds remain available as [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) and [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). See the [full changelog](CHANGELOG.md) for the differences.
+Previous testing builds remain available as [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a), [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a), and [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). See the [full changelog](CHANGELOG.md) for the differences.
 
 > [!WARNING]
 > **The application is not digitally signed.** This free, noncommercial project has no budget and no intention of paying platform fees for code-signing certificates or notarization of software that should remain free. Download packages only from the official [GitHub Releases](https://github.com/Fantomiaso/aquastoich/releases) page and verify the repository owner is `Fantomiaso`.
 
 ## Download and install
 
-Download the matching package from [release 0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a): Windows installer or portable `.exe`, macOS `.dmg` or `.zip`, Debian/Ubuntu `.deb`, or Linux `.AppImage`. The first launch uses English; the language selector in the top bar offers English, Russian, German, and Spanish. Because the packages are unsigned, Windows SmartScreen or macOS Gatekeeper may require an explicit confirmation before the first launch.
+Download the matching package from [release 0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a): Windows installer or portable `.exe`, macOS `.dmg` or `.zip`, Debian/Ubuntu `.deb`, or Linux `.AppImage`. The first launch uses English; the language selector in the top bar offers English, Russian, German, and Spanish. Because the packages are unsigned, Windows SmartScreen or macOS Gatekeeper may require an explicit confirmation before the first launch.
+
+Numeric fields accept either a dot or a comma. The value is immediately rewritten with the decimal separator of the selected app language; the decimal key on the numeric keypad follows that language as well.
 
 The app works offline and has no account or remote database. Electron stores the calculation, custom substances, journal, and language setting in the current user's application data directory:
 
@@ -29,7 +31,8 @@ The optional browser version keeps separate data in that browser's local storage
 
 | Version | Date | Summary |
 | --- | --- | --- |
-| [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 2026-09-22 | Current testing build. Documentation and release guidance were expanded, the unsigned-package notice was made explicit, and the Linux AppImage/DEB plus macOS x64/ARM64 packages were launch-tested. |
+| [0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a) | 2026-10-05 | Current testing build. Added measurement-log integration for water changes, visually distinct calculated readings, locale-aware decimal input, and clearer range fields in the dark theme. |
+| [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 2026-09-22 | Documentation and release guidance were expanded, the unsigned-package notice was made explicit, and the Linux AppImage/DEB plus macOS x64/ARM64 packages were launch-tested. |
 | [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) | 2026-09-21 | Added calendar and chart views for measurement history, interpolation, period statistics, two-reading comparison, themes, and the major readability pass. |
 | [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) | 2026-09-16 | Established the standalone calculator with aquarium profiles, geometry-based volume, per-aquarium logs, lighting channels, Excel export, TDS, editable presets, substances, dosing, and remineralization. |
 
@@ -50,7 +53,7 @@ See the [complete changelog](CHANGELOG.md) for detailed changes in every version
 ## How to use
 
 1. In **Aquariums**, create or select a tank. Set its working water volume manually or choose **From dimensions** and enter the outside dimensions, glass thickness, average substrate depth, and top gap. The active aquarium selector stays in the top bar.
-2. Choose **Preparation** or **Water change**. Enter prepared-water volume, source-water GH/KH/TDS and any known ions. For a change, also enter the selected aquarium's starting values, including its TDS reading. Leave TDS blank if it has not been measured.
+2. Choose **Preparation** or **Water change**. Enter prepared-water volume, source-water GH/KH/TDS and any known ions. For a change, use the vertical journal selector to load the latest measured aquarium values explicitly, or keep the current fields and save them as a new pre-change reading when **Calculate doses** is pressed. The button at the top of **Result** can save the calculated post-change values; these estimates are marked as calculated and use a separate colour in the log. Leave TDS blank if it has not been measured.
 3. Enter only the water targets you need. A blank target is ignored; zero is valid. Open **Allowed range** under a target to set a minimum, maximum, or both. A range can also be used without an exact target. Select one or more presets to fill water targets, their ranges, and ion ratios. Use **Edit** beside a preset to change its targets, ranges, and ratios; **Restore original** resets a built-in preset. **+ Custom preset** creates your own, which can be edited or deleted. Saved presets stay on this device. Overlapping presets use the intersection of their ranges; incompatible ranges are explained. Add ratios such as NO₃:PO₄ = 12:1 with optional bounds.
 4. Choose substances in **Substances and doses**. Search by name, synonym, or formula and filter by effect. The `+` or `−` tag shows the direction of change separately from ionic charge, such as `+` with `Mg²⁺` or `−` with `NO₃⁻`. `PO₄ (Σ)` means total phosphate, not one ionic species. Sort by name, effect, or substance/mixture/solution.
 5. For a dry substance, choose its chemical form and purity, then a dry dose or a stock solution. Enter the mass and final solution volume. You can also calculate the mass for a convenient millilitre dose.

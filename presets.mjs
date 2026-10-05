@@ -16,7 +16,7 @@ const filled = value => value !== '' && value != null && (typeof value !== 'stri
 const error = (code, field = '') => Object.assign(new Error(code), { field });
 const limit = (value, field) => {
   if (!filled(value)) return '';
-  const parsed = Number(value);
+  const parsed = Number(String(value).replace(',', '.'));
   if (!Number.isFinite(parsed) || parsed < 0) throw error('preset-number', field);
   return parsed;
 };

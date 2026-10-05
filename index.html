@@ -11,7 +11,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand"><span class="brand-mark">A</span><div><strong>AquaStoich</strong><span>Расчёт воды для подмены</span></div></div>
-      <div class="top-actions"><label class="aquarium-switch"><span>Аквариум</span><select id="active-aquarium" aria-label="Выбрать аквариум"></select></label><span class="testing-badge">Версия 0.1.2a · тестирование</span><label class="theme-picker"><span>Тема</span><select id="theme" aria-label="Тема приложения"><option value="light">Светлая</option><option value="dark">Тёмная</option><option value="colorblind">Режим цветовой слепоты</option></select></label><label class="language-picker"><span>Язык</span><select id="language" aria-label="Язык приложения"><option value="en">English</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="es">Español</option></select></label><button id="copy-summary" class="button quiet" type="button">Скопировать расчёт</button><button id="reset" class="button quiet" type="button">Новый расчёт</button></div>
+      <div class="top-actions"><label class="aquarium-switch"><span>Аквариум</span><select id="active-aquarium" aria-label="Выбрать аквариум"></select></label><span class="testing-badge">Версия 0.1.3a · тестирование</span><label class="theme-picker"><span>Тема</span><select id="theme" aria-label="Тема приложения"><option value="light">Светлая</option><option value="dark">Тёмная</option><option value="colorblind">Режим цветовой слепоты</option></select></label><label class="language-picker"><span>Язык</span><select id="language" aria-label="Язык приложения"><option value="en">English</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="es">Español</option></select></label><button id="copy-summary" class="button quiet" type="button">Скопировать расчёт</button><button id="reset" class="button quiet" type="button">Новый расчёт</button></div>
     </header>
 
     <nav class="app-tabs" aria-label="Разделы программы">
@@ -41,6 +41,16 @@
 
         <section class="panel" id="tank-panel" hidden>
           <div class="section-heading"><h2>Вода в аквариуме до подмены</h2></div>
+          <fieldset class="change-journal-controls" id="change-journal-controls">
+            <legend>Связь с журналом измерений</legend>
+            <div class="change-journal-mode-slider">
+              <label class="vertical-toggle"><input id="change-journal-mode-toggle" type="checkbox" aria-label="Режим связи с журналом"><span aria-hidden="true"><i></i></span></label>
+              <button type="button" data-change-journal-mode="latest">Взять параметры из последнего теста</button>
+              <button type="button" data-change-journal-mode="current">Внести текущие параметры как последний тест</button>
+            </div>
+            <p id="change-journal-status" class="change-journal-status"></p>
+            <button id="load-change-journal-values" class="button secondary full change-journal-load" type="button">Загрузить значения</button>
+          </fieldset>
           <label class="field"><span>Объём аквариума с водой</span><div class="input-unit"><input id="tank-volume" type="number" min="0.001" step="any"><span>л</span></div></label>
           <button id="open-aquarium-profile" class="text-button" type="button">Размеры и рабочий объём ↗</button>
           <div class="field-grid two spaced-grid">
@@ -77,7 +87,7 @@
         </section>
 
         <section class="panel results-panel">
-          <div class="section-heading split"><div><h2>Результат</h2></div><span class="live-pill"><span></span> обновляется сразу</span></div>
+          <div class="section-heading split"><div><h2>Результат</h2></div><div class="result-heading-actions"><button id="record-calculated-result" class="button secondary result-journal-button" type="button" hidden>Добавить расчёт в журнал</button><span class="live-pill"><span></span> обновляется сразу</span></div></div>
           <div id="messages" class="messages" aria-live="polite"></div>
           <button id="ph-result" class="ph-result" type="button" aria-expanded="false" aria-controls="ph-breakdown"></button>
           <div id="ph-breakdown" class="result-breakdown" hidden></div>
@@ -157,7 +167,7 @@
             </div>
             <div id="journal-chart-manual" class="journal-chart-manual" hidden><label class="mini-field"><span>Начало периода</span><input id="journal-chart-from" type="date"></label><label class="mini-field"><span>Конец периода</span><input id="journal-chart-to" type="date"></label></div>
             <p class="help journal-change-note">Изменение рассчитано от предыдущего замера того же теста и воды; скорость пересчитана на 24 часа. Это чистое изменение: внесения и подмены не вычитаются.</p>
-            <div class="journal-history-toolbar"><span id="journal-history-period" class="journal-history-period"></span></div>
+            <div class="journal-history-toolbar"><span class="journal-calculated-legend"><i aria-hidden="true"></i>Расчётная запись</span><span id="journal-history-period" class="journal-history-period"></span></div>
             <div id="journal-calendar-view" class="journal-history-view" hidden>
               <section class="journal-calendar-panel" aria-labelledby="journal-calendar-title">
                 <div class="journal-calendar-heading"><strong id="journal-calendar-title">Календарь измерений</strong><span id="journal-calendar-scale" class="count-pill"></span><button id="journal-calendar-up" class="button secondary journal-calendar-back" type="button" hidden>← Назад к периоду</button></div>
