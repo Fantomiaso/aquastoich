@@ -15,7 +15,8 @@ This release connects water-change calculations with the measurement log and imp
 - Added full JSON backup and restore for aquarium profiles, journals, custom substances, presets, settings, language, and theme. The web app also requests persistent browser storage; a backup file remains necessary for another browser or after manually clearing site data.
 - Added a restrictive Content Security Policy that blocks programmatic outbound data connections. External source and documentation pages open only after the user follows their links.
 - Added a localized **Feedback** button and a structured GitHub issue chooser with separate bug-report and feature-proposal forms; unstructured blank issues are disabled.
-- Added tests for the water-change journal snapshots and locale-aware decimal normalization; the full suite contains 59 passing tests.
+- The Windows installer now detects an existing AquaStoich installation and updates it in place while preserving application data. The uninstaller offers data-preserving removal or clean removal, warns before permanent deletion, offers an automatic JSON backup in Documents, never overwrites an earlier backup, and blocks cleanup if that backup fails.
+- Added tests for the water-change journal snapshots, locale-aware decimal normalization and uninstall-backup generation; the full suite contains 63 passing tests.
 
 ## 0.1.2a — Testing release
 

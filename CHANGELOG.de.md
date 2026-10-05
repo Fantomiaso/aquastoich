@@ -15,7 +15,8 @@ Diese Version verbindet Wasserwechselberechnungen mit dem Messprotokoll und verb
 - Vollständige JSON-Sicherung und Wiederherstellung für Aquarienprofile, Protokolle, eigene Stoffe, Vorlagen, Einstellungen, Sprache und Design wurden ergänzt. Die Web-App fordert zudem dauerhaften Browserspeicher an; für einen anderen Browser oder nach manuellem Löschen der Websitedaten bleibt eine Sicherungsdatei erforderlich.
 - Eine strenge Content Security Policy blockiert programmatische ausgehende Datenverbindungen. Externe Quellen und Dokumentation werden nur nach einem bewussten Klick geöffnet.
 - Eine lokalisierte **Feedback**-Schaltfläche und eine strukturierte GitHub-Issue-Auswahl trennen Fehlermeldungen von Verbesserungsvorschlägen; leere unstrukturierte Issues sind deaktiviert.
-- Tests für Wasserwechsel-Protokolleinträge und lokalisierte Dezimaleingabe wurden ergänzt; alle 59 Tests bestehen.
+- Der Windows-Installer erkennt nun eine vorhandene AquaStoich-Installation und aktualisiert sie unter Beibehaltung der Daten. Der Deinstaller bietet das Behalten von Protokollen und Einstellungen oder eine vollständige Entfernung, warnt vor dauerhaftem Verlust, bietet eine automatische JSON-Sicherung in Dokumente an, überschreibt keine ältere Sicherung und verhindert die Löschung, wenn die Sicherung fehlschlägt.
+- Tests für Wasserwechsel-Protokolleinträge, lokalisierte Dezimaleingabe und die Sicherung vor der Deinstallation wurden ergänzt; alle 63 Tests bestehen.
 
 ## 0.1.2a — Testversion
 

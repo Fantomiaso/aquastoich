@@ -24,6 +24,8 @@ Descargue el paquete correspondiente de la [versión 0.1.3a](https://github.com/
 
 Los campos numéricos aceptan tanto punto como coma. El valor se reescribe de inmediato con el separador decimal del idioma elegido; la tecla decimal del teclado numérico sigue la misma regla.
 
+El instalador de Windows comprueba el registro existente de AquaStoich. Si encuentra una instalación anterior, la actualiza sobre la misma ubicación y conserva registros, perfiles de acuarios y ajustes; en caso contrario realiza una instalación limpia. El desinstalador de Windows ofrece por defecto **Conservar registros y ajustes** o **Eliminación completa de todos los datos locales**. Antes de limpiar todo muestra una advertencia de pérdida permanente y ofrece crear una copia JSON completa en `Documentos\AquaStoich Backups`. Los nombres de archivo son únicos; si la copia solicitada falla, la limpieza no se inicia.
+
 La aplicación funciona sin conexión ni cuenta. El cálculo, las sustancias propias, el registro y el idioma se guardan en la carpeta de datos del usuario:
 
 | Sistema | Carpeta de datos |
@@ -31,6 +33,8 @@ La aplicación funciona sin conexión ni cuenta. El cálculo, las sustancias pro
 | Windows | `%APPDATA%\AquaStoich` |
 | macOS | `~/Library/Application Support/AquaStoich` |
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
+
+En macOS, sustituir la aplicación en `Applications` conserva el directorio de datos anterior; en Debian/Ubuntu, instalar un `.deb` más reciente actualiza el paquete y conserva los datos del usuario. La versión portátil de Windows y el AppImage de Linux se sustituyen manualmente. Para borrar por completo los datos en macOS o Linux, use primero **Descargar copia de seguridad**, cierre AquaStoich, desinstale la aplicación y elimine después el directorio de datos indicado arriba.
 
 La versión web solicita almacenamiento local persistente al navegador. Esto reduce la eliminación automática, pero no protege frente al borrado manual de los datos del sitio. **Descargar copia de seguridad** exporta a JSON todos los acuarios, registros, sustancias propias, preajustes, ajustes, idioma y tema; **Restaurar desde archivo** los importa en otro navegador o tras una limpieza. No hay sincronización automática en la nube ni migración a la aplicación de escritorio.
 

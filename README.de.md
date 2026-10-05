@@ -24,6 +24,8 @@ Laden Sie im [Release 0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/
 
 Zahlenfelder akzeptieren sowohl Punkt als auch Komma. Der Wert wird sofort mit dem Dezimaltrennzeichen der gewählten Anwendungssprache dargestellt; die Dezimaltaste des Ziffernblocks folgt derselben Regel.
 
+Der Windows-Installer prüft die vorhandene AquaStoich-Registrierung. Wird eine frühere Installation gefunden, aktualisiert er sie direkt und behält Messprotokolle, Aquarienprofile und Einstellungen; andernfalls erfolgt eine Neuinstallation. Der Windows-Deinstaller bietet standardmäßig **Protokolle und Einstellungen behalten** oder **Vollständige Entfernung aller lokalen Daten**. Vor der vollständigen Löschung erscheint eine Warnung vor dauerhaftem Datenverlust und das Angebot, zunächst eine vollständige JSON-Sicherung in `Dokumente\AquaStoich Backups` anzulegen. Dateinamen sind eindeutig; schlägt die angeforderte Sicherung fehl, wird die Datenlöschung abgebrochen.
+
 Die Anwendung arbeitet offline ohne Konto. Berechnung, eigene Stoffe, Messprotokoll und Sprache werden im Anwendungsdatenverzeichnis des jeweiligen Benutzers gespeichert:
 
 | System | Speicherort |
@@ -31,6 +33,8 @@ Die Anwendung arbeitet offline ohne Konto. Berechnung, eigene Stoffe, Messprotok
 | Windows | `%APPDATA%\AquaStoich` |
 | macOS | `~/Library/Application Support/AquaStoich` |
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
+
+Unter macOS bleibt dieses Datenverzeichnis beim Ersetzen der Anwendung in `Applications` erhalten; unter Debian/Ubuntu aktualisiert ein neueres `.deb` das Paket und behält die Benutzerdaten. Die portable Windows-Version und das Linux-AppImage werden manuell ersetzt. Für eine vollständige Entfernung unter macOS oder Linux zuerst **Sicherung herunterladen** verwenden, AquaStoich schließen, die Anwendung deinstallieren und anschließend das oben genannte Datenverzeichnis löschen.
 
 Die Browser-Version fordert dauerhaften lokalen Speicher an. Das verringert automatische Löschungen, schützt jedoch nicht vor dem manuellen Löschen der Websitedaten. **Sicherung herunterladen** exportiert alle Aquarien, Protokolle, eigenen Stoffe, Vorlagen, Einstellungen, Sprache und Design in eine JSON-Datei; **Aus Datei wiederherstellen** importiert sie in einen anderen Browser oder nach einer Löschung. Es gibt keine automatische Cloud-Synchronisierung oder Übernahme in die Desktop-App.
 

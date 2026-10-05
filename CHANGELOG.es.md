@@ -15,7 +15,8 @@ Esta versión conecta los cálculos de cambio de agua con el registro de medicio
 - Se añadieron copia y restauración completas en JSON para perfiles, registros, sustancias propias, preajustes, ajustes, idioma y tema. La aplicación web también solicita almacenamiento persistente; sigue siendo necesario un archivo para cambiar de navegador o recuperarse tras borrar manualmente los datos del sitio.
 - Una Content Security Policy restrictiva bloquea las conexiones de datos salientes iniciadas por el programa. Las fuentes y la documentación externas solo se abren cuando el usuario sigue sus enlaces.
 - Se añadió un botón **Comentarios** localizado y un selector estructurado de incidencias de GitHub con formularios separados para errores y propuestas; se desactivaron las incidencias vacías sin estructura.
-- Se añadieron pruebas de las lecturas del cambio de agua y de la normalización decimal localizada; las 59 pruebas pasan correctamente.
+- El instalador de Windows detecta ahora una instalación existente de AquaStoich y la actualiza conservando los datos. El desinstalador permite mantener registros y ajustes o realizar una limpieza completa, advierte antes del borrado permanente, ofrece una copia JSON automática en Documentos, nunca sobrescribe copias anteriores y bloquea la limpieza si falla la copia.
+- Se añadieron pruebas de las lecturas del cambio de agua, la normalización decimal localizada y la copia previa a la desinstalación; las 63 pruebas pasan correctamente.
 
 ## 0.1.2a — versión de prueba
 

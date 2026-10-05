@@ -24,6 +24,8 @@ Download the matching package from [release 0.1.3a](https://github.com/Fantomias
 
 Numeric fields accept either a dot or a comma. The value is immediately rewritten with the decimal separator of the selected app language; the decimal key on the numeric keypad follows that language as well.
 
+The Windows installer checks the existing AquaStoich registration. If it finds an earlier installation, it performs an in-place update and preserves journals, aquarium profiles and settings; otherwise it performs a clean installation. The Windows uninstaller offers **Keep journals and settings** by default or **Clean removal**. Clean removal shows a permanent-data-loss warning and offers to create a complete JSON backup first in `Documents\AquaStoich Backups`. Backup filenames are unique, and cleanup is stopped if the requested backup cannot be created.
+
 The app works offline and has no account or remote database. Electron stores the calculation, custom substances, journal, and language setting in the current user's application data directory:
 
 | System | Application data location |
@@ -31,6 +33,8 @@ The app works offline and has no account or remote database. Electron stores the
 | Windows | `%APPDATA%\AquaStoich` |
 | macOS | `~/Library/Application Support/AquaStoich` |
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
+
+On macOS, replacing the application in `Applications` keeps the data directory above; on Debian/Ubuntu, installing a newer `.deb` upgrades the package and keeps per-user data. The portable Windows build and Linux AppImage are replaced manually. To remove macOS or Linux data completely, first use **Download backup**, close AquaStoich, uninstall the application, and then remove the corresponding application-data directory above.
 
 The browser version asks the browser for persistent local storage and keeps separate data on that device. This reduces automatic eviction but cannot survive a manual clearing of site data. **Download backup** exports all aquariums, journals, custom substances, presets, settings, language, and theme to a JSON file; **Restore from file** imports it in another browser or after clearing data. There is no automatic cloud synchronization or migration into the desktop app.
 

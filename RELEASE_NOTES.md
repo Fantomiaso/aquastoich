@@ -14,6 +14,8 @@ The static web version requests persistent browser storage and includes complete
 
 A localized **Feedback** button opens two structured GitHub forms: one for bug reports and one for feature proposals. Blank unstructured issues are disabled.
 
+The Windows installer detects an existing AquaStoich installation and updates it in place without deleting journals or settings. The uninstaller defaults to keeping local data and also offers clean removal. Before clean removal it warns about permanent loss and offers a complete JSON backup in `Documents\AquaStoich Backups`; cleanup is cancelled if the requested backup cannot be created.
+
 The project is free, noncommercial, unsigned, and still being tested. Verify calculated doses and estimated readings with actual aquarium measurements.
 
 [English instructions](README.md) · [Changelog](CHANGELOG.md) · [License](LICENSE.md)
@@ -27,6 +29,8 @@ AquaStoich 0.1.3a связывает расчёт подмены с журнал
 **Приватность веб-версии:** [AquaStoich доступен на GitHub Pages](https://fantomiaso.github.io/aquastoich/) без регистрации и входа. Профили, расчёты, пользовательские вещества, пресеты, настройки и журналы остаются в браузере пользователя. У AquaStoich нет серверной части, облачной базы, аналитики, рекламы, телеметрии и отправки пользовательских данных. Веб-версия запрашивает постоянное хранилище, позволяет скачать и восстановить полную JSON-копию, а строгая Content Security Policy блокирует программные исходящие подключения к API.
 
 Локализованная кнопка **«Обратная связь»** открывает две оформленные формы GitHub: отдельно для сообщения об ошибке и предложения улучшения. Пустые неструктурированные issues отключены.
+
+Установщик Windows обнаруживает уже установленную AquaStoich и обновляет её поверх, не удаляя журналы и настройки. Деинсталлятор по умолчанию сохраняет локальные данные, но позволяет выбрать полное удаление. Перед очисткой он предупреждает о безвозвратной потере и предлагает сохранить полную JSON-копию в `Документы\AquaStoich Backups`; если копию создать не удалось, очистка отменяется.
 
 Проект бесплатный, некоммерческий, не подписан цифровой подписью и всё ещё тестируется. Проверяйте дозировки и расчётные показания фактическими измерениями.
 
@@ -42,6 +46,8 @@ Zahlenfelder akzeptieren nun Punkt und Komma, zeigen das Dezimaltrennzeichen der
 
 Eine lokalisierte **Feedback**-Schaltfläche öffnet zwei strukturierte GitHub-Formulare: eines für Fehler und eines für Verbesserungsvorschläge. Leere unstrukturierte Issues sind deaktiviert.
 
+Der Windows-Installer erkennt eine vorhandene AquaStoich-Installation und aktualisiert sie, ohne Protokolle oder Einstellungen zu löschen. Der Deinstaller behält lokale Daten standardmäßig bei und bietet zusätzlich eine vollständige Entfernung. Vor der Löschung warnt er vor dauerhaftem Verlust und bietet eine vollständige JSON-Sicherung in `Dokumente\AquaStoich Backups`; schlägt die angeforderte Sicherung fehl, wird die Datenlöschung abgebrochen.
+
 Das Projekt ist kostenlos, nichtkommerziell, unsigniert und befindet sich weiterhin in der Testphase. Dosierungen und Schätzwerte bitte mit tatsächlichen Messungen prüfen.
 
 [Deutsche Anleitung](README.de.md) · [Änderungsprotokoll](CHANGELOG.de.md) · [Lizenz](LICENSE.md)
@@ -55,6 +61,8 @@ Los campos numéricos aceptan tanto el punto como la coma, muestran el separador
 **Privacidad de la versión web:** [abra AquaStoich en GitHub Pages](https://fantomiaso.github.io/aquastoich/). No requiere registro ni inicio de sesión. Perfiles, cálculos, sustancias propias, preajustes, ajustes y registros permanecen en el navegador. No existe backend, base en la nube, analítica, publicidad, telemetría ni carga de datos. Incluye almacenamiento persistente, copia JSON completa y una Content Security Policy restrictiva.
 
 Un botón **Comentarios** localizado abre dos formularios estructurados de GitHub: uno para errores y otro para propuestas de mejora. Las incidencias vacías sin estructura están desactivadas.
+
+El instalador de Windows detecta una instalación existente de AquaStoich y la actualiza sin eliminar registros ni ajustes. El desinstalador conserva los datos locales de forma predeterminada y también ofrece una eliminación completa. Antes de limpiar advierte de la pérdida permanente y ofrece una copia JSON completa en `Documentos\AquaStoich Backups`; si no se puede crear la copia solicitada, se cancela la limpieza.
 
 El proyecto es gratuito, no comercial, no está firmado y continúa en fase de pruebas. Compruebe las dosis y estimaciones con mediciones reales.
 

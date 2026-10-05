@@ -28,7 +28,13 @@
     ],
     "directories": { "output": "dist" },
     "win": { "target": ["nsis", "portable"], "icon": "assets/icon.ico" },
-    "nsis": { "artifactName": "AquaStoich-Setup-0.1.3a.${ext}" },
+    "nsis": {
+      "artifactName": "AquaStoich-Setup-0.1.3a.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": false,
+      "deleteAppDataOnUninstall": false,
+      "include": "build/installer.nsh"
+    },
     "portable": { "artifactName": "AquaStoich-Portable-0.1.3a.${ext}" },
     "mac": { "target": ["dmg", "zip"], "icon": "assets/icon.icns", "artifactName": "AquaStoich-0.1.3a-${arch}.${ext}" },
     "linux": { "target": ["deb", "AppImage"], "category": "Education", "icon": "assets/icon.png", "syncDesktopName": true, "artifactName": "AquaStoich-0.1.3a-${arch}.${ext}" },
