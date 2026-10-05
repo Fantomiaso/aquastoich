@@ -4,12 +4,17 @@
 
 ## [⬇ Download AquaStoich 0.1.3a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a)
 
+## [🌐 Open the private web version](https://fantomiaso.github.io/aquastoich/)
+
 **Version 0.1.3a is a testing release.** AquaStoich calculates freshwater aquarium remineralization, fertilizer doses, stock solutions, ion ratios, water changes and measurement trends. Verify doses, pH and interpreted trends with actual measurements.
 
 Previous testing builds remain available as [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a), [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a), and [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). See the [full changelog](CHANGELOG.md) for the differences.
 
 > [!WARNING]
 > **The application is not digitally signed.** This free, noncommercial project has no budget and no intention of paying platform fees for code-signing certificates or notarization of software that should remain free. Download packages only from the official [GitHub Releases](https://github.com/Fantomiaso/aquastoich/releases) page and verify the repository owner is `Fantomiaso`.
+
+> [!IMPORTANT]
+> **Web privacy:** no registration or login is required. Aquarium profiles, calculations, custom substances, presets, settings, and the measurement log stay in that browser on that device. AquaStoich has no application server, cloud database, analytics, advertising, telemetry, or data upload. GitHub Pages only serves the static application files. Use **Download backup** to preserve or move the data: browser site data, including local storage and IndexedDB, can be removed when the user clears site data.
 
 ## Download and install
 
@@ -25,13 +30,13 @@ The app works offline and has no account or remote database. Electron stores the
 | macOS | `~/Library/Application Support/AquaStoich` |
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
 
-The optional browser version keeps separate data in that browser's local storage. It does not migrate data into the desktop app automatically.
+The browser version asks the browser for persistent local storage and keeps separate data on that device. This reduces automatic eviction but cannot survive a manual clearing of site data. **Download backup** exports all aquariums, journals, custom substances, presets, settings, language, and theme to a JSON file; **Restore from file** imports it in another browser or after clearing data. There is no automatic cloud synchronization or migration into the desktop app.
 
 ## Version history
 
 | Version | Date | Summary |
 | --- | --- | --- |
-| [0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a) | 2026-10-05 | Current testing build. Added measurement-log integration for water changes, visually distinct calculated readings, locale-aware decimal input, and clearer range fields in the dark theme. |
+| [0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a) | 2026-10-05 | Current testing build. Added measurement-log integration for water changes, visually distinct calculated readings, locale-aware decimal input, clearer dark-theme ranges, the private GitHub Pages app, and full local backup/restore. |
 | [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 2026-09-22 | Documentation and release guidance were expanded, the unsigned-package notice was made explicit, and the Linux AppImage/DEB plus macOS x64/ARM64 packages were launch-tested. |
 | [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) | 2026-09-21 | Added calendar and chart views for measurement history, interpolation, period statistics, two-reading comparison, themes, and the major readability pass. |
 | [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) | 2026-09-16 | Established the standalone calculator with aquarium profiles, geometry-based volume, per-aquarium logs, lighting channels, Excel export, TDS, editable presets, substances, dosing, and remineralization. |

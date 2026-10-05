@@ -12,6 +12,7 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test",
+    "pages": "node scripts/build-pages.mjs",
     "dist": "electron-builder --publish never"
   },
   "devDependencies": {

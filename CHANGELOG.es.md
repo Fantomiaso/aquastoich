@@ -11,7 +11,10 @@ Esta versión conecta los cálculos de cambio de agua con el registro de medicio
 - Las entradas calculadas tienen un color propio y la etiqueta **Calculado** en el calendario, el gráfico, las listas anidadas, el historial y las tarjetas de comparación.
 - Los campos numéricos aceptan tanto el punto como la coma, muestran de inmediato el separador decimal del idioma elegido y tratan la tecla decimal del teclado numérico como separador con independencia de la configuración regional del sistema.
 - Se aumentó el contraste del texto en los campos de rango de objetivos y proporciones del tema oscuro.
-- Se añadieron pruebas de las lecturas del cambio de agua y de la normalización decimal localizada; las 56 pruebas pasan correctamente.
+- La misma calculadora se publicó como [aplicación web estática en GitHub Pages](https://fantomiaso.github.io/aquastoich/). No requiere registro ni inicio de sesión y no tiene backend, base de datos en la nube, analítica, publicidad, telemetría ni carga de datos del usuario.
+- Se añadieron copia y restauración completas en JSON para perfiles, registros, sustancias propias, preajustes, ajustes, idioma y tema. La aplicación web también solicita almacenamiento persistente; sigue siendo necesario un archivo para cambiar de navegador o recuperarse tras borrar manualmente los datos del sitio.
+- Una Content Security Policy restrictiva bloquea las conexiones de datos salientes iniciadas por el programa. Las fuentes y la documentación externas solo se abren cuando el usuario sigue sus enlaces.
+- Se añadieron pruebas de las lecturas del cambio de agua y de la normalización decimal localizada; las 59 pruebas pasan correctamente.
 
 ## 0.1.2a — versión de prueba
 

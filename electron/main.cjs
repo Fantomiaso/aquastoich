@@ -6,8 +6,8 @@ app.setName('AquaStoich');
 protocol.registerSchemesAsPrivileged([{ scheme: 'rem', privileges: { standard: true, secure: true, supportFetchAPI: true } }]);
 
 const root = path.resolve(__dirname, '..');
-const allowed = new Set(['index.html', 'styles.css', 'app.mjs', 'builtin-catalog.mjs', 'catalog.mjs', 'chemistry.mjs', 'journal.mjs', 'presets.mjs', 'localization.mjs', 'aquarium.mjs', 'journal-export.mjs', 'light-channels.mjs', 'README.md']);
-const contentTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.md': 'text/plain; charset=utf-8' };
+const allowed = new Set(['index.html', 'styles.css', 'app.mjs', 'builtin-catalog.mjs', 'catalog.mjs', 'chemistry.mjs', 'journal.mjs', 'presets.mjs', 'localization.mjs', 'aquarium.mjs', 'journal-export.mjs', 'light-channels.mjs', 'localized-number.mjs', 'storage-backup.mjs', 'assets/icon.png', 'README.md']);
+const contentTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.md': 'text/plain; charset=utf-8', '.png': 'image/png' };
 const windows = new Set();
 
 app.whenReady().then(() => {

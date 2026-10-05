@@ -501,6 +501,13 @@ tbody td:last-child { color: #173f2c; font-weight: 750; }
 .aquarium-list-item strong { color: #2b6246; font-size: 11px; overflow: hidden; text-overflow: ellipsis; }
 .aquarium-list-item span { flex: none; color: #8a9d90; }
 .aquarium-list-item.active { border-color: #4fa87a; background: #eaf5ed; }
+.local-data-panel { display: grid; gap: 6px; margin-top: 12px; padding: 10px; border: 1px solid #dbe7de; border-radius: 6px; background: #f4faf6; }
+.local-data-panel .section-heading { margin: 0; }
+.local-data-panel h3 { margin: 0; color: #286748; font-size: 11.5px; }
+.local-data-panel p { margin: 0; color: #4d6958; font-size: 10.5px; line-height: 1.4; }
+.storage-persistence-status { font-weight: 700; }
+.local-data-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.local-data-actions .text-button { padding: 4px 2px; }
 .aquarium-note textarea { width: 100%; margin-top: 8px; }
 .aquarium-volume-result { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; padding: 9px; border-radius: 5px; background: #edf5ef; color: #5d7768; font-size: 11px; }
 .aquarium-volume-result strong { color: #176f52; }
@@ -915,6 +922,9 @@ textarea::placeholder { color: #617669; opacity: 1; }
 [data-theme="dark"] .result-breakdown-heading,
 [data-theme="dark"] .light-channel-row,
 [data-theme="dark"] .aquarium-volume-result { color: #c5d8ce; }
+[data-theme="dark"] .local-data-panel { border-color: #3e5649; background: #17231c; }
+[data-theme="dark"] .local-data-panel h3 { color: #91dfb7; }
+[data-theme="dark"] .local-data-panel p { color: #c5d8ce; }
 [data-theme="dark"] .reagent-info,
 [data-theme="dark"] .ph-result em,
 [data-theme="dark"] .database-reference-note { color: #efc47f; }

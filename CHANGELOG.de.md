@@ -11,7 +11,10 @@ Diese Version verbindet Wasserwechselberechnungen mit dem Messprotokoll und verb
 - Berechnete Protokolleinträge haben nun eine eigene Farbe und die Kennzeichnung **Berechnet** in Kalender, Diagramm, Auswahllisten, Verlauf und Vergleichskarten.
 - Zahlenfelder akzeptieren Punkt und Komma, zeigen sofort das Dezimaltrennzeichen der gewählten Anwendungssprache und behandeln die Dezimaltaste des Ziffernblocks unabhängig von der Tastaturlokalisierung als Trennzeichen.
 - Der Textkontrast der Ziel- und Verhältnisbereiche im dunklen Design wurde erhöht.
-- Tests für Wasserwechsel-Protokolleinträge und lokalisierte Dezimaleingabe wurden ergänzt; alle 56 Tests bestehen.
+- Derselbe Rechner wurde als statische [GitHub-Pages-Web-App](https://fantomiaso.github.io/aquastoich/) veröffentlicht. Registrierung und Anmeldung sind nicht nötig; die Anwendung hat kein Backend, keine Cloud-Datenbank, Analyse, Werbung, Telemetrie oder Übertragung von Benutzerdaten.
+- Vollständige JSON-Sicherung und Wiederherstellung für Aquarienprofile, Protokolle, eigene Stoffe, Vorlagen, Einstellungen, Sprache und Design wurden ergänzt. Die Web-App fordert zudem dauerhaften Browserspeicher an; für einen anderen Browser oder nach manuellem Löschen der Websitedaten bleibt eine Sicherungsdatei erforderlich.
+- Eine strenge Content Security Policy blockiert programmatische ausgehende Datenverbindungen. Externe Quellen und Dokumentation werden nur nach einem bewussten Klick geöffnet.
+- Tests für Wasserwechsel-Protokolleinträge und lokalisierte Dezimaleingabe wurden ergänzt; alle 59 Tests bestehen.
 
 ## 0.1.2a — Testversion
 

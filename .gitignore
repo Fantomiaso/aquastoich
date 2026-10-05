@@ -1,5 +1,6 @@
 node_modules/
 dist/
+_site/
 .cache/
 .pnpm-store/
 qa-data/

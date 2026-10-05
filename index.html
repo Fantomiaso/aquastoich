@@ -4,7 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4f6f5">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="description" content="Private, local-only freshwater aquarium water and fertilizer calculator.">
   <title>AquaStoich — aquarium water calculator</title>
+  <link rel="icon" href="./assets/icon.png" type="image/png">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -114,6 +118,14 @@
           <div class="section-heading split"><h2>Аквариумы</h2><button id="aquarium-add" class="button secondary" type="button">+ Новый аквариум</button></div>
           <p class="help">Выберите аквариум для расчёта подмены и отдельного журнала.</p>
           <div id="aquarium-list" class="aquarium-list"></div>
+          <section class="local-data-panel" aria-labelledby="local-data-title">
+            <div class="section-heading"><h3 id="local-data-title">Локальные данные и резервная копия</h3></div>
+            <p>Аккаунт не нужен. AquaStoich не отправляет параметры аквариумов, журнал и настройки на сервер.</p>
+            <p id="storage-persistence-status" class="storage-persistence-status">Проверяем защиту локального хранилища…</p>
+            <div class="local-data-actions"><button id="backup-export" class="button secondary" type="button">Скачать резервную копию</button><button id="backup-import" class="button quiet" type="button">Восстановить из файла</button><button id="storage-persist" class="text-button" type="button">Запросить постоянное хранение</button></div>
+            <input id="backup-import-file" type="file" accept="application/json,.json" hidden>
+            <p class="fine-print">Файл резервной копии нужен для переноса в другой браузер или после очистки данных сайта. Храните его самостоятельно.</p>
+          </section>
         </div>
         <div class="panel aux-panel">
           <div class="section-heading"><h2>Профиль аквариума</h2></div>

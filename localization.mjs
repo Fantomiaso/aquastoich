@@ -652,6 +652,21 @@ PAR у грунта, мкмоль/м²/с|PAR at substrate, µmol/m²/s|PAR am B
 Начало|Start|Beginn|Inicio
 Длительность|Duration|Dauer|Duración
 Цветовая температура|Color temperature|Farbtemperatur|Temperatura de color
+Локальные данные и резервная копия|Local data and backup|Lokale Daten und Sicherung|Datos locales y copia de seguridad
+Аккаунт не нужен. AquaStoich не отправляет параметры аквариумов, журнал и настройки на сервер.|No account is required. AquaStoich does not send aquarium parameters, the log, or settings to a server.|Kein Konto erforderlich. AquaStoich sendet Aquarienwerte, Protokoll und Einstellungen nicht an einen Server.|No se necesita una cuenta. AquaStoich no envía parámetros del acuario, el registro ni los ajustes a un servidor.
+Проверяем защиту локального хранилища…|Checking local storage protection…|Schutz des lokalen Speichers wird geprüft…|Comprobando la protección del almacenamiento local…
+Скачать резервную копию|Download backup|Sicherung herunterladen|Descargar copia de seguridad
+Восстановить из файла|Restore from file|Aus Datei wiederherstellen|Restaurar desde archivo
+Запросить постоянное хранение|Request persistent storage|Dauerhaften Speicher anfordern|Solicitar almacenamiento persistente
+Файл резервной копии нужен для переноса в другой браузер или после очистки данных сайта. Храните его самостоятельно.|The backup file is needed when moving to another browser or after clearing site data. Keep it in a safe place.|Die Sicherungsdatei wird für den Wechsel zu einem anderen Browser oder nach dem Löschen der Websitedaten benötigt. Bewahren Sie sie sicher auf.|El archivo de copia es necesario para cambiar de navegador o después de borrar los datos del sitio. Guárdelo en un lugar seguro.
+Постоянное хранение не поддерживается этим браузером. Используйте резервную копию.|Persistent storage is not supported by this browser. Use a backup file.|Dieser Browser unterstützt keinen dauerhaften Speicher. Verwenden Sie eine Sicherungsdatei.|Este navegador no admite almacenamiento persistente. Use un archivo de copia de seguridad.
+Браузер предоставил постоянное локальное хранилище.|The browser granted persistent local storage.|Der Browser hat dauerhaften lokalen Speicher gewährt.|El navegador ha concedido almacenamiento local persistente.
+Данные локальны, но браузер не гарантирует постоянное хранение. Скачайте резервную копию.|The data is local, but the browser does not guarantee persistent storage. Download a backup.|Die Daten sind lokal, der Browser garantiert jedoch keine dauerhafte Speicherung. Laden Sie eine Sicherung herunter.|Los datos son locales, pero el navegador no garantiza su conservación. Descargue una copia de seguridad.
+Не удалось проверить постоянное хранение. Используйте резервную копию.|Persistent storage could not be checked. Use a backup file.|Der dauerhafte Speicher konnte nicht geprüft werden. Verwenden Sie eine Sicherungsdatei.|No se pudo comprobar el almacenamiento persistente. Use un archivo de copia de seguridad.
+Резервная копия скачана|Backup downloaded|Sicherung heruntergeladen|Copia de seguridad descargada
+Не удалось восстановить резервную копию AquaStoich|The AquaStoich backup could not be restored|Die AquaStoich-Sicherung konnte nicht wiederhergestellt werden|No se pudo restaurar la copia de AquaStoich
+Постоянное хранение разрешено|Persistent storage granted|Dauerhafter Speicher gewährt|Almacenamiento persistente concedido
+Браузер не предоставил постоянное хранение|The browser did not grant persistent storage|Der Browser hat keinen dauerhaften Speicher gewährt|El navegador no concedió almacenamiento persistente
 Вт|W|W|W
 ч|h|h|h`;
 

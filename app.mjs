@@ -7,6 +7,7 @@ import { estimateAquariumVolume, makeAquarium } from './aquarium.mjs';
 import { journalXlsx } from './journal-export.mjs';
 import { LIGHT_CHANNELS, MAX_LIGHT_CHANNELS, channelName, validLightChannels } from './light-channels.mjs';
 import { installLocalizedNumberInputs, refreshLocalizedNumberInputs } from './localized-number.mjs';
+import { backupFileName, makeBackup, parseBackup } from './storage-backup.mjs';
 
 const STORAGE_KEY = 'rem-aquarium-v1';
 const THEME_KEY = 'aqua-stoich-theme';
@@ -145,6 +146,61 @@ function applyAquariumProfile(profile) {
   state.waterChangeLoadedEntryId = null;
 }
 function save() { try { syncAquariumProfile(); localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* private browsing */ } }
+async function refreshStoragePersistence(request = false) {
+  const status = $('#storage-persistence-status');
+  const button = $('#storage-persist');
+  if (!navigator.storage?.persisted) {
+    status.textContent = translate('Постоянное хранение не поддерживается этим браузером. Используйте резервную копию.');
+    button.hidden = true;
+    return false;
+  }
+  try {
+    let persisted = await navigator.storage.persisted();
+    if (request && !persisted && navigator.storage.persist) persisted = await navigator.storage.persist();
+    status.textContent = translate(persisted
+      ? 'Браузер предоставил постоянное локальное хранилище.'
+      : 'Данные локальны, но браузер не гарантирует постоянное хранение. Скачайте резервную копию.');
+    button.hidden = persisted || !navigator.storage.persist;
+    return persisted;
+  } catch {
+    status.textContent = translate('Не удалось проверить постоянное хранение. Используйте резервную копию.');
+    button.hidden = !navigator.storage?.persist;
+    return false;
+  }
+}
+function downloadFullBackup() {
+  save();
+  const payload = makeBackup({ state, locale: getLocale(), theme: localStorage.getItem(THEME_KEY) ?? 'light' });
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = backupFileName();
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  toast('Резервная копия скачана');
+}
+async function restoreFullBackup(file) {
+  if (!file) return;
+  try {
+    if (file.size > 32 * 1024 * 1024) throw new Error('Backup is too large');
+    const backup = parseBackup(await file.text());
+    const prompts = {
+      en: 'Replace all local AquaStoich data with this backup? The current browser data will be overwritten.',
+      ru: 'Заменить все локальные данные AquaStoich этой резервной копией? Текущие данные браузера будут перезаписаны.',
+      de: 'Alle lokalen AquaStoich-Daten durch diese Sicherung ersetzen? Die aktuellen Browserdaten werden überschrieben.',
+      es: '¿Reemplazar todos los datos locales de AquaStoich con esta copia? Se sobrescribirán los datos actuales del navegador.',
+    };
+    if (!window.confirm(prompts[getLocale()])) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(backup.state));
+    localStorage.setItem('aqua-stoich-locale', backup.locale);
+    localStorage.setItem(THEME_KEY, backup.theme);
+    window.location.reload();
+  } catch {
+    toast('Не удалось восстановить резервную копию AquaStoich');
+  }
+}
 function getRow(id) { return state.rows.find(row => row.id === id); }
 function hasConstraints() { return TARGETS.some(target => !!targetLimits(state.targets?.[target.id], state.targetRanges?.[target.id])) || activeRatios(state).length > 0; }
 function missingTankInputs() {
@@ -1508,6 +1564,17 @@ $('#aquarium-delete').addEventListener('click', () => {
   renderJournalList();
   recalculate();
 });
+$('#backup-export').addEventListener('click', downloadFullBackup);
+$('#backup-import').addEventListener('click', () => $('#backup-import-file').click());
+$('#backup-import-file').addEventListener('change', async event => {
+  const [file] = event.target.files;
+  event.target.value = '';
+  await restoreFullBackup(file);
+});
+$('#storage-persist').addEventListener('click', async () => {
+  const persisted = await refreshStoragePersistence(true);
+  toast(persisted ? 'Постоянное хранение разрешено' : 'Браузер не предоставил постоянное хранение');
+});
 document.querySelectorAll('[data-calc-mode]').forEach(button => button.addEventListener('click', () => {
   state.mode = button.dataset.calcMode;
   syncStaticFields();
@@ -2270,7 +2337,9 @@ document.addEventListener('aqua-locale-change', () => {
   renderAquariums();
   renderDatabaseList();
   refreshLocalizedNumberInputs(document, intlLocale);
+  refreshStoragePersistence();
 });
 $('#theme').addEventListener('change', event => applyTheme(event.target.value));
 installLocalizedNumberInputs(document, intlLocale);
 startLocalization();
+refreshStoragePersistence();

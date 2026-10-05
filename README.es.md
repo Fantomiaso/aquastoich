@@ -4,12 +4,17 @@
 
 ## [⬇ Descargar AquaStoich 0.1.3a · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a)
 
+## [🌐 Abrir la versión web privada](https://fantomiaso.github.io/aquastoich/)
+
 **La versión 0.1.3a está en fase de pruebas.** AquaStoich calcula remineralización, fertilizantes, soluciones madre, proporciones iónicas, cambios de agua y tendencias de medición. Compruebe las dosis, el pH y la interpretación de tendencias mediante mediciones reales.
 
 Las versiones de prueba anteriores siguen disponibles como [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a), [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) y [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). Las diferencias figuran en el [registro de cambios completo](CHANGELOG.es.md).
 
 > [!WARNING]
 > **La aplicación no está firmada digitalmente.** Este proyecto gratuito y no comercial no tiene dinero ni intención de pagar tarifas de plataforma por certificados de firma o notarización de software que debe seguir siendo gratuito. Descargue los paquetes únicamente desde la página oficial de [GitHub Releases](https://github.com/Fantomiaso/aquastoich/releases) y compruebe que `Fantomiaso` sea el propietario del repositorio.
+
+> [!IMPORTANT]
+> **Privacidad de la versión web:** no requiere registro ni inicio de sesión. Los perfiles de acuarios, cálculos, sustancias propias, preajustes, ajustes y registro permanecen en este navegador y dispositivo. AquaStoich no tiene servidor de aplicación, base de datos en la nube, analítica, publicidad, telemetría ni carga de datos. GitHub Pages solo entrega los archivos estáticos del programa. Use **Descargar copia de seguridad** para conservar o trasladar los datos: al borrar manualmente los datos del sitio también pueden eliminarse el almacenamiento local e IndexedDB.
 
 ## Descarga e instalación
 
@@ -25,13 +30,13 @@ La aplicación funciona sin conexión ni cuenta. El cálculo, las sustancias pro
 | macOS | `~/Library/Application Support/AquaStoich` |
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
 
-La versión web guarda sus datos por separado en el navegador. No existe una migración automática a la aplicación de escritorio.
+La versión web solicita almacenamiento local persistente al navegador. Esto reduce la eliminación automática, pero no protege frente al borrado manual de los datos del sitio. **Descargar copia de seguridad** exporta a JSON todos los acuarios, registros, sustancias propias, preajustes, ajustes, idioma y tema; **Restaurar desde archivo** los importa en otro navegador o tras una limpieza. No hay sincronización automática en la nube ni migración a la aplicación de escritorio.
 
 ## Historial de versiones
 
 | Versión | Fecha | Resumen |
 | --- | --- | --- |
-| [0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a) | 05/10/2026 | Compilación de prueba actual. Integración del cambio de agua con el registro, identificación visual de lecturas calculadas, entrada decimal localizada y mayor contraste de los rangos en el tema oscuro. |
+| [0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a) | 05/10/2026 | Compilación de prueba actual. Integración del cambio de agua con el registro, lecturas calculadas diferenciadas, entrada decimal localizada, rangos oscuros más claros, aplicación privada en GitHub Pages y copia local completa. |
 | [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 22/09/2026 | Se ampliaron la documentación y las instrucciones de instalación, se destacó la ausencia de firma y se comprobó el arranque de Linux AppImage/DEB y macOS x64/ARM64. |
 | [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) | 21/09/2026 | Añadió calendario y gráfico del historial, interpolación, estadísticas del periodo, comparación de dos lecturas, temas y una amplia mejora de legibilidad. |
 | [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) | 16/09/2026 | Primera versión independiente con perfiles de acuarios, cálculo de volumen, registros separados, canales de luz, Excel, TDS, preajustes editables, base de sustancias, dosificación y remineralización. |

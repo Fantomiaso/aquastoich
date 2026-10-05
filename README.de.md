@@ -4,12 +4,17 @@
 
 ## [⬇ AquaStoich 0.1.3a herunterladen · Windows / macOS / Linux](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a)
 
+## [🌐 Private Web-Version öffnen](https://fantomiaso.github.io/aquastoich/)
+
 **Version 0.1.3a befindet sich in der Testphase.** AquaStoich berechnet Remineralisierung, Dünger, Stammlösungen, Ionenverhältnisse, Wasserwechsel und Messverläufe. Dosierungen, pH und interpretierte Trends sollten mit tatsächlichen Messungen überprüft werden.
 
 Frühere Testversionen bleiben als [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a), [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) und [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) verfügbar. Die Unterschiede stehen im [vollständigen Änderungsprotokoll](CHANGELOG.de.md).
 
 > [!WARNING]
 > **Die Anwendung ist nicht digital signiert.** Dieses kostenlose, nichtkommerzielle Projekt hat weder Geld noch die Absicht, Plattformgebühren für Signaturzertifikate oder die Notarisierung von Software zu bezahlen, die kostenlos bleiben soll. Laden Sie Pakete nur von der offiziellen Seite [GitHub Releases](https://github.com/Fantomiaso/aquastoich/releases) herunter und prüfen Sie, dass `Fantomiaso` der Repository-Inhaber ist.
+
+> [!IMPORTANT]
+> **Datenschutz der Web-Version:** Registrierung und Anmeldung sind nicht erforderlich. Aquarienprofile, Berechnungen, eigene Stoffe, Vorlagen, Einstellungen und das Messprotokoll bleiben in diesem Browser auf diesem Gerät. AquaStoich besitzt keinen Anwendungsserver, keine Cloud-Datenbank, Analyse, Werbung, Telemetrie oder Datenübertragung. GitHub Pages liefert nur die statischen Programmdateien aus. Mit **Sicherung herunterladen** lassen sich die Daten erhalten und übertragen; beim manuellen Löschen der Websitedaten können sowohl lokaler Speicher als auch IndexedDB entfernt werden.
 
 ## Download und Installation
 
@@ -25,13 +30,13 @@ Die Anwendung arbeitet offline ohne Konto. Berechnung, eigene Stoffe, Messprotok
 | macOS | `~/Library/Application Support/AquaStoich` |
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
 
-Die Browser-Version speichert Daten getrennt im lokalen Speicher des Browsers; eine automatische Übernahme in die Desktop-App findet nicht statt.
+Die Browser-Version fordert dauerhaften lokalen Speicher an. Das verringert automatische Löschungen, schützt jedoch nicht vor dem manuellen Löschen der Websitedaten. **Sicherung herunterladen** exportiert alle Aquarien, Protokolle, eigenen Stoffe, Vorlagen, Einstellungen, Sprache und Design in eine JSON-Datei; **Aus Datei wiederherstellen** importiert sie in einen anderen Browser oder nach einer Löschung. Es gibt keine automatische Cloud-Synchronisierung oder Übernahme in die Desktop-App.
 
 ## Versionsverlauf
 
 | Version | Datum | Zusammenfassung |
 | --- | --- | --- |
-| [0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a) | 05.10.2026 | Aktueller Test-Build. Messprotokoll-Anbindung für Wasserwechsel, getrennte Kennzeichnung berechneter Einträge, lokalisierte Dezimaleingabe und kontrastreichere Bereichsfelder im dunklen Design. |
+| [0.1.3a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.3a) | 05.10.2026 | Aktueller Test-Build. Messprotokoll-Anbindung für Wasserwechsel, Kennzeichnung berechneter Einträge, lokalisierte Dezimaleingabe, bessere dunkle Bereiche, private GitHub-Pages-App und vollständige lokale Sicherung. |
 | [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a) | 22.09.2026 | Dokumentation und Installationshinweise wurden erweitert, der Hinweis auf die fehlende Signatur wurde hervorgehoben und Linux AppImage/DEB sowie macOS x64/ARM64 wurden auf Startfähigkeit geprüft. |
 | [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) | 21.09.2026 | Kalender- und Diagrammansicht für Messverläufe, Interpolation, Zeitraumstatistik, Vergleich zweier Messungen, Designs und eine umfassende Überarbeitung der Lesbarkeit. |
 | [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) | 16.09.2026 | Erste Standalone-Version mit Aquarienprofilen, Volumenberechnung, getrennten Protokollen, Lichtkanälen, Excel-Export, TDS, bearbeitbaren Vorlagen, Stoffdatenbank, Dosierung und Remineralisierung. |
