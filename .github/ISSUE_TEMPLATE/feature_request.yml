@@ -1,0 +1,89 @@
+name: Feature proposal / Предложить улучшение
+description: Suggest a workflow, calculation, data or interface improvement. / Предложить функцию или улучшение.
+title: "[Proposal]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting an improvement. You may write in any language.
+
+        Спасибо за предложение. Форму можно заполнить на любом языке. Explain the aquarium task first, then the desired interface or calculation.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting / Перед отправкой
+      options:
+        - label: I searched existing issues and did not find the same proposal.
+          required: true
+        - label: This proposal is related to freshwater-aquarium use or AquaStoich distribution.
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area / Раздел
+      options:
+        - Calculator and doses
+        - Water-change workflow
+        - Measurement log and analysis
+        - Aquarium profiles and lighting
+        - Substance database and presets
+        - Backup, portability and privacy
+        - Interface and accessibility
+        - Documentation or distribution
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: need
+    attributes:
+      label: Aquarium task or problem / Задача или проблема
+      description: Describe what is difficult or impossible now. Concrete examples are helpful.
+      placeholder: When preparing water or reviewing measurements, I need to…
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed improvement / Предлагаемое улучшение
+      description: Explain how you expect the feature to work from the user's point of view.
+      placeholder: Add a control that…
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example workflow or calculation / Пример сценария или расчёта
+      description: Include example inputs and expected output when the proposal affects calculations.
+      placeholder: Optional, but useful for defining the feature precisely.
+
+  - type: dropdown
+    id: data
+    attributes:
+      label: Data and privacy impact / Данные и приватность
+      description: AquaStoich keeps user data locally and has no accounts or application backend.
+      options:
+        - Works entirely with local data
+        - Would import or export a user-selected file
+        - May require an external data source
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered / Рассмотренные альтернативы
+      placeholder: Existing workaround, another application, manual calculation, etc.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context or mockup / Дополнительная информация или макет
+      description: Drag screenshots or sketches here if they help explain the proposal.

@@ -6,6 +6,8 @@
 
 ## [🌐 Private Web-Version öffnen](https://fantomiaso.github.io/aquastoich/)
 
+## [💬 Feedback: Fehler melden oder Verbesserung vorschlagen](https://github.com/Fantomiaso/aquastoich/issues/new/choose)
+
 **Version 0.1.3a befindet sich in der Testphase.** AquaStoich berechnet Remineralisierung, Dünger, Stammlösungen, Ionenverhältnisse, Wasserwechsel und Messverläufe. Dosierungen, pH und interpretierte Trends sollten mit tatsächlichen Messungen überprüft werden.
 
 Frühere Testversionen bleiben als [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a), [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) und [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a) verfügbar. Die Unterschiede stehen im [vollständigen Änderungsprotokoll](CHANGELOG.de.md).
@@ -31,6 +33,8 @@ Die Anwendung arbeitet offline ohne Konto. Berechnung, eigene Stoffe, Messprotok
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
 
 Die Browser-Version fordert dauerhaften lokalen Speicher an. Das verringert automatische Löschungen, schützt jedoch nicht vor dem manuellen Löschen der Websitedaten. **Sicherung herunterladen** exportiert alle Aquarien, Protokolle, eigenen Stoffe, Vorlagen, Einstellungen, Sprache und Design in eine JSON-Datei; **Aus Datei wiederherstellen** importiert sie in einen anderen Browser oder nach einer Löschung. Es gibt keine automatische Cloud-Synchronisierung oder Übernahme in die Desktop-App.
+
+Die Schaltfläche **Feedback** in der oberen Leiste öffnet die strukturierte Issue-Auswahl des Repositorys. **Fehlermeldung** ist für falsches Verhalten, Rechenfehler, Abstürze und Layoutprobleme vorgesehen; **Verbesserungsvorschlag** für neue Abläufe und Funktionen. Leere unstrukturierte Issues sind deaktiviert. Meldungen können in jeder Sprache verfasst werden.
 
 ## Versionsverlauf
 

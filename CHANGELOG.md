@@ -14,6 +14,7 @@ This release connects water-change calculations with the measurement log and imp
 - Published the same calculator as a static [GitHub Pages web app](https://fantomiaso.github.io/aquastoich/). It requires no registration or login and has no application backend, cloud database, analytics, advertising, telemetry, or user-data upload.
 - Added full JSON backup and restore for aquarium profiles, journals, custom substances, presets, settings, language, and theme. The web app also requests persistent browser storage; a backup file remains necessary for another browser or after manually clearing site data.
 - Added a restrictive Content Security Policy that blocks programmatic outbound data connections. External source and documentation pages open only after the user follows their links.
+- Added a localized **Feedback** button and a structured GitHub issue chooser with separate bug-report and feature-proposal forms; unstructured blank issues are disabled.
 - Added tests for the water-change journal snapshots and locale-aware decimal normalization; the full suite contains 59 passing tests.
 
 ## 0.1.2a — Testing release

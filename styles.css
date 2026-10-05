@@ -40,6 +40,8 @@ a:hover { text-decoration: underline; }
 .button.primary:hover { background: #105a42; }
 .button.secondary { background: #e2f0e7; color: #176f52; border-color: #d4e7da; }
 .button.secondary:hover { background: #d7e9de; }
+.feedback-button { display: inline-flex; align-items: center; justify-content: center; min-height: 27px; padding-block: 5px; }
+.feedback-button:hover { text-decoration: none; }
 .button.full { width: 100%; margin-top: 11px; }
 
 .layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 250px minmax(340px, 1fr) minmax(400px, 500px); gap: 9px; }
@@ -994,11 +996,14 @@ textarea::placeholder { color: #617669; opacity: 1; }
 [data-theme="colorblind"] thead,
 [data-theme="colorblind"] .group-row th { background: #e1eef4; }
 
+@media (max-width: 1360px) {
+  .topbar { height: auto; min-height: 45px; flex-wrap: wrap; }
+  .top-actions { flex: 1 1 100%; flex-wrap: wrap; justify-content: flex-end; }
+  .brand div span { display: none; }
+}
+
 @media (max-width: 1120px) {
   .layout { grid-template-columns: 225px minmax(300px, 1fr) minmax(340px, 400px); }
-  .topbar { height: auto; min-height: 45px; flex-wrap: wrap; }
-  .top-actions { flex-wrap: wrap; justify-content: flex-end; }
-  .brand div span { display: none; }
 }
 
 @media (max-width: 900px) {

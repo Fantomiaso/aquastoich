@@ -1,0 +1,123 @@
+name: Bug report / Сообщить об ошибке
+description: Report incorrect behaviour, a crash, layout or calculation problem. / Сообщить об ошибке, сбое или проблеме расчёта.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping test AquaStoich. You may write in any language.
+
+        Спасибо, что помогаете тестировать AquaStoich. Форму можно заполнить на любом языке. Do not attach a full backup if it contains data you do not want to publish.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting / Перед отправкой
+      options:
+        - label: I searched existing issues and did not find the same problem.
+          required: true
+        - label: I am using the latest available web or desktop build.
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area / Раздел
+      options:
+        - Calculator and doses
+        - Water-change calculation
+        - Measurement log, calendar or chart
+        - Aquarium profiles and geometry
+        - Substance database or presets
+        - Backup, restore or local storage
+        - Interface, layout or translation
+        - Installation or startup
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: AquaStoich version / Версия
+      description: Shown in the top bar, for example 0.1.3a.
+      placeholder: 0.1.3a
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform / Платформа
+      options:
+        - Web version
+        - Windows installer
+        - Windows portable
+        - macOS Intel
+        - macOS Apple Silicon
+        - Linux AppImage
+        - Linux DEB
+        - Source build
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser or operating system / Браузер или ОС
+      description: Include the browser version for the web app or the OS version for desktop.
+      placeholder: Firefox 145 on Debian 13, Windows 11 25H2, macOS 27…
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened? / Что произошло?
+      description: Describe the visible problem and any error message.
+      placeholder: Describe the problem clearly…
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / Шаги воспроизведения
+      description: List the shortest sequence that reliably causes the problem.
+      placeholder: |
+        1. Open…
+        2. Enter…
+        3. Click…
+        4. Observe…
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result / Ожидаемый результат
+      placeholder: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: calculation
+    attributes:
+      label: Calculation inputs / Входные данные расчёта
+      description: If calculation-related, include volumes, targets, substances, forms and doses. Remove anything you do not want to publish.
+      placeholder: Optional for non-calculation bugs.
+
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Screenshots or logs / Скриншоты или журнал
+      description: Drag files here. Do not upload a complete backup unless you have reviewed its contents.
+      placeholder: Optional, but very useful for layout and startup problems.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context / Дополнительная информация
+      placeholder: Anything else that may help reproduce or diagnose the problem.

@@ -12,6 +12,8 @@ Numeric fields now accept both dot and comma, display the decimal separator of t
 
 The static web version requests persistent browser storage and includes complete backup and restore. A restrictive Content Security Policy blocks programmatic outbound data connections; external source links open only when selected by the user.
 
+A localized **Feedback** button opens two structured GitHub forms: one for bug reports and one for feature proposals. Blank unstructured issues are disabled.
+
 The project is free, noncommercial, unsigned, and still being tested. Verify calculated doses and estimated readings with actual aquarium measurements.
 
 [English instructions](README.md) · [Changelog](CHANGELOG.md) · [License](LICENSE.md)
@@ -23,6 +25,8 @@ AquaStoich 0.1.3a связывает расчёт подмены с журнал
 Числовые поля теперь принимают точку и запятую, отображают десятичный разделитель выбранного языка и корректно обрабатывают клавишу разделителя на цифровом блоке независимо от системной раскладки. В тёмной теме также повышен контраст полей диапазонов целей и пропорций.
 
 **Приватность веб-версии:** [AquaStoich доступен на GitHub Pages](https://fantomiaso.github.io/aquastoich/) без регистрации и входа. Профили, расчёты, пользовательские вещества, пресеты, настройки и журналы остаются в браузере пользователя. У AquaStoich нет серверной части, облачной базы, аналитики, рекламы, телеметрии и отправки пользовательских данных. Веб-версия запрашивает постоянное хранилище, позволяет скачать и восстановить полную JSON-копию, а строгая Content Security Policy блокирует программные исходящие подключения к API.
+
+Локализованная кнопка **«Обратная связь»** открывает две оформленные формы GitHub: отдельно для сообщения об ошибке и предложения улучшения. Пустые неструктурированные issues отключены.
 
 Проект бесплатный, некоммерческий, не подписан цифровой подписью и всё ещё тестируется. Проверяйте дозировки и расчётные показания фактическими измерениями.
 
@@ -36,6 +40,8 @@ Zahlenfelder akzeptieren nun Punkt und Komma, zeigen das Dezimaltrennzeichen der
 
 **Datenschutz der Web-Version:** [AquaStoich auf GitHub Pages öffnen](https://fantomiaso.github.io/aquastoich/). Keine Registrierung oder Anmeldung. Profile, Berechnungen, eigene Stoffe, Vorlagen, Einstellungen und Protokolle bleiben im Browser. Es gibt kein Backend, keine Cloud-Datenbank, Analyse, Werbung, Telemetrie oder Datenübertragung. Dauerhafter Speicher, vollständige JSON-Sicherung und eine restriktive Content Security Policy sind enthalten.
 
+Eine lokalisierte **Feedback**-Schaltfläche öffnet zwei strukturierte GitHub-Formulare: eines für Fehler und eines für Verbesserungsvorschläge. Leere unstrukturierte Issues sind deaktiviert.
+
 Das Projekt ist kostenlos, nichtkommerziell, unsigniert und befindet sich weiterhin in der Testphase. Dosierungen und Schätzwerte bitte mit tatsächlichen Messungen prüfen.
 
 [Deutsche Anleitung](README.de.md) · [Änderungsprotokoll](CHANGELOG.de.md) · [Lizenz](LICENSE.md)
@@ -47,6 +53,8 @@ AquaStoich 0.1.3a conecta el cálculo del cambio de agua con el registro del acu
 Los campos numéricos aceptan tanto el punto como la coma, muestran el separador decimal del idioma elegido y procesan la tecla decimal del teclado numérico con independencia de la configuración regional del sistema. El tema oscuro también ofrece mayor contraste en los rangos de objetivos y proporciones.
 
 **Privacidad de la versión web:** [abra AquaStoich en GitHub Pages](https://fantomiaso.github.io/aquastoich/). No requiere registro ni inicio de sesión. Perfiles, cálculos, sustancias propias, preajustes, ajustes y registros permanecen en el navegador. No existe backend, base en la nube, analítica, publicidad, telemetría ni carga de datos. Incluye almacenamiento persistente, copia JSON completa y una Content Security Policy restrictiva.
+
+Un botón **Comentarios** localizado abre dos formularios estructurados de GitHub: uno para errores y otro para propuestas de mejora. Las incidencias vacías sin estructura están desactivadas.
 
 El proyecto es gratuito, no comercial, no está firmado y continúa en fase de pruebas. Compruebe las dosis y estimaciones con mediciones reales.
 

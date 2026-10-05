@@ -16,6 +16,8 @@ const rows = `Расчёт воды для подмены|Aquarium water calcula
 Сбросить выделение|Clear selection|Auswahl aufheben|Borrar selección
 Скопировать расчёт|Copy calculation|Berechnung kopieren|Copiar cálculo
 Новый расчёт|New calculation|Neue Berechnung|Nuevo cálculo
+Обратная связь ↗|Feedback ↗|Feedback ↗|Comentarios ↗
+Оставить отзыв или сообщить об ошибке|Send feedback or report a bug|Feedback senden oder einen Fehler melden|Enviar comentarios o informar de un error
 Разделы программы|App sections|App-Bereiche|Secciones
 Расчёт|Calculator|Rechner|Calculadora
 Журнал измерений|Measurement log|Messprotokoll|Registro de mediciones

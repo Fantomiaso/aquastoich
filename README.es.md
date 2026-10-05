@@ -6,6 +6,8 @@
 
 ## [🌐 Abrir la versión web privada](https://fantomiaso.github.io/aquastoich/)
 
+## [💬 Comentarios: informar de un error o proponer una mejora](https://github.com/Fantomiaso/aquastoich/issues/new/choose)
+
 **La versión 0.1.3a está en fase de pruebas.** AquaStoich calcula remineralización, fertilizantes, soluciones madre, proporciones iónicas, cambios de agua y tendencias de medición. Compruebe las dosis, el pH y la interpretación de tendencias mediante mediciones reales.
 
 Las versiones de prueba anteriores siguen disponibles como [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a), [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a) y [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). Las diferencias figuran en el [registro de cambios completo](CHANGELOG.es.md).
@@ -31,6 +33,8 @@ La aplicación funciona sin conexión ni cuenta. El cálculo, las sustancias pro
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
 
 La versión web solicita almacenamiento local persistente al navegador. Esto reduce la eliminación automática, pero no protege frente al borrado manual de los datos del sitio. **Descargar copia de seguridad** exporta a JSON todos los acuarios, registros, sustancias propias, preajustes, ajustes, idioma y tema; **Restaurar desde archivo** los importa en otro navegador o tras una limpieza. No hay sincronización automática en la nube ni migración a la aplicación de escritorio.
+
+El botón **Comentarios** de la barra superior abre el selector estructurado de incidencias del repositorio. Use **Informar de un error** para comportamientos incorrectos, fallos de cálculo, cierres o problemas de diseño, y **Proponer una mejora** para nuevos flujos y funciones. Las incidencias vacías sin estructura están desactivadas; puede escribir en cualquier idioma.
 
 ## Historial de versiones
 

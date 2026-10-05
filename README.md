@@ -6,6 +6,8 @@
 
 ## [🌐 Open the private web version](https://fantomiaso.github.io/aquastoich/)
 
+## [💬 Feedback: report a bug or propose an improvement](https://github.com/Fantomiaso/aquastoich/issues/new/choose)
+
 **Version 0.1.3a is a testing release.** AquaStoich calculates freshwater aquarium remineralization, fertilizer doses, stock solutions, ion ratios, water changes and measurement trends. Verify doses, pH and interpreted trends with actual measurements.
 
 Previous testing builds remain available as [0.1.2a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.2a), [0.1.1a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.1a), and [0.1.0a](https://github.com/Fantomiaso/aquastoich/releases/tag/v0.1.0a). See the [full changelog](CHANGELOG.md) for the differences.
@@ -31,6 +33,8 @@ The app works offline and has no account or remote database. Electron stores the
 | Linux | `${XDG_CONFIG_HOME:-~/.config}/AquaStoich` |
 
 The browser version asks the browser for persistent local storage and keeps separate data on that device. This reduces automatic eviction but cannot survive a manual clearing of site data. **Download backup** exports all aquariums, journals, custom substances, presets, settings, language, and theme to a JSON file; **Restore from file** imports it in another browser or after clearing data. There is no automatic cloud synchronization or migration into the desktop app.
+
+The **Feedback** button in the top bar opens the repository's structured issue chooser. Use **Bug report** for incorrect behaviour, calculation errors, crashes or layout problems, and **Feature proposal** for new workflows and improvements. Empty unstructured issues are disabled; reports can be written in any language.
 
 ## Version history
 
